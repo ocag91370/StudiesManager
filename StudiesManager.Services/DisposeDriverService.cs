@@ -10,21 +10,23 @@ namespace MaxicoursDownloader.Api.Services
     public static class DisposeDriverService
     {
         private static readonly List<string> _processesToCheck = new List<string> {
-            "opera",
-            "chrome",
-            "firefox",
-            "ie",
-            "gecko",
-            "phantomjs",
-            "edge",
-            "microsoftwebdriver",
-            "webdriver"
+            "chromedriver",
+            //"opera",
+            //"chrome",
+            //"firefox",
+            //"ie",
+            //"gecko",
+            //"phantomjs",
+            //"edge",
+            //"microsoftwebdriver",
+            //"webdriver"
         };
 
         public static DateTime? TestRunStartTime { get; set; }
 
-        public static void FinishHim(IWebDriver driver)
+        public static void FinishHim(this IWebDriver driver)
         {
+            driver?.Quit();
             driver?.Dispose();
             var processes = Process.GetProcesses();
             foreach (var process in processes)

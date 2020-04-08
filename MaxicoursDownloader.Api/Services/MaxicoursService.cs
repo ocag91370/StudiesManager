@@ -20,7 +20,7 @@ namespace MaxicoursDownloader.Api.Services
     public class MaxicoursService : IMaxicoursService, IDisposable
     {
         private readonly IMapper _mapper;
-        private readonly IWebDriver Driver;
+        private IWebDriver Driver;
 
         public MaxicoursService(IMapper mapper)
         {
@@ -76,9 +76,9 @@ namespace MaxicoursDownloader.Api.Services
 
             var Renderer = new IronPdf.HtmlToPdf();
 
-            Renderer.PrintOptions.SetCustomPaperSizeinMilimeters(210, 297);
-            Renderer.PrintOptions.PrintHtmlBackgrounds = true;
+            Renderer.PrintOptions.PaperSize = PdfPrintOptions.PdfPaperSize.A4;
             Renderer.PrintOptions.PaperOrientation = PdfPrintOptions.PdfPaperOrientation.Portrait;
+            Renderer.PrintOptions.PrintHtmlBackgrounds = true;
             Renderer.PrintOptions.Title = "My PDF Document Name";
             Renderer.PrintOptions.EnableJavaScript = true;
             Renderer.PrintOptions.RenderDelay = 50;
@@ -91,10 +91,10 @@ namespace MaxicoursDownloader.Api.Services
             Renderer.PrintOptions.InputEncoding = Encoding.UTF8;
             Renderer.PrintOptions.Zoom = 100;
             Renderer.PrintOptions.CreatePdfFormsFromHtml = true;
-            Renderer.PrintOptions.MarginTop = 0;
-            Renderer.PrintOptions.MarginLeft = 0;
-            Renderer.PrintOptions.MarginRight = 0;
-            Renderer.PrintOptions.MarginBottom = 0;
+            Renderer.PrintOptions.MarginTop = 10;
+            Renderer.PrintOptions.MarginLeft = 10;
+            Renderer.PrintOptions.MarginRight = 10;
+            Renderer.PrintOptions.MarginBottom = 10;
             Renderer.PrintOptions.FirstPageNumber = 1;
 
             var pdf = Renderer.RenderHtmlAsPdf(html);
@@ -103,8 +103,10 @@ namespace MaxicoursDownloader.Api.Services
 
         public void Dispose()
         {
+            //Driver.FinishHim();
             Driver.Quit();
             Driver.Dispose();
+            Driver = null;
         }
     }
 }
