@@ -1,8 +1,6 @@
 ﻿using MaxicoursDownloader.Api.Models;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MaxicoursDownloader.Api.Contracts
 {
@@ -12,10 +10,10 @@ namespace MaxicoursDownloader.Api.Contracts
 
         SchoolLevelModel GetSchoolLevel(string levelTag);
 
-        List<SubjectModel> GetAllSubjects(string levelTag);
+        List<SubjectSummaryModel> GetAllSubjects(string levelTag);
 
         SubjectModel GetSubject(string levelTag, int subjectId);
 
-        List<ThemeModel> GetAllThemes(string levelTag, int subjectId);
+        void SaveClosedPageAsPdf();
     }
 }

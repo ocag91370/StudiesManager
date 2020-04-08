@@ -11,11 +11,11 @@ namespace MaxicoursDownloader.Api.Pages
 {
     public partial class SubjectPage : BasePage
     {
-        private IWebElement CategoriesContainerElement => ContainerElement.FindElement(By.XPath("//*[@class = 'lsi-crn-container']//*[@class = 'container-tabs']"));
+        private IWebElement CategoriesContainerElement => ContainerElement.FindElement(By.XPath("//*[@class = 'lsi-crn-container']//*[@class = 'onglets']"));
 
-        private IEnumerable<IWebElement> CategoryElementList => CategoriesContainerElement.FindElements(By.XPath("//*[@class = 'onglets']//a"));
+        private IEnumerable<IWebElement> CategoryElementList => CategoriesContainerElement.FindElements(By.TagName("a"));
 
-        private IWebElement GetCategoryElement(string categoryId) => CategoriesContainerElement.FindElement(By.XPath($"//*[@class = 'onglets']//a[@rel = '{categoryId}']"));
+        private IWebElement GetCategoryElement(string categoryId) => CategoriesContainerElement.FindElement(By.XPath($"a[@rel = '{categoryId}']"));
 
 
         public List<CategoryEntity> GetAllCategories()
@@ -26,6 +26,16 @@ namespace MaxicoursDownloader.Api.Pages
         public void SelectCategory(string categoryId)
         {
             GetCategoryElement(categoryId)?.Click();
+        }
+
+        public void SelectLessonCategory()
+        {
+            SelectCategory("fiche");
+        }
+
+        public void SelectVideoCategory()
+        {
+            SelectCategory("video");
         }
 
         private CategoryEntity GetCategory(IWebElement categoryElement)

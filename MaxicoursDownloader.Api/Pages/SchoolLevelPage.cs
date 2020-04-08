@@ -1,5 +1,5 @@
-﻿using MaxicoursDownloader.Api.Extensions;
-using MaxicoursDownloader.Api.Models;
+﻿using MaxicoursDownloader.Api.Entities;
+using MaxicoursDownloader.Api.Extensions;
 using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
@@ -22,37 +22,24 @@ namespace MaxicoursDownloader.Api.Pages
 
         public string Title => TitleElement.Text;
 
-        public List<SubjectModel> GetAllSubjects()
+        public List<SubjectSummaryEntity> GetAllSubjects()
         {
-            return SubjectElementList.Select(o => GetSubject(o)).ToList();
+            return SubjectElementList.Select(o => GetSubjectSummary(o)).ToList();
         }
 
-        private SubjectModel GetSubject(IWebElement subjectElement)
+        private SubjectSummaryEntity GetSubjectSummary(IWebElement subjectElement)
         {
             var url = subjectElement.GetAttribute("href");
             var ids = url.SplitUrl();
+            var name = subjectElement.FindElement(By.TagName("span")).Text;
 
-            var model = new SubjectModel
+            return new SubjectSummaryEntity
             {
-                SchoolLevelId = ids[0],
-                SubjectId = ids[1],
-                Name = subjectElement.FindElement(By.TagName("span")).Text,
+                SchoolLevelId = ids.First(),
+                SubjectId = ids.Last(),
+                Name = name,
                 Url = url
             };
-
-            //var urlSplitted = url.Replace("https://entraide-covid19.maxicours.com/LSI/prod/Arbo/home/bo/", "").Replace("?", "/").Split('/');
-            //int.TryParse(urlSplitted[0], out var schoolLevelId);
-            //int.TryParse(urlSplitted[1], out var subjectId);
-
-            //var model = new SubjectModel
-            //{
-            //    SchoolLevelId = schoolLevelId,
-            //    SubjectId = subjectId,
-            //    Name = subjectElement.FindElement(By.TagName("span")).Text,
-            //    Url = url
-            //};
-
-            return model;
         }
     }
 }

@@ -117,5 +117,15 @@ namespace MaxicoursDownloader.Api.Controllers
 
             return Ok();
         }
+
+
+        [HttpGet]
+        [Route("closed")]
+        public IActionResult Closed()
+        {
+            _maxicoursService.SaveClosedPageAsPdf();
+
+            return Ok();
+        }
     }
 }

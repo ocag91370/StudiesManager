@@ -1,11 +1,8 @@
-﻿using MaxicoursDownloader.Api.Models;
+﻿using MaxicoursDownloader.Api.Extensions;
+using MaxicoursDownloader.Api.Models;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
 
 namespace MaxicoursDownloader.Api.Pages
 {
@@ -25,7 +22,7 @@ namespace MaxicoursDownloader.Api.Pages
         {
             return SchoolLevelListElements.Select(o => {
                 var url = o.GetAttribute("href");
-                var tag = HttpUtility.ParseQueryString(url).Get("cla");
+                var tag = url.GetUrlParameter("cla");
 
                 var result = new SchoolLevelModel {
                     Tag = tag,
@@ -35,11 +32,6 @@ namespace MaxicoursDownloader.Api.Pages
 
                 return result;
             }).ToList();
-        }
-
-        public SchoolLevelModel GetSchoolLevelByTag(string tag)
-        {
-            return GetAllSchoolLevels().FirstOrDefault(o => o.Tag == tag);
         }
     }
 }

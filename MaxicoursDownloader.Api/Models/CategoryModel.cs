@@ -1,4 +1,6 @@
-﻿namespace MaxicoursDownloader.Api.Models
+﻿using System.Collections.Generic;
+
+namespace MaxicoursDownloader.Api.Models
 {
     public class CategoryModel
     {

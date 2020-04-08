@@ -1,5 +1,5 @@
-﻿using MaxicoursDownloader.Api.Extensions;
-using MaxicoursDownloader.Api.Models;
+﻿using MaxicoursDownloader.Api.Entities;
+using MaxicoursDownloader.Api.Extensions;
 using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
@@ -30,18 +30,6 @@ namespace MaxicoursDownloader.Api.Pages
                 Name = themeElement.FindElement(By.TagName("span")).Text,
                 Url = url
             };
-
-            //var urlSplitted = url.Replace("https://entraide-covid19.maxicours.com/LSI/prod/Arbo/home/bo/", "").Replace("?", "/").Split('/');
-            //int.TryParse(urlSplitted[0], out var schoolLevelId);
-            //int.TryParse(urlSplitted[1], out var subjectId);
-            //int.TryParse(urlSplitted[2], out var themeId);
-
-            //var model = new ThemeEntity
-            //{
-            //    ThemeId = themeId,
-            //    Name = themeElement.FindElement(By.TagName("span")).Text,
-            //    Url = url
-            //};
 
             return model;
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace MaxicoursDownloader.Api.Extensions
 {
@@ -12,23 +13,44 @@ namespace MaxicoursDownloader.Api.Extensions
             return @this.Equals(value, StringComparison.InvariantCultureIgnoreCase);
         }
 
-        public static int[] SplitUrl (this string @this)
+        public static int[] SplitUrl(this string @this)
         {
-            var url = @this.Replace("https://entraide-covid19.maxicours.com/LSI/prod/Arbo/home/bo/", "");
+            var url = @this;
 
-            if (url.Contains("?"))
-            {
-                var index = url.IndexOf('?');
-                url = url.Substring(0, index);
-            }
+            url = url.Split('?').First();
+            //if (url.Contains("?"))
+            //{
+            //    var index = url.IndexOf('?');
+            //    url = url.Substring(0, index);
+            //}
 
-            var values = new List<int>();
-            url.Split('/').ToList().ForEach(o => {
-                if (int.TryParse(o, out var value))
-                    values.Add(value);
-            });
+            //url = url
+            //    .Replace("https://entraide-covid19.maxicours.com", "")
+            //    .Replace("/LSI/prod/Arbo/home/bo/", "")
+            //    .Replace("/LSI/prod/Accueil/", "");
 
-            return values.ToArray();
+            //var values = new List<int>();
+            //url.Split('/').ToList().ForEach(o => {
+            //    if (int.TryParse(o, out var value))
+            //        values.Add(value);
+            //});
+
+            var values = url.Split('/')
+                .Where(o => int.TryParse(o, out var value))
+                .Select(o => int.Parse(o))
+                .ToArray();
+
+            return values;
+        }
+
+        public static string GetUrlParameter(this string @this, string key)
+        {
+            return HttpUtility.ParseQueryString(@this).Get(key);
+        }
+
+        public static string DecodeUrl(this string @this)
+        {
+            return HttpUtility.UrlDecode(@this);
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using MaxicoursDownloader.Api.Contracts;
 using MaxicoursDownloader.Api.Services;
 using Microsoft.AspNetCore.Builder;
@@ -28,6 +29,10 @@ namespace MaxicoursDownloader.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            // AutoMapper
+            services.AddAutoMapper(typeof(Startup));
+            //services.AddControllersWithViews();
 
             // Register using generic types
             services.AddTransient<IMaxicoursService, MaxicoursService>();
