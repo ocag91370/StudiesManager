@@ -11,6 +11,12 @@ namespace MaxicoursDownloader.Api.Pages
 
         public IWebDriver Driver { get; set; }
 
+        public BasePage(IWebDriver driver)
+        {
+            Driver = driver;
+            Url = string.Empty;
+        }
+
         public BasePage(IWebDriver driver, string url)
         {
             Driver = driver;

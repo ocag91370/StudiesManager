@@ -1,8 +1,8 @@
 ﻿namespace MaxicoursDownloader.Api.Models
 {
-    public class SchoolLevelModel
+    public class ThemeModel
     {
-        public string Tag { get; set; }
+        public int ThemeId { get; set; }
 
         public string Name { get; set; }
 

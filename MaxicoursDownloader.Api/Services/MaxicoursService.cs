@@ -1,9 +1,11 @@
 ﻿using IronPdf;
 using MaxicoursDownloader.Api.Contracts;
+using MaxicoursDownloader.Api.Extensions;
 using MaxicoursDownloader.Api.Models;
 using MaxicoursDownloader.Api.Pages;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using StudiesManager.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,18 +17,16 @@ namespace MaxicoursDownloader.Api.Services
 {
     public class MaxicoursService : IMaxicoursService, IDisposable
     {
-        private readonly string Url = @"http://r.mail.cours.fr/tr/cl/uQVn67dGsu3VLVV8kZSVL5BVRagoDxwMejRp-6QpPslJOGZZ7IsABnHusm2CLvDHSJrTYgRE7wAa812MJ-111mkNI_j0KHFqVKHxQnkExhiPSZQdFn78Ac_F6SuRXAgM-ZMF9qGlkOesETjANgizI7i0qiuUKrzN6kPUdy8Rx4QZUB-SyZed_ULyMxB0jMBBddfQVxQqE7Jc099Q5RrkPK7Ue9xIuAzF4fGYkDcDiloiG1Uopfe3zzuzoZwXm88AR--Xo1KLKN733ejt6MufqY8nMVSwQjCiLy1Ub_CP1D7VNCKwwtKluWiRkmb0NaU8VXl5yQ";
-
-        private IWebDriver Driver;
+        private readonly IWebDriver Driver;
 
         public MaxicoursService()
         {
-            Driver = new ChromeDriver();
+            Driver = WebDriverFactory.CreateWebDriver(WebBrowserType.Chrome);
         }
 
-        public byte[] GetHtml()
+        public void GetHtml()
         {
-            var homePage = new MaxicoursCovidHomePage(Driver, Url);
+            var homePage = new MaxicoursCovidHomePage(Driver);
 
             var Renderer = new IronPdf.HtmlToPdf();
 
@@ -53,38 +53,33 @@ namespace MaxicoursDownloader.Api.Services
 
             var html = homePage.GetHtml();
 
-            Dispose();
-
             var pdf = Renderer.RenderHtmlAsPdf(html);
             pdf.SaveAs("example.pdf");
-
-            return pdf.BinaryData;
 
             //return html;
         }
 
         public List<SchoolLevelModel> GetAllSchoolLevels()
         {
-            var homePage = new MaxicoursHomePage(Driver, Url);
+            var homePage = new MaxicoursHomePage(Driver);
 
             var result = homePage.GetAllSchoolLevels();
 
             return result;
         }
 
-
-        public SchoolLevelModel GetSchoolLevel(string levelName)
+        public SchoolLevelModel GetSchoolLevel(string levelTag)
         {
             var schoolLevelList = GetAllSchoolLevels();
 
-            var schoolLevel = schoolLevelList.FirstOrDefault(o => o.Name == levelName);
+            var schoolLevel = schoolLevelList.FirstOrDefault(o => o.Tag.IsSameAs(levelTag));
 
             return schoolLevel;
         }
 
-        public List<SubjectModel> GetAllSubjects(string levelName)
+        public List<SubjectModel> GetAllSubjects(string levelTag)
         {
-            var schoolLevel = GetSchoolLevel(levelName);
+            var schoolLevel = GetSchoolLevel(levelTag);
 
             var schoolLevelPage = new SchoolLevelPage(Driver, schoolLevel.Url);
             var subjectList = schoolLevelPage.GetAllSubjects();
@@ -92,18 +87,27 @@ namespace MaxicoursDownloader.Api.Services
             return subjectList;
         }
 
-        public SubjectModel GetSubject(string levelName, string subjectName)
+        public SubjectModel GetSubject(string levelTag, int subjectId)
         {
-            var subjectList = GetAllSubjects(levelName);
+            var subjectList = GetAllSubjects(levelTag);
 
-            var subject = subjectList.FirstOrDefault(o => o.Name == subjectName);
+            var subject = subjectList.FirstOrDefault(o => o.SubjectId == subjectId);
+            var subjectPage = new SubjectPage(Driver, subject.Url);
+
+            subject.Themes = subjectPage.GetAllThemes().Select(o => new ThemeModel { ThemeId = o.ThemeId, Name = o.Name, Url = o.Url }).ToList();
+            subject.Categories = subjectPage.GetAllCategories().Select(o => new CategoryModel { Id = o.Id, Name = o.Name }).ToList();
 
             return subject;
         }
 
-        public void Close()
+        public List<ThemeModel> GetAllThemes(string levelTag, int subjectId)
         {
-            Dispose();
+            var subject = GetSubject(levelTag, subjectId);
+
+            var subjectPage = new SubjectPage(Driver, subject.Url);
+            var themeList = subjectPage.GetAllThemes().Select(o => new ThemeModel { ThemeId = o.ThemeId, Name = o.Name, Url = o.Url }).ToList();
+
+            return themeList;
         }
 
         public void Dispose()

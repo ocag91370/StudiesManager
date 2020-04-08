@@ -10,10 +10,12 @@ namespace MaxicoursDownloader.Api.Contracts
     {
         List<SchoolLevelModel> GetAllSchoolLevels();
 
-        SchoolLevelModel GetSchoolLevel(string levelName);
+        SchoolLevelModel GetSchoolLevel(string levelTag);
 
-        List<SubjectModel> GetAllSubjects(string levelName);
+        List<SubjectModel> GetAllSubjects(string levelTag);
 
-        SubjectModel GetSubject(string levelName, string subjectName);
+        SubjectModel GetSubject(string levelTag, int subjectId);
+
+        List<ThemeModel> GetAllThemes(string levelTag, int subjectId);
     }
 }
