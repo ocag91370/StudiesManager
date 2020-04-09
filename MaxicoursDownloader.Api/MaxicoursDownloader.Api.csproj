@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="ClosedPage.pdf" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="PDF.Core" Version="2020.0.0" />
     <PackageReference Include="Selenium.Chrome.WebDriver" Version="79.0.0" />

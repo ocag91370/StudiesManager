@@ -10,6 +10,6 @@ namespace MaxicoursDownloader.Api.Entities
 
         public List<CategoryEntity> Categories { get; set; }
 
-        public List<LessonEntity> Lessons { get; set; }
+        public List<ItemEntity> Items { get; set; }
     }
 }

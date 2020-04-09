@@ -26,7 +26,7 @@ namespace MaxicoursDownloader.Api.Pages
                 Header = GetHeader(),
                 Themes = GetAllThemes(),
                 Categories = GetAllCategories(),
-                Lessons = GetAllLessons()
+                Items = GetAllItems()
             };
         }
     }

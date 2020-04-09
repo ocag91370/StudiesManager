@@ -10,6 +10,6 @@ namespace MaxicoursDownloader.Api.Models
 
         public List<CategoryModel> Categories { get; set; }
 
-        public List<LessonModel> Lessons { get; set; }
+        public List<ItemModel> Items { get; set; }
     }
 }

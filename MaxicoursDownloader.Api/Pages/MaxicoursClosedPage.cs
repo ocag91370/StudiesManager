@@ -19,12 +19,12 @@ namespace MaxicoursDownloader.Api.Pages
         public string GetHtml()
         {
             return Driver.PageSource;
-            var js = Driver as IJavaScriptExecutor;
-            if (js == null)
-                return string.Empty;
+            //var js = Driver as IJavaScriptExecutor;
+            //if (js == null)
+            //    return string.Empty;
 
-            var element = Driver.FindElement(By.ClassName("main"));
-            return (string)js.ExecuteScript("return arguments[0].innerHTML;", element);
+            //var element = Driver.FindElement(By.ClassName("main"));
+            //return (string)js.ExecuteScript("return arguments[0].innerHTML;", element);
         }
     }
 }

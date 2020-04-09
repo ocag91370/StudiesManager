@@ -45,7 +45,16 @@ namespace MaxicoursDownloader.Api.Extensions
 
         public static string GetUrlParameter(this string @this, string key)
         {
-            return HttpUtility.ParseQueryString(@this).Get(key);
+            var url = @this.Substring(@this.IndexOf("?"));
+            return HttpUtility.ParseQueryString(url)?[key];
+        }
+
+        public static int? GetUrlParameterAsInt(this string @this, string key)
+        {
+            if (int.TryParse(@this.GetUrlParameter(key), out var value))
+                return value;
+
+            return null;
         }
 
         public static string DecodeUrl(this string @this)
