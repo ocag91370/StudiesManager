@@ -3,6 +3,7 @@ using IronPdf;
 using MaxicoursDownloader.Api.Contracts;
 using MaxicoursDownloader.Api.Entities;
 using MaxicoursDownloader.Api.Extensions;
+using MaxicoursDownloader.Api.Interfaces;
 using MaxicoursDownloader.Api.Models;
 using MaxicoursDownloader.Api.Pages;
 using OpenQA.Selenium;
@@ -20,14 +21,18 @@ namespace MaxicoursDownloader.Api.Services
     public class MaxicoursService : IMaxicoursService, IDisposable
     {
         private readonly IMapper _mapper;
+        private readonly IPdfConverterService _pdfConverterService;
         private IWebDriver Driver;
 
-        public MaxicoursService(IMapper mapper)
+        public MaxicoursService(IMapper mapper, IPdfConverterService pdfConverterService)
         {
             _mapper = mapper;
+            _pdfConverterService = pdfConverterService;
 
             Driver = WebDriverFactory.CreateWebDriver(WebBrowserType.Chrome);
         }
+
+        #region SchoolLevel
 
         public List<SchoolLevelModel> GetAllSchoolLevels()
         {
@@ -46,6 +51,10 @@ namespace MaxicoursDownloader.Api.Services
 
             return result;
         }
+
+        #endregion
+
+        #region Subject
 
         public List<SubjectSummaryModel> GetAllSubjects(string levelTag)
         {
@@ -129,7 +138,11 @@ namespace MaxicoursDownloader.Api.Services
             return result;
         }
 
-        public bool SaveLesson(string levelTag, int subjectId, string categoryId, int lessonId)
+        #endregion
+
+        #region Lesson
+
+        public bool SaveSubjectLessons(string levelTag, int subjectId, string categoryId)
         {
             try
             {
@@ -137,15 +150,14 @@ namespace MaxicoursDownloader.Api.Services
                 var themeList = GetAllThemes(levelTag, subjectId);
                 var categoryList = GetAllCategories(levelTag, subjectId);
 
-                var itemList = GetItemsOfCategory(levelTag, subjectId, categoryId);
-                var lesson = itemList.Where(o => o.ItemId == lessonId).FirstOrDefault();
+                var lessons = GetItemsOfCategory(levelTag, subjectId, categoryId);
 
-                var lessonPage = new LessonPage(Driver, _mapper.Map<ItemEntity>(lesson));
-                var url = lessonPage.GetPrintUrl();
-                SaveUrlAsPdf(url, $"{lessonId}.pdf");
-
-                //var html = lessonPage.GetPrintFormat();
-                //SaveHtmlAsPdf(html, $"{lessonId}.pdf");
+                foreach (var lesson in lessons)
+                {
+                    var lessonPage = new LessonPage(Driver, _mapper.Map<ItemEntity>(lesson));
+                    var url = lessonPage.GetPrintUrl();
+                    _pdfConverterService.SaveUrlAsPdf(url, $"{levelTag}_{subjectId}_{categoryId}_{lesson.ThemeId}_{lesson.ItemId}.pdf");
+                }
 
                 return true;
             }
@@ -155,7 +167,7 @@ namespace MaxicoursDownloader.Api.Services
             }
         }
 
-        public bool SaveLessonsOfTheme(string levelTag, int subjectId, string categoryId, int themeId)
+        public bool SaveThemeLessons(string levelTag, int subjectId, string categoryId, int themeId)
         {
             try
             {
@@ -170,7 +182,7 @@ namespace MaxicoursDownloader.Api.Services
                 {
                     var lessonPage = new LessonPage(Driver, _mapper.Map<ItemEntity>(lesson));
                     var url = lessonPage.GetPrintUrl();
-                    SaveUrlAsPdf(url, $"{levelTag}_{subjectId}_{categoryId}_{lesson.ThemeId}_{lesson.ItemId}.pdf");
+                    _pdfConverterService.SaveUrlAsPdf(url, $"{levelTag}_{subjectId}_{categoryId}_{lesson.ThemeId}_{lesson.ItemId}.pdf");
                 }
 
                 return true;
@@ -181,103 +193,33 @@ namespace MaxicoursDownloader.Api.Services
             }
         }
 
-        public void SaveUrlAsPdf(string url, string filename)
+        public bool SaveLesson(string levelTag, int subjectId, string categoryId, int lessonId)
         {
-            var Renderer = new IronPdf.HtmlToPdf();
+            try
+            {
+                var schoolLevel = GetSchoolLevel(levelTag);
+                var themeList = GetAllThemes(levelTag, subjectId);
+                var categoryList = GetAllCategories(levelTag, subjectId);
 
-            Renderer.PrintOptions.PaperSize = PdfPrintOptions.PdfPaperSize.A4;
-            Renderer.PrintOptions.PaperOrientation = PdfPrintOptions.PdfPaperOrientation.Portrait;
-            Renderer.PrintOptions.EnableJavaScript = true;
-            Renderer.PrintOptions.PrintHtmlBackgrounds = true;
-            Renderer.PrintOptions.Title = "My PDF Document Name";
-            Renderer.PrintOptions.EnableJavaScript = true;
-            Renderer.PrintOptions.RenderDelay = 50;
-            Renderer.PrintOptions.CssMediaType = PdfPrintOptions.PdfCssMediaType.Print;
-            Renderer.PrintOptions.DPI = 300;
-            Renderer.PrintOptions.FitToPaperWidth = true;
-            Renderer.PrintOptions.JpegQuality = 80;
-            Renderer.PrintOptions.GrayScale = false;
-            Renderer.PrintOptions.FitToPaperWidth = true;
-            //Renderer.PrintOptions.InputEncoding = Encoding.UTF8;
-            Renderer.PrintOptions.Zoom = 100;
-            //Renderer.PrintOptions.CreatePdfFormsFromHtml = true;
-            Renderer.PrintOptions.MarginTop = 10;
-            Renderer.PrintOptions.MarginLeft = 10;
-            Renderer.PrintOptions.MarginRight = 10;
-            Renderer.PrintOptions.MarginBottom = 10;
-            Renderer.PrintOptions.FirstPageNumber = 1;
+                var itemList = GetItemsOfCategory(levelTag, subjectId, categoryId);
+                var lesson = itemList.Where(o => o.ItemId == lessonId).FirstOrDefault();
 
-            var pdf = Renderer.RenderUrlAsPdf(url);
+                var lessonPage = new LessonPage(Driver, _mapper.Map<ItemEntity>(lesson));
+                var url = lessonPage.GetPrintUrl();
+                _pdfConverterService.SaveUrlAsPdf(url, $"{lessonId}.pdf");
 
-            pdf.SaveAs(filename);
+                //var html = lessonPage.GetPrintFormat();
+                //SaveHtmlAsPdf(html, $"{lessonId}.pdf");
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
-        public void SaveHtmlAsPdf(string html, string filename)
-        {
-            var Renderer = new IronPdf.HtmlToPdf();
-
-            Renderer.PrintOptions.PaperSize = PdfPrintOptions.PdfPaperSize.A4;
-            Renderer.PrintOptions.PaperOrientation = PdfPrintOptions.PdfPaperOrientation.Portrait;
-            Renderer.PrintOptions.EnableJavaScript = true;
-            Renderer.PrintOptions.PrintHtmlBackgrounds = true;
-            Renderer.PrintOptions.Title = "My PDF Document Name";
-            Renderer.PrintOptions.EnableJavaScript = true;
-            Renderer.PrintOptions.RenderDelay = 50;
-            Renderer.PrintOptions.CssMediaType = PdfPrintOptions.PdfCssMediaType.Print;
-            Renderer.PrintOptions.DPI = 300;
-            Renderer.PrintOptions.FitToPaperWidth = true;
-            Renderer.PrintOptions.JpegQuality = 80;
-            Renderer.PrintOptions.GrayScale = false;
-            Renderer.PrintOptions.FitToPaperWidth = true;
-            //Renderer.PrintOptions.InputEncoding = Encoding.UTF8;
-            Renderer.PrintOptions.Zoom = 100;
-            //Renderer.PrintOptions.CreatePdfFormsFromHtml = true;
-            Renderer.PrintOptions.MarginTop = 10;
-            Renderer.PrintOptions.MarginLeft = 10;
-            Renderer.PrintOptions.MarginRight = 10;
-            Renderer.PrintOptions.MarginBottom = 10;
-            Renderer.PrintOptions.FirstPageNumber = 1;
-
-            var pdf = Renderer.RenderHtmlAsPdf(html);
-
-            pdf.SaveAs(filename);
-        }
-
-        public void SaveClosedPageAsPdf()
-        {
-            var closedPage = new MaxicoursClosedPage(Driver);
-            var html = closedPage.GetHtml();
-
-            Driver.Url = "https://entraide-covid19.maxicours.com/W/cours/fiche/postit.php?oid=544567";
-            var navigation = Driver.Navigate();
-            html = Driver.PageSource;
-
-            var Renderer = new IronPdf.HtmlToPdf();
-
-            Renderer.PrintOptions.PaperSize = PdfPrintOptions.PdfPaperSize.A4;
-            Renderer.PrintOptions.PaperOrientation = PdfPrintOptions.PdfPaperOrientation.Portrait;
-            Renderer.PrintOptions.PrintHtmlBackgrounds = true;
-            Renderer.PrintOptions.Title = "My PDF Document Name";
-            Renderer.PrintOptions.EnableJavaScript = true;
-            Renderer.PrintOptions.RenderDelay = 50;
-            Renderer.PrintOptions.CssMediaType = PdfPrintOptions.PdfCssMediaType.Screen;
-            Renderer.PrintOptions.DPI = 300;
-            Renderer.PrintOptions.FitToPaperWidth = true;
-            Renderer.PrintOptions.JpegQuality = 80;
-            Renderer.PrintOptions.GrayScale = false;
-            Renderer.PrintOptions.FitToPaperWidth = true;
-            Renderer.PrintOptions.InputEncoding = Encoding.UTF8;
-            Renderer.PrintOptions.Zoom = 100;
-            Renderer.PrintOptions.CreatePdfFormsFromHtml = true;
-            Renderer.PrintOptions.MarginTop = 10;
-            Renderer.PrintOptions.MarginLeft = 10;
-            Renderer.PrintOptions.MarginRight = 10;
-            Renderer.PrintOptions.MarginBottom = 10;
-            Renderer.PrintOptions.FirstPageNumber = 1;
-
-            var pdf = Renderer.RenderHtmlAsPdf(html);
-            pdf.SaveAs("ClosedPage.pdf");
-        }
+        #endregion
 
         public void Dispose()
         {

@@ -92,19 +92,28 @@ namespace MaxicoursDownloader.Api.Controllers
         }
 
         [HttpGet]
-        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/lessons/{lessonId:int}/save")]
-        public IActionResult SaveLesson(string levelTag, int subjectId, int lessonId)
+        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/save")]
+        public IActionResult SaveSubjectLessons(string levelTag, int subjectId)
         {
-            _maxicoursService.SaveLesson(levelTag, subjectId, "fiche", lessonId);
+            _maxicoursService.SaveSubjectLessons(levelTag, subjectId, "fiche");
 
             return Ok();
         }
 
         [HttpGet]
         [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/themes/{themeId}/save")]
-        public IActionResult SaveLessons(string levelTag, int subjectId, int themeId)
+        public IActionResult SaveThemeLessons(string levelTag, int subjectId, int themeId)
         {
-            _maxicoursService.SaveLessonsOfTheme(levelTag, subjectId, "fiche", themeId);
+            _maxicoursService.SaveThemeLessons(levelTag, subjectId, "fiche", themeId);
+
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/lessons/{lessonId:int}/save")]
+        public IActionResult SaveLesson(string levelTag, int subjectId, int lessonId)
+        {
+            _maxicoursService.SaveLesson(levelTag, subjectId, "fiche", lessonId);
 
             return Ok();
         }
@@ -162,15 +171,5 @@ namespace MaxicoursDownloader.Api.Controllers
 
         //    return Ok();
         //}
-
-
-        [HttpGet]
-        [Route("closed")]
-        public IActionResult Closed()
-        {
-            _maxicoursService.SaveClosedPageAsPdf();
-
-            return Ok();
-        }
     }
 }

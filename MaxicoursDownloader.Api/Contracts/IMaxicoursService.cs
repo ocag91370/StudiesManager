@@ -24,10 +24,10 @@ namespace MaxicoursDownloader.Api.Contracts
 
         public List<ItemModel> GetItemsOfCategory(string levelTag, int subjectId, string categoryId);
 
+        bool SaveSubjectLessons(string levelTag, int subjectId, string categoryId);
+
+        bool SaveThemeLessons(string levelTag, int subjectId, string categoryId, int themeId);
+
         bool SaveLesson(string levelTag, int subjectId, string categoryId, int lessonId);
-
-        bool SaveLessonsOfTheme(string levelTag, int subjectId, string categoryId, int themeId);
-
-        void SaveClosedPageAsPdf();
     }
 }
