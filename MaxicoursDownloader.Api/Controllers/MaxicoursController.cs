@@ -91,32 +91,32 @@ namespace MaxicoursDownloader.Api.Controllers
             return Ok(result);
         }
 
-        [HttpGet]
-        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/save")]
-        public IActionResult SaveSubjectLessons(string levelTag, int subjectId)
-        {
-            _maxicoursService.SaveSubjectLessons(levelTag, subjectId, "fiche");
+        //[HttpGet]
+        //[Route("schoollevels/{levelTag}/subjects/{subjectId:int}/export")]
+        //public IActionResult ExportSubjectLessons(string levelTag, int subjectId)
+        //{
+        //    _maxicoursService.ExportSubjectLessons(levelTag, subjectId, "fiche");
 
-            return Ok();
-        }
+        //    return Ok();
+        //}
 
-        [HttpGet]
-        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/themes/{themeId}/save")]
-        public IActionResult SaveThemeLessons(string levelTag, int subjectId, int themeId)
-        {
-            _maxicoursService.SaveThemeLessons(levelTag, subjectId, "fiche", themeId);
+        //[HttpGet]
+        //[Route("schoollevels/{levelTag}/subjects/{subjectId:int}/themes/{themeId}/export")]
+        //public IActionResult ExportThemeLessons(string levelTag, int subjectId, int themeId)
+        //{
+        //    _maxicoursService.ExportThemeLessons(levelTag, subjectId, "fiche", themeId);
 
-            return Ok();
-        }
+        //    return Ok();
+        //}
 
-        [HttpGet]
-        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/lessons/{lessonId:int}/save")]
-        public IActionResult SaveLesson(string levelTag, int subjectId, int lessonId)
-        {
-            _maxicoursService.SaveLesson(levelTag, subjectId, "fiche", lessonId);
+        //[HttpGet]
+        //[Route("schoollevels/{levelTag}/subjects/{subjectId:int}/lessons/{lessonId:int}/export")]
+        //public IActionResult ExportLesson(string levelTag, int subjectId, int lessonId)
+        //{
+        //    _maxicoursService.ExportLesson(levelTag, subjectId, "fiche", lessonId);
 
-            return Ok();
-        }
+        //    return Ok();
+        //}
 
         //[HttpGet]
         //[Route("schoollevels/{levelTag}/subjects/{subjectId:int}/paths")]

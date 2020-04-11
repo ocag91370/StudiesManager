@@ -4,6 +4,8 @@ namespace MaxicoursDownloader.Api.Entities
 {
     public class LessonEntity
     {
-        public int LessonId { get; set; }
+        public ItemEntity Item { get; set; }
+
+        public string PrintUrl { get; set; }
     }
 }

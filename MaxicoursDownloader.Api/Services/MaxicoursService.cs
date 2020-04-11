@@ -58,7 +58,10 @@ namespace MaxicoursDownloader.Api.Services
 
         public List<SubjectSummaryModel> GetAllSubjects(string levelTag)
         {
-            var schoolLevel = GetSchoolLevel(levelTag);
+            //var schoolLevel = GetSchoolLevel(levelTag);
+            var schoolLevel = new SchoolLevelModel { 
+                Url = "https://entraide-covid19.maxicours.com/LSI/prod/Accueil?_cla=4e&_eid=fcafrfk6crdp0qmdnk3jllja16"
+            };
 
             var schoolLevelPage = new SchoolLevelPage(Driver, schoolLevel.Url);
             var result = _mapper.Map<List<SubjectSummaryModel>>(schoolLevelPage.GetAllSubjects());
@@ -138,92 +141,123 @@ namespace MaxicoursDownloader.Api.Services
             return result;
         }
 
+        public ItemModel GetItem(string levelTag, int subjectId, string categoryId, int lessonId)
+        {
+            var subjectList = GetAllSubjects(levelTag);
+
+            var subjectSummary = subjectList.FirstOrDefault(o => o.SubjectId == subjectId);
+            var subjectPage = new SubjectPage(Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
+
+            var result = _mapper.Map<ItemModel>(subjectPage.GetItem(categoryId, lessonId));
+
+            return result;
+        }
+
         #endregion
 
         #region Lesson
 
-        public bool SaveSubjectLessons(string levelTag, int subjectId, string categoryId)
+        public LessonModel GetLesson(string levelTag, int subjectId, string categoryId, int lessonId)
         {
-            try
-            {
-                var schoolLevel = GetSchoolLevel(levelTag);
-                var themeList = GetAllThemes(levelTag, subjectId);
-                var categoryList = GetAllCategories(levelTag, subjectId);
+            var item = GetItem(levelTag, subjectId, categoryId, lessonId);
 
-                var lessons = GetItemsOfCategory(levelTag, subjectId, categoryId);
+            var lessonPage = new LessonPage(Driver, _mapper.Map<ItemEntity>(item));
 
-                foreach (var lesson in lessons)
-                {
-                    var lessonPage = new LessonPage(Driver, _mapper.Map<ItemEntity>(lesson));
-                    var url = lessonPage.GetPrintUrl();
-                    _pdfConverterService.SaveUrlAsPdf(url, $"{levelTag}_{subjectId}_{categoryId}_{lesson.ThemeId}_{lesson.ItemId}.pdf");
-                }
+            var result = _mapper.Map<LessonModel>(lessonPage.GetLesson());
 
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return result;
         }
 
-        public bool SaveThemeLessons(string levelTag, int subjectId, string categoryId, int themeId)
+        public LessonModel GetLesson(ItemModel item)
         {
-            try
-            {
-                var schoolLevel = GetSchoolLevel(levelTag);
-                var themeList = GetAllThemes(levelTag, subjectId);
-                var categoryList = GetAllCategories(levelTag, subjectId);
+            var lessonPage = new LessonPage(Driver, _mapper.Map<ItemEntity>(item));
 
-                var itemList = GetItemsOfCategory(levelTag, subjectId, categoryId);
-                var lessons = itemList.Where(o => o.ThemeId == themeId);
+            var result = _mapper.Map<LessonModel>(lessonPage.GetLesson());
 
-                foreach (var lesson in lessons)
-                {
-                    var lessonPage = new LessonPage(Driver, _mapper.Map<ItemEntity>(lesson));
-                    var url = lessonPage.GetPrintUrl();
-                    _pdfConverterService.SaveUrlAsPdf(url, $"{levelTag}_{subjectId}_{categoryId}_{lesson.ThemeId}_{lesson.ItemId}.pdf");
-                }
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return result;
         }
 
-        public bool SaveLesson(string levelTag, int subjectId, string categoryId, int lessonId)
-        {
-            try
-            {
-                var schoolLevel = GetSchoolLevel(levelTag);
-                var themeList = GetAllThemes(levelTag, subjectId);
-                var categoryList = GetAllCategories(levelTag, subjectId);
+        //public bool ExportSubjectLessons(string levelTag, int subjectId, string categoryId)
+        //{
+        //    try
+        //    {
+        //        var schoolLevel = GetSchoolLevel(levelTag);
+        //        var themeList = GetAllThemes(levelTag, subjectId);
+        //        var categoryList = GetAllCategories(levelTag, subjectId);
 
-                var itemList = GetItemsOfCategory(levelTag, subjectId, categoryId);
-                var lesson = itemList.Where(o => o.ItemId == lessonId).FirstOrDefault();
+        //        var lessons = GetItemsOfCategory(levelTag, subjectId, categoryId);
 
-                var lessonPage = new LessonPage(Driver, _mapper.Map<ItemEntity>(lesson));
-                var url = lessonPage.GetPrintUrl();
-                _pdfConverterService.SaveUrlAsPdf(url, $"{lessonId}.pdf");
+        //        foreach (var lesson in lessons)
+        //        {
+        //            var lessonPage = new LessonPage(Driver, _mapper.Map<ItemEntity>(lesson));
+        //            var url = lessonPage.GetPrintUrl();
+        //            _pdfConverterService.SaveUrlAsPdf(url, $"{levelTag}_{subjectId}_{categoryId}_{lesson.ThemeId}_{lesson.ItemId}.pdf");
+        //        }
 
-                //var html = lessonPage.GetPrintFormat();
-                //SaveHtmlAsPdf(html, $"{lessonId}.pdf");
+        //        return true;
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return false;
+        //    }
+        //}
 
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
+        //public bool ExportThemeLessons(string levelTag, int subjectId, string categoryId, int themeId)
+        //{
+        //    try
+        //    {
+        //        var schoolLevel = GetSchoolLevel(levelTag);
+        //        var themeList = GetAllThemes(levelTag, subjectId);
+        //        var categoryList = GetAllCategories(levelTag, subjectId);
+
+        //        var itemList = GetItemsOfCategory(levelTag, subjectId, categoryId);
+        //        var lessons = itemList.Where(o => o.ThemeId == themeId);
+
+        //        foreach (var lesson in lessons)
+        //        {
+        //            var lessonPage = new LessonPage(Driver, _mapper.Map<ItemEntity>(lesson));
+        //            var url = lessonPage.GetPrintUrl();
+        //            _pdfConverterService.SaveUrlAsPdf(url, $"{levelTag}_{subjectId}_{categoryId}_{lesson.ThemeId}_{lesson.ItemId}.pdf");
+        //        }
+
+        //        return true;
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return false;
+        //    }
+        //}
+
+        //public bool ExportLesson(string levelTag, int subjectId, string categoryId, int lessonId)
+        //{
+        //    try
+        //    {
+        //        var schoolLevel = GetSchoolLevel(levelTag);
+        //        var themeList = GetAllThemes(levelTag, subjectId);
+        //        var categoryList = GetAllCategories(levelTag, subjectId);
+
+        //        var itemList = GetItemsOfCategory(levelTag, subjectId, categoryId);
+        //        var lesson = itemList.Where(o => o.ItemId == lessonId).FirstOrDefault();
+
+        //        var lessonPage = new LessonPage(Driver, _mapper.Map<ItemEntity>(lesson));
+        //        var url = lessonPage.GetPrintUrl();
+        //        _pdfConverterService.SaveUrlAsPdf(url, $"{lessonId}.pdf");
+
+        //        //var html = lessonPage.GetPrintFormat();
+        //        //SaveHtmlAsPdf(html, $"{lessonId}.pdf");
+
+        //        return true;
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return false;
+        //    }
+        //}
 
         #endregion
 
         public void Dispose()
         {
-            //Driver.FinishHim();
             Driver.Quit();
             Driver.Dispose();
             Driver = null;

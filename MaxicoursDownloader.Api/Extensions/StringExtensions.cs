@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -60,6 +62,25 @@ namespace MaxicoursDownloader.Api.Extensions
         public static string DecodeUrl(this string @this)
         {
             return HttpUtility.UrlDecode(@this);
+        }
+
+        public static string CleanName(this string @this)
+        {
+            var invalidCharacters = new List<char>();
+            var substituteValue = string.Empty;
+
+            invalidCharacters.AddRange((IEnumerable<char>)Path.GetInvalidPathChars());
+            invalidCharacters.AddRange((IEnumerable<char>)Path.GetInvalidFileNameChars());
+            invalidCharacters.AddRange((IEnumerable<char>)new char[] { ':', '?', '"', '\\', '/' });
+
+            var result = new StringBuilder(@this);
+
+            foreach (var character in invalidCharacters)
+            {
+                result = result.Replace(character.ToString(), substituteValue);
+            }
+
+            return result.ToString();
         }
     }
 }

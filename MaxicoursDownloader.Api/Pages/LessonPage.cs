@@ -17,7 +17,16 @@ namespace MaxicoursDownloader.Api.Pages
             _item = item;
         }
 
-        public string GetPrintUrl()
+        public LessonEntity GetLesson()
+        {
+            return new LessonEntity
+            {
+                Item = _item,
+                PrintUrl = GetPrintUrl()
+            };
+        }
+
+        private string GetPrintUrl()
         {
             var url = _item.Url.Replace("visualiser.php", "postit.php");
 

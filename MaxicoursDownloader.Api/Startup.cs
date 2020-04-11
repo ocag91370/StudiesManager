@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using MaxicoursDownloader.Api.Contracts;
+using MaxicoursDownloader.Api.Interfaces;
 using MaxicoursDownloader.Api.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -36,6 +37,8 @@ namespace MaxicoursDownloader.Api
 
             // Register using generic types
             services.AddTransient<IMaxicoursService, MaxicoursService>();
+            services.AddTransient<IExportService, ExportService>();
+            services.AddTransient<IPdfConverterService, PdfConverterService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -13,21 +13,27 @@ namespace MaxicoursDownloader.Api.Pages
     {
         private IWebElement ItemsContainerElement => ContainerElement.FindElement(By.XPath("//*[@class = 'lsi-crn-container']//*[@class = 'panes']"));
 
-        private IEnumerable<IWebElement> ItemElementList => ItemsContainerElement.FindElements(By.XPath("//*[contains(@class, '  overable')]"));
+        private IEnumerable<IWebElement> ItemElementList(string categoryId) => ItemsContainerElement.FindElements(By.XPath($"//*[contains(@class, '{categoryId}  overable')]"));
+
+        private IWebElement ItemElement(string categoryId, int itemId) => ItemsContainerElement.FindElement(By.XPath($"//*[contains(@class, '{categoryId}  overable')][./td[@class = 'label']/a[contains(@href, 'oid={itemId}')]]"));
 
         public List<ItemEntity> GetAllItems()
         {
-            var result = ItemElementList.Select(o => GetItem(o)).ToList();
+            var result = ItemElementList(string.Empty).Select(o => GetItem(o)).ToList();
 
             return result;
         }
 
         public List<ItemEntity> GetItemsOfCategory(string categoryId)
         {
-            var itemElementList = ItemsContainerElement.FindElements(By.XPath($"//*[contains(@class, '{categoryId}  overable')]"));
-            var result = itemElementList.Select(o => GetItem(o)).ToList();
+            var result = ItemElementList(categoryId).Select(o => GetItem(o)).ToList();
 
             return result;
+        }
+
+        public ItemEntity GetItem(string categoryId, int itemId)
+        {
+            return GetItem(ItemElement(categoryId, itemId));
         }
 
         private ItemEntity GetItem(IWebElement element)
