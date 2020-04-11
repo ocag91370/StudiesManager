@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MaxicoursDownloader.Api.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -73,7 +74,7 @@ namespace MaxicoursDownloader.Api.Extensions
             return new List<int>();
         }
 
-        public static object GetFromUrl(this string @this)
+        public static ReferenceModel GetReferenceFromUrl(this string @this)
         {
             var uri = new Uri(@this);
 
@@ -83,13 +84,63 @@ namespace MaxicoursDownloader.Api.Extensions
             {
                 case var arbo when path.Contains("/home/bo/"):
                     var idList = path.Split('/').Where(o => int.TryParse(o, out var value)).Select(o => int.Parse(o)).ToList();
-                    return new { SchoolLevelId = idList.First(), SubjectId = idList.Skip(1).First(), ThemeIdList = idList.Skip(2), ItemId = int.MinValue };
+                    return new ReferenceModel
+                    {
+                        SchoolLevelId = idList.First(),
+                        SubjectId = idList.Skip(1).First(),
+                        ThemeIdList = idList.Skip(2).ToList(),
+                        CategoryId = null,
+                        ItemId = null
+                    };
+
+                case var quizz when path.Contains("quizz"):
+                    idList = HttpUtility.ParseQueryString(uri.Query)["_vp"].Split('/').Where(o => int.TryParse(o, out var value)).Select(o => int.Parse(o)).ToList();
+                    return new ReferenceModel
+                    {
+                        SchoolLevelId = idList.First(),
+                        SubjectId = idList.Skip(1).First(),
+                        ThemeIdList = new List<int>(),
+                        CategoryId = "serie-qcm",
+                        ItemId = null
+                    };
 
                 case var parcours when path.Contains("parcours"):
                 case var cours when path.Contains("cours"):
                 case var exercices when path.Contains("exercices"):
                     idList = HttpUtility.ParseQueryString(uri.Query)["_vp"].Split('/').Where(o => int.TryParse(o, out var value)).Select(o => int.Parse(o)).ToList();
-                    return new { SchoolLevelId = idList.First(), SubjectId = idList.Skip(1).First(), ThemeIdList = idList.Skip(2).SkipLast(1), ItemId = idList.Last() };
+                    var result = new ReferenceModel
+                    {
+                        SchoolLevelId = idList.First(),
+                        SubjectId = idList.Skip(1).First(),
+                        ThemeIdList = idList.Skip(2).SkipLast(1).ToList(),
+                        CategoryId = string.Empty,
+                        ItemId = idList.Last()
+                    };
+                    switch (path)
+                    {
+                        case var parcours_pivot when path.Contains("/prod/parcours/"):
+                            result.CategoryId = "parcours_pivot";
+                            break;
+                        case var parcours_pivot when path.Contains("/cours/fiche/"):
+                            result.CategoryId = "fiche";
+                            break;
+                        case var parcours_pivot when path.Contains("/cours/video/"):
+                            result.CategoryId = "video";
+                            break;
+                        case var parcours_pivot when path.Contains("/cours/fiche-synthese/"):
+                            result.CategoryId = "fiche_synthese";
+                            break;
+                        case var parcours_pivot when path.Contains("/exercices/enonce_corrige_video/"):
+                            result.CategoryId = "enonce_corrige_video";
+                            break;
+                        case var parcours_pivot when path.Contains("/exercices/pazapa/"):
+                            result.CategoryId = "pazapa";
+                            break;
+                        case var parcours_pivot when path.Contains("/exercices/controle_pdf/"):
+                            result.CategoryId = "controle_pdf";
+                            break;
+                    }
+                    return result;
             }
 
             return null;
