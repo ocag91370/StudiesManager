@@ -58,10 +58,10 @@ namespace MaxicoursDownloader.Api.Services
 
         public List<SubjectSummaryModel> GetAllSubjects(string levelTag)
         {
-            //var schoolLevel = GetSchoolLevel(levelTag);
-            var schoolLevel = new SchoolLevelModel { 
-                Url = "https://entraide-covid19.maxicours.com/LSI/prod/Accueil?_cla=4e&_eid=fcafrfk6crdp0qmdnk3jllja16"
-            };
+            var schoolLevel = GetSchoolLevel(levelTag);
+            //var schoolLevel = new SchoolLevelModel { 
+            //    Url = "https://entraide-covid19.maxicours.com/LSI/prod/Accueil?_cla=4e&_eid=fcafrfk6crdp0qmdnk3jllja16"
+            //};
 
             var schoolLevelPage = new SchoolLevelPage(Driver, schoolLevel.Url);
             var result = _mapper.Map<List<SubjectSummaryModel>>(schoolLevelPage.GetAllSubjects());
