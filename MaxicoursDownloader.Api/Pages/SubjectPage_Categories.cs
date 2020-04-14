@@ -15,8 +15,7 @@ namespace MaxicoursDownloader.Api.Pages
 
         private IEnumerable<IWebElement> CategoryElementList => CategoriesContainerElement.FindElements(By.TagName("a"));
 
-        private IWebElement GetCategoryElement(string categoryId) => CategoriesContainerElement.FindElement(By.XPath($"a[@rel = '{categoryId}']"));
-
+        private IWebElement CategoryElement(string categoryId) => CategoriesContainerElement.FindElement(By.XPath($"//a[@rel = '{categoryId}']"));
 
         public List<CategoryEntity> GetAllCategories()
         {
@@ -25,7 +24,7 @@ namespace MaxicoursDownloader.Api.Pages
 
         public void SelectCategory(string categoryId)
         {
-            GetCategoryElement(categoryId)?.Click();
+            CategoryElement(categoryId)?.Click();
         }
 
         public void SelectLessonCategory()
@@ -40,10 +39,21 @@ namespace MaxicoursDownloader.Api.Pages
 
         private CategoryEntity GetCategory(IWebElement categoryElement)
         {
+            var id = categoryElement.GetAttribute("rel");
+            var name = categoryElement.FindElement(By.TagName("span")).Text;
+
             return new CategoryEntity {
-                Id = categoryElement.GetAttribute("rel"),
-                Name = categoryElement.FindElement(By.TagName("span")).Text
+                Id = id,
+                Tag = name.CleanName(),
+                Name = name
             };
+        }
+
+        private CategoryEntity GetCategory(string categoryId)
+        {
+            var element = CategoryElement(categoryId);
+
+            return GetCategory(element);
         }
     }
 }

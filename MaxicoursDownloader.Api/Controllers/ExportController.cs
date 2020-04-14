@@ -20,15 +20,6 @@ namespace MaxicoursDownloader.Api.Controllers
             _exportService = exportService;
         }
 
-        //[HttpGet]
-        //[Route("schoollevels/{levelTag}/subjects/{subjectId:int}")]
-        //public IActionResult ExportSubjectLessons(string levelTag, int subjectId)
-        //{
-        //    _maxicoursService.ExportSubjectLessons(levelTag, subjectId, "fiche");
-
-        //    return Ok();
-        //}
-
         [HttpGet]
         [Route("schoollevels/{levelTag}/subjects/{subjectId:int}")]
         public IActionResult ExportLessons(string levelTag, int subjectId)

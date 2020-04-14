@@ -12,6 +12,9 @@ namespace MaxicoursDownloader.Api.Profiles
     {
         public MaxicoursProfiles()
         {
+            CreateMap<ReferenceEntity, ReferenceModel>()
+                .ReverseMap();
+
             CreateMap<BreadcrumbEntity, BreadcrumbModel>()
                 .ReverseMap();
 

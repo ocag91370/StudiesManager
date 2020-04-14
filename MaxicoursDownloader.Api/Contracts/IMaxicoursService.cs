@@ -14,8 +14,6 @@ namespace MaxicoursDownloader.Api.Contracts
 
         SubjectModel GetSubject(string levelTag, int subjectId);
 
-        HeaderModel GetHeader(string levelTag, int subjectId);
-
         List<ThemeModel> GetAllThemes(string levelTag, int subjectId);
 
         List<CategoryModel> GetAllCategories(string levelTag, int subjectId);
@@ -23,8 +21,6 @@ namespace MaxicoursDownloader.Api.Contracts
         List<ItemModel> GetAllItems(string levelTag, int subjectId);
 
         public List<ItemModel> GetItemsOfCategory(string levelTag, int subjectId, string categoryId);
-
-        ItemModel GetItem(string levelTag, int subjectId, string categoryId, int itemId);
 
         LessonModel GetLesson(string levelTag, int subjectId, string categoryId, int lessonId);
 

@@ -38,21 +38,24 @@ namespace MaxicoursDownloader.Api.Pages
 
         private ItemEntity GetItem(IWebElement element)
         {
-            var categoryId = GetCategoryId(element);
-
             var itemElement = element.FindElement(By.XPath("td[@class = 'label']/a"));
 
             var url = itemElement.GetAttribute("href");
-            var themeId = GetThemeId(url);
-            var itemId = GetItemId(url);
+            var reference = FromUrl(url);
 
             var name = itemElement.GetAttribute("title");
 
+            ThemeEntity theme = null;
+            if (reference.Arbo.Skip(2).Any())
+                theme = GetTheme(reference.Arbo.Skip(2).FirstOrDefault());
+
             var entity = new ItemEntity
             {
-                ThemeId = themeId,
-                CategoryId = categoryId,
-                ItemId = itemId,
+                SubjectSummary = _subjectSummary,
+                Theme = theme,
+                Category = GetCategory(reference.CategoryId),
+                Id = reference.ItemId,
+                Tag = name.CleanName(),
                 Name = name,
                 Url = url
             };

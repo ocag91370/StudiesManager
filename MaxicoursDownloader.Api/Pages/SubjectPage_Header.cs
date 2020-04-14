@@ -35,8 +35,11 @@ namespace MaxicoursDownloader.Api.Pages
         private BreadcrumbEntity GetBreadcrumItem(IWebElement element)
         {
             var url = element.GetAttribute("href");
-            var id = GetBreadcrumItemId(element);
-            var name = element.FindElement(By.TagName("span")).Text;
+            var name = element.GetAttribute("title");
+
+            var reference = FromUrl(url);
+
+            var id = reference.Arbo.Last();
 
             return new BreadcrumbEntity
             {
@@ -44,18 +47,6 @@ namespace MaxicoursDownloader.Api.Pages
                 Name = name,
                 Url = url
             };
-        }
-
-        private int GetBreadcrumItemId(IWebElement element)
-        {
-            var ids = element.GetAttribute("href").SplitUrl();
-
-            if (ids.Any())
-                return ids.Last();
-
-            ids = CurrentElement.GetAttribute("href").SplitUrl();
-
-            return ids.Any() ? ids.First() : -1;
         }
     }
 }

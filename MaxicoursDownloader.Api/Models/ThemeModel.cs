@@ -2,7 +2,9 @@
 {
     public class ThemeModel
     {
-        public int ThemeId { get; set; }
+        public int Id { get; set; }
+
+        public string Tag { get; set; }
 
         public string Name { get; set; }
 

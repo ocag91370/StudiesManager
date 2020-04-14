@@ -6,6 +6,8 @@ namespace MaxicoursDownloader.Api.Models
     {
         public string Id { get; set; }
 
+        public string Tag { get; set; }
+
         public string Name { get; set; }
     }
 }

@@ -23,7 +23,7 @@ namespace MaxicoursDownloader.Api.Pages
         {
             return new SubjectEntity
             {
-                Header = GetHeader(),
+                SubjectSummary = _subjectSummary,
                 Themes = GetAllThemes(),
                 Categories = GetAllCategories(),
                 Items = GetAllItems()

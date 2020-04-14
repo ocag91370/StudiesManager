@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 
-namespace MaxicoursDownloader.Api.Models
+namespace MaxicoursDownloader.Api.Entities
 {
-    public class ReferenceModel
+    public class ReferenceEntity
     {
-        public ReferenceModel(List<int> arbo, int schoolLevelId, int subjectId, int themeId = int.MinValue, string categoryId = null, int itemId = int.MinValue)
+        public ReferenceEntity(List<int> arbo, int schoolLevelId, int subjectId, int themeId = int.MinValue, string categoryId = null, int itemId = int.MinValue)
         {
             Arbo = arbo;
             SchoolLevelId = schoolLevelId;

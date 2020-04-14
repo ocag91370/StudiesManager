@@ -2,11 +2,9 @@
 {
     public class ThemeEntity
     {
-        public int SchoolLevelId { get; set; }
+        public int Id { get; set; }
 
-        public int SubjectId { get; set; }
-
-        public int ThemeId { get; set; }
+        public string Tag { get; set; }
 
         public string Name { get; set; }
 

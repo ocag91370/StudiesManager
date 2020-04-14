@@ -47,15 +47,6 @@ namespace MaxicoursDownloader.Api.Controllers
         }
 
         [HttpGet]
-        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/header")]
-        public IActionResult GetHeader(string levelTag, int subjectId)
-        {
-            var result = _maxicoursService.GetHeader(levelTag, subjectId);
-
-            return Ok(result);
-        }
-
-        [HttpGet]
         [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/themes")]
         public IActionResult GetAllThemes(string levelTag, int subjectId)
         {
@@ -87,6 +78,15 @@ namespace MaxicoursDownloader.Api.Controllers
         public IActionResult GetAllLessons(string levelTag, int subjectId)
         {
             var result = _maxicoursService.GetItemsOfCategory(levelTag, subjectId, "fiche");
+
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/lessons/{lessonId:int}")]
+        public IActionResult GetLesson(string levelTag, int subjectId, int lessonId)
+        {
+            var result = _maxicoursService.GetItemsOfCategory(levelTag, subjectId, "fiche").FirstOrDefault(o => o.Id == lessonId);
 
             return Ok(result);
         }

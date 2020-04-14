@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MaxicoursDownloader.Api.Entities
 {
-    public class ItemEntity
+    public class SubjectItemEntity
     {
         public SubjectSummaryEntity SubjectSummary { get; set; }
 
@@ -13,12 +13,6 @@ namespace MaxicoursDownloader.Api.Entities
 
         public CategoryEntity Category { get; set; }
 
-        public int Id { get; set; }
-
-        public string Tag { get; set; }
-
-        public string Name { get; set; }
-
-        public string Url { get; set; }
+        public ItemEntity Item { get; set; }
     }
 }

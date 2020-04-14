@@ -4,9 +4,11 @@ namespace MaxicoursDownloader.Api.Models
 {
     public class SubjectSummaryModel
     {
-        public int SchoolLevelId { get; set; }
+        public SchoolLevelModel SchoolLevel { get; set; }
 
-        public int SubjectId { get; set; }
+        public string Tag { get; set; }
+
+        public int Id { get; set; }
 
         public string Name { get; set; }
 

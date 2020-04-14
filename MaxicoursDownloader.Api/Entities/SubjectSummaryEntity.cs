@@ -4,9 +4,11 @@ namespace MaxicoursDownloader.Api.Entities
 {
     public class SubjectSummaryEntity
     {
-        public int SchoolLevelId { get; set; }
+        public SchoolLevelEntity SchoolLevel { get; set; }
 
-        public int SubjectId { get; set; }
+        public int Id { get; set; }
+
+        public string Tag { get; set; }
 
         public string Name { get; set; }
 

@@ -13,6 +13,7 @@ namespace MaxicoursDownloader.Api.Pages
         private IWebElement ThemesContainerElement => ContainerElement.FindElement(By.XPath("//*[@class = 'lsi-cartouche-milieu']"));
 
         private IEnumerable<IWebElement> ThemeElementList => ThemesContainerElement.FindElements(By.TagName("a"));
+        private IWebElement ThemeElement(int themeId) => ThemesContainerElement.FindElement(By.XPath($"//a[contains(@href, '/{themeId}')]"));
 
         public List<ThemeEntity> GetAllThemes()
         {
@@ -22,16 +23,26 @@ namespace MaxicoursDownloader.Api.Pages
         private ThemeEntity GetTheme(IWebElement themeElement)
         {
             var url = themeElement.GetAttribute("href");
-            var ids = url.SplitUrl();
+            var name = themeElement.GetAttribute("title");
+
+            var reference = FromUrl(url);
 
             var model = new ThemeEntity
             {
-                ThemeId = ids[2],
-                Name = themeElement.FindElement(By.TagName("span")).Text,
+                Id = reference.ThemeId,
+                Tag = name.CleanName(),
+                Name = name,
                 Url = url
             };
 
             return model;
+        }
+
+        private ThemeEntity GetTheme(int themeId)
+        {
+            var element = ThemeElement(themeId);
+
+            return GetTheme(element);
         }
     }
 }

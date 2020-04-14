@@ -25,50 +25,26 @@ namespace MaxicoursDownloader.Api.Services
         private readonly IMapper _mapper;
         private readonly IMaxicoursService _maxicoursService;
         private readonly IPdfConverterService _pdfConverterService;
+        private readonly IDirectoryService _directoryService;
 
-        public ExportService(IMapper mapper, IMaxicoursService maxicoursService, IPdfConverterService pdfConverterService)
+        public ExportService(IMapper mapper, IMaxicoursService maxicoursService, IPdfConverterService pdfConverterService, IDirectoryService directoryService)
         {
             _mapper = mapper;
             _maxicoursService = maxicoursService;
             _pdfConverterService = pdfConverterService;
+            _directoryService = directoryService;
         }
-
-        //public bool ExportSubjectLessons(string levelTag, int subjectId, string categoryId)
-        //{
-        //    try
-        //    {
-        //        var schoolLevel = _maxicoursService.GetSchoolLevel(levelTag);
-        //        var themeList = _maxicoursService.GetAllThemes(levelTag, subjectId);
-        //        var categoryList = _maxicoursService.GetAllCategories(levelTag, subjectId);
-
-        //        var lessons = _maxicoursService.GetItemsOfCategory(levelTag, subjectId, categoryId);
-
-        //        foreach (var lesson in lessons)
-        //        {
-        //            var lessonPage = new LessonPage(Driver, _mapper.Map<ItemEntity>(lesson));
-        //            var url = lessonPage.GetPrintUrl();
-        //            _pdfConverterService.SaveUrlAsPdf(url, $"{levelTag}_{subjectId}_{categoryId}_{lesson.ThemeId}_{lesson.ItemId}.pdf");
-        //        }
-
-        //        return true;
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return false;
-        //    }
-        //}
 
         public bool ExportThemeLessons(string levelTag, int subjectId, string categoryId, int themeId)
         {
             try
             {
-                var itemList = _maxicoursService.GetItemsOfCategory(levelTag, subjectId, categoryId)
-                                    .Where(o => o.ThemeId == themeId);
+                var itemList = _maxicoursService.GetItemsOfCategory(levelTag, subjectId, categoryId).Where(o => o.Id == themeId);
 
                 foreach (var item in itemList)
                 {
                     var lesson = _maxicoursService.GetLesson(item);
-                    SaveAsPdf(levelTag, subjectId, lesson);
+                    SaveUrlAsPdf(lesson);
                 }
 
                 return true;
@@ -84,13 +60,13 @@ namespace MaxicoursDownloader.Api.Services
             try
             {
                 var subject = _maxicoursService.GetSubject(levelTag, subjectId);
-                var itemList = subject.Items.Where(o => o.CategoryId == categoryId);
+                var itemList = subject.Items.Where(o => o.Category.Id == categoryId);
 
                 foreach(var item in itemList)
                 {
                     var lesson = _maxicoursService.GetLesson(item);
 
-                    SaveAsPdf(levelTag, subjectId, lesson);
+                    SaveUrlAsPdf(lesson);
                 }
 
                 return true;
@@ -107,7 +83,7 @@ namespace MaxicoursDownloader.Api.Services
             {
                 var lesson = _maxicoursService.GetLesson(levelTag, subjectId, categoryId, lessonId);
 
-                SaveAsPdf(levelTag, subjectId, lesson);
+                SaveUrlAsPdf(lesson);
 
                 return true;
             }
@@ -117,7 +93,7 @@ namespace MaxicoursDownloader.Api.Services
             }
         }
 
-        private void SaveAsPdf(string levelTag, int subjectId, LessonModel lesson)
+        private void SaveUrlAsPdf(LessonModel lesson)
         {
             try
             {
@@ -133,15 +109,30 @@ namespace MaxicoursDownloader.Api.Services
             }
         }
 
+        private void SaveHtmlAsPdf(string levelTag, int subjectId, LessonModel lesson)
+        {
+            try
+            {
+                var filename = GetFilename(lesson.Item);
+
+                _pdfConverterService.SaveHtmlAsPdf(lesson.PageSource, filename);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+
+                throw ex;
+            }
+        }
+
         private string GetFilename(string levelTag, int subjectId, ItemModel item)
         {
-            return $"{levelTag}_{subjectId}_{item.CategoryId}_{item.ThemeId}_{item.ItemId}.pdf";
+            return $"{levelTag}_{subjectId}_{item.Category.Id}_{item.Theme.Id}_{item.Id}.pdf";
         }
 
         private string GetFilename(ItemModel item)
         {
-            return $"{item.Name.CleanName()}.pdf";
+            return $"{item.Id} - {item.Name.CleanName()}.pdf";
         }
-
     }
 }

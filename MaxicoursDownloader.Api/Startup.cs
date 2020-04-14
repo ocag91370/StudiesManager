@@ -39,6 +39,7 @@ namespace MaxicoursDownloader.Api
             services.AddTransient<IMaxicoursService, MaxicoursService>();
             services.AddTransient<IExportService, ExportService>();
             services.AddTransient<IPdfConverterService, PdfConverterService>();
+            services.AddTransient<IDirectoryService, DirectoryService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

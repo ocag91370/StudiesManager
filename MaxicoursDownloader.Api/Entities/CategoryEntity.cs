@@ -6,6 +6,8 @@ namespace MaxicoursDownloader.Api.Entities
     {
         public string Id { get; set; }
 
+        public string Tag { get; set; }
+
         public string Name { get; set; }
     }
 }

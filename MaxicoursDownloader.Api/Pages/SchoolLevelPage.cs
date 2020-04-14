@@ -10,14 +10,17 @@ namespace MaxicoursDownloader.Api.Pages
 {
     public class SchoolLevelPage : BasePage
     {
+        private readonly SchoolLevelEntity _schoolLevelEntity;
+
         private IWebElement ContainerElement => Driver.FindElement(By.ClassName("mes-matieres"));
 
         private IWebElement TitleElement => ContainerElement.FindElement(By.ClassName("lsi-txt"));
 
         private IEnumerable<IWebElement> SubjectElementList => ContainerElement.FindElements(By.XPath("//*[@class='td-label']/a"));
 
-        public SchoolLevelPage(IWebDriver driver, string url) : base(driver, url)
+        public SchoolLevelPage(IWebDriver driver, SchoolLevelEntity schoolLevelEntity) : base(driver, schoolLevelEntity.Url)
         {
+            _schoolLevelEntity = schoolLevelEntity;
         }
 
         public string Title => TitleElement.Text;
@@ -30,13 +33,15 @@ namespace MaxicoursDownloader.Api.Pages
         private SubjectSummaryEntity GetSubjectSummary(IWebElement subjectElement)
         {
             var url = subjectElement.GetAttribute("href");
-            var ids = url.SplitUrl();
-            var name = subjectElement.FindElement(By.TagName("span")).Text;
+            var name = subjectElement.GetAttribute("title");
 
+            var reference = FromUrl(url);
+            _schoolLevelEntity.Id = reference.SchoolLevelId;
             return new SubjectSummaryEntity
             {
-                SchoolLevelId = ids.First(),
-                SubjectId = ids.Last(),
+                SchoolLevel = _schoolLevelEntity,
+                Id = reference.SubjectId,
+                Tag = name.CleanName(),
                 Name = name,
                 Url = url
             };
