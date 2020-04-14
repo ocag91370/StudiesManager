@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using IronPdf;
 using MaxicoursDownloader.Api.Contracts;
 using MaxicoursDownloader.Api.Entities;
 using MaxicoursDownloader.Api.Extensions;
@@ -8,14 +7,10 @@ using MaxicoursDownloader.Api.Models;
 using MaxicoursDownloader.Api.Pages;
 using MaxicoursDownloader.Api.Repositories;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
 using StudiesManager.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MaxicoursDownloader.Api.Services
 {
