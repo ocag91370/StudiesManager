@@ -51,5 +51,19 @@ namespace MaxicoursDownloader.Api.Pages
 
             return GetTheme(element);
         }
+
+        private ThemeEntity GetTheme(List<ThemeEntity> themeList, ReferenceEntity reference)
+        {
+            var skipNb = Current.Arbo.Count();
+
+            if (!reference.Arbo.Skip(skipNb).Any())
+                return null;
+
+            int themeId = reference.Arbo.Skip(skipNb).FirstOrDefault();
+
+            var theme = themeList.FirstOrDefault(o => o.Id == themeId);
+
+            return theme;
+        }
     }
 }

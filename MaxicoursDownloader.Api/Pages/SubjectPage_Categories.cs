@@ -57,5 +57,14 @@ namespace MaxicoursDownloader.Api.Pages
 
             return GetCategory(element);
         }
+
+        private CategoryEntity GetCategory(List<CategoryEntity> categoryList, ReferenceEntity reference)
+        {
+            var categoryId = reference.CategoryId;
+
+            var category = categoryList.FirstOrDefault(o => o.Id == categoryId);
+
+            return category;
+        }
     }
 }
