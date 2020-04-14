@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using MaxicoursDownloader.Api.Contracts;
-using MaxicoursDownloader.Api.Extensions;
 using MaxicoursDownloader.Api.Interfaces;
 using MaxicoursDownloader.Api.Models;
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MaxicoursDownloader.Api.Services
 {
@@ -24,65 +26,112 @@ namespace MaxicoursDownloader.Api.Services
             _directoryService = directoryService;
         }
 
-        public bool ExportThemeLessons(string levelTag, int subjectId, string categoryId, int themeId)
-        {
-            try
-            {
-                var itemList = _maxicoursService.GetItemsOfCategory(levelTag, subjectId, categoryId).Where(o => o.Id == themeId);
-
-                foreach (var item in itemList)
-                {
-                    var lesson = _maxicoursService.GetLesson(item);
-                    SaveUrlAsPdf(lesson);
-                }
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        public bool ExportLessons(string levelTag, int subjectId, string categoryId)
-        {
-            try
-            {
-                var subject = _maxicoursService.GetSubject(levelTag, subjectId);
-                var itemList = subject.Items.Where(o => o.Category.Id == categoryId);
-
-                foreach(var item in itemList)
-                {
-                    var lesson = _maxicoursService.GetLesson(item);
-
-                    SaveUrlAsPdf(lesson);
-                }
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        public bool ExportLesson(string levelTag, int subjectId, string categoryId, int lessonId)
+        public int ExportLesson(string levelTag, int subjectId, string categoryId, int lessonId)
         {
             try
             {
                 var lesson = _maxicoursService.GetLesson(levelTag, subjectId, categoryId, lessonId);
 
-                SaveUrlAsPdf(lesson);
-
-                return true;
+                return ExportLesson(lesson);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return false;
+                throw ex;
             }
         }
 
-        private void SaveUrlAsPdf(LessonModel lesson)
+        public int ExportLessons(string levelTag, string categoryId)
+        {
+            try
+            {
+                var subjectList = _maxicoursService.GetAllSubjects(levelTag);
+
+                int count = 0;
+                Parallel.ForEach(subjectList, (subject) => {
+                    var itemList = _maxicoursService.GetItemsOfCategory(levelTag, subject.Id, categoryId);
+                    count += ExportLessons(itemList);
+                });
+
+                return count;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public int ExportLessons(string levelTag, int subjectId, string categoryId)
+        {
+            try
+            {
+                var itemList = _maxicoursService.GetItemsOfCategory(levelTag, subjectId, categoryId);
+
+                return ExportLessons(itemList);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public int ExportLessons(string levelTag, int subjectId, string categoryId, int themeId)
+        {
+            try
+            {
+                var itemList = _maxicoursService.GetItemsOfCategory(levelTag, subjectId, categoryId)
+                    .Where(o => o.Id == themeId)
+                    .ToList();
+
+                return ExportLessons(itemList);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private int ExportLesson(LessonModel lesson)
+        {
+            try
+            {
+                SaveAsPdf(lesson);
+
+                return 1;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private int ExportLessons(List<ItemModel> itemList)
+        {
+            try
+            {
+                var lessonList = new ConcurrentBag<LessonModel>();
+                Parallel.ForEach(itemList, (item) => {
+                    var lesson = _maxicoursService.GetLesson(item);
+                    lessonList.Add(lesson);
+                });
+
+                Parallel.ForEach(lessonList, (lesson) => {
+                    SaveAsPdf(lesson);
+                });
+
+                return itemList.Count();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public void Dispose()
+        {
+            _maxicoursService.Dispose();
+        }
+
+        private void SaveAsPdf(LessonModel lesson)
         {
             try
             {
@@ -96,27 +145,6 @@ namespace MaxicoursDownloader.Api.Services
 
                 throw ex;
             }
-        }
-
-        private void SaveHtmlAsPdf(string levelTag, int subjectId, LessonModel lesson)
-        {
-            try
-            {
-                var filename = GetFilename(lesson.Item);
-
-                _pdfConverterService.SaveHtmlAsPdf(lesson.PageSource, filename);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-
-                throw ex;
-            }
-        }
-
-        private string GetFilename(string levelTag, int subjectId, ItemModel item)
-        {
-            return $"{levelTag}_{subjectId}_{item.Category.Id}_{item.Theme.Id}_{item.Id}.pdf";
         }
 
         private string GetFilename(ItemModel item)

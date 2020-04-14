@@ -3,7 +3,9 @@ using MaxicoursDownloader.Api.Interfaces;
 using MaxicoursDownloader.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
+using System.Net;
 
 namespace MaxicoursDownloader.Api.Controllers
 {
@@ -21,93 +23,79 @@ namespace MaxicoursDownloader.Api.Controllers
         }
 
         [HttpGet]
-        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}")]
-        public IActionResult ExportLessons(string levelTag, int subjectId)
+        [Route("schoollevels/{levelTag}")]
+        public IActionResult ExportSchoolLevelLessons(string levelTag)
         {
-            var isOk = _exportService.ExportLessons(levelTag, subjectId, "fiche");
+            try
+            {
+                var count = _exportService.ExportLessons(levelTag, "fiche");
 
-            if (!isOk)
-                return NotFound();
+                if (count <= 0)
+                    return NotFound();
 
-            return Ok();
+                return Ok($"{count} lesson(s) successfully exported.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}")]
+        public IActionResult ExportSubjectLessons(string levelTag, int subjectId)
+        {
+            try
+            {
+                var count = _exportService.ExportLessons(levelTag, subjectId, "fiche");
+
+                if (count <= 0)
+                    return NotFound();
+
+                return Ok($"{count} lesson(s) successfully exported.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
         }
 
         [HttpGet]
         [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/themes/{themeId}")]
         public IActionResult ExportThemeLessons(string levelTag, int subjectId, int themeId)
         {
-            var isOk = _exportService.ExportThemeLessons(levelTag, subjectId, "fiche", themeId);
+            try
+            {
+                var count = _exportService.ExportLessons(levelTag, subjectId, "fiche", themeId);
 
-            if (!isOk)
-                return NotFound();
+                if (count <= 0)
+                    return NotFound();
 
-            return Ok();
+                return Ok($"{count} lesson(s) successfully exported.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
         }
 
         [HttpGet]
         [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/lessons/{lessonId:int}")]
         public IActionResult ExportLesson(string levelTag, int subjectId, int lessonId)
         {
-            var isOk = _exportService.ExportLesson(levelTag, subjectId, "fiche", lessonId);
+            try
+            {
+                var count = _exportService.ExportLesson(levelTag, subjectId, "fiche", lessonId);
 
-            if (!isOk)
-                return NotFound();
+                if (count <= 0)
+                    return NotFound();
 
-            return Ok();
+                return Ok("Lesson successfully exported.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
         }
-
-        //[HttpGet]
-        //[Route("schoollevels/{levelTag}/subjects/{subjectId:int}/paths")]
-        //public IActionResult GetAllPaths(string levelTag, int subjectId)
-        //{
-        //    //var subjectList = _maxicoursService.GetSubject(levelTag, subjectName);
-
-        //    return Ok();
-        //}
-
-        //[HttpGet]
-        //[Route("schoollevels/{levelTag}/subjects/{subjectId:int}/lessons/videos")]
-        //public IActionResult GetAllVideosLessons(string levelTag, int subjectId)
-        //{
-        //    //var subjectList = _maxicoursService.GetSubject(levelTag, subjectName);
-
-        //    return Ok();
-        //}
-
-        //[HttpGet]
-        //[Route("schoollevels/{levelTag}/subjects/{subjectId:int}/lessons/{lessonId}")]
-        //public IActionResult GetLesson(string levelTag, int subjectId)
-        //{
-        //    //var subjectList = _maxicoursService.GetSubject(levelTag, subjectName);
-
-        //    return Ok();
-        //}
-
-        //[HttpGet]
-        //[Route("schoollevels/{levelTag}/subjects/{subjectId:int}/summarysheets")]
-        //public IActionResult GetAllSummarySheets(string levelTag, int subjectId)
-        //{
-        //    //var subjectList = _maxicoursService.GetSubject(levelTag, subjectName);
-
-        //    return Ok();
-        //}
-
-        //[HttpGet]
-        //[Route("schoollevels/{levelTag}/subjects/{subjectId:int}/exercices")]
-        //public IActionResult GetAllVideosExercices(string levelTag, int subjectId)
-        //{
-        //    //var subjectList = _maxicoursService.GetSubject(levelTag, subjectName);
-
-        //    return Ok();
-        //}
-
-        //[HttpGet]
-        //[Route("schoollevels/{levelTag}/subjects/{subjectId:int}/tests")]
-        //public IActionResult GetAllTests(string levelTag, int subjectId)
-        //{
-        //    //var subjectList = _maxicoursService.GetSubject(levelTag, subjectName);
-
-        //    return Ok();
-        //}
     }
 }

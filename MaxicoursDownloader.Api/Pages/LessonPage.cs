@@ -21,13 +21,10 @@ namespace MaxicoursDownloader.Api.Pages
         {
             var printUrl = GetPrintUrl();
 
-            Driver.Navigate().GoToUrl(printUrl);
-
             return new LessonEntity
             {
                 Item = _item,
-                PrintUrl = printUrl,
-                PageSource = Driver.PageSource
+                PrintUrl = printUrl
             };
         }
 

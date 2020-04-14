@@ -14,7 +14,7 @@ using System.Linq;
 
 namespace MaxicoursDownloader.Api.Services
 {
-    public class MaxicoursService : IMaxicoursService, IDisposable
+    public class MaxicoursService : IMaxicoursService
     {
         private readonly IMapper _mapper;
         private readonly IPdfConverterService _pdfConverterService;
@@ -168,6 +168,9 @@ namespace MaxicoursDownloader.Api.Services
 
         public void Dispose()
         {
+            if (Driver == null)
+                return;
+
             Driver.Quit();
             Driver.Dispose();
             Driver = null;

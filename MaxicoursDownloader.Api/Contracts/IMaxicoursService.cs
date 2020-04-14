@@ -1,10 +1,11 @@
 ﻿using MaxicoursDownloader.Api.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace MaxicoursDownloader.Api.Contracts
 {
-    public interface IMaxicoursService
+    public interface IMaxicoursService : IDisposable
     {
         List<SchoolLevelModel> GetAllSchoolLevels();
 

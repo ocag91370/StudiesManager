@@ -7,7 +7,5 @@ namespace MaxicoursDownloader.Api.Models
         public ItemModel Item { get; set; }
 
         public string PrintUrl { get; set; }
-
-        public string PageSource { get; set; }
     }
 }

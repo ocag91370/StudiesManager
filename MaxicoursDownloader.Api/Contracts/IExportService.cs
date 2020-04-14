@@ -1,11 +1,15 @@
-﻿namespace MaxicoursDownloader.Api.Interfaces
+﻿using System;
+
+namespace MaxicoursDownloader.Api.Interfaces
 {
-    public interface IExportService
+    public interface IExportService : IDisposable
     {
-        bool ExportLesson(string levelTag, int subjectId, string categoryId, int lessonId);
+        int ExportLesson(string levelTag, int subjectId, string categoryId, int lessonId);
 
-        bool ExportThemeLessons(string levelTag, int subjectId, string categoryId, int themeId);
+        int ExportLessons(string levelTag, string categoryId);
 
-        bool ExportLessons(string levelTag, int subjectId, string categoryId);
+        int ExportLessons(string levelTag, int subjectId, string categoryId);
+
+        int ExportLessons(string levelTag, int subjectId, string categoryId, int themeId);
     }
 }
