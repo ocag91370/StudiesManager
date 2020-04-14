@@ -45,15 +45,14 @@ namespace MaxicoursDownloader.Api.Pages
 
             var name = itemElement.GetAttribute("title");
 
-            ThemeEntity theme = null;
-            if (reference.Arbo.Skip(2).Any())
-                theme = GetTheme(reference.Arbo.Skip(2).FirstOrDefault());
+            var category = GetCategory(reference);
+            var theme = GetTheme(reference);
 
             var entity = new ItemEntity
             {
                 SubjectSummary = _subjectSummary,
                 Theme = theme,
-                Category = GetCategory(reference.CategoryId),
+                Category = category,
                 Id = reference.ItemId,
                 Tag = name.CleanName(),
                 Name = name,

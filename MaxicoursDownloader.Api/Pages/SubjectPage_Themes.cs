@@ -38,8 +38,15 @@ namespace MaxicoursDownloader.Api.Pages
             return model;
         }
 
-        private ThemeEntity GetTheme(int themeId)
+        private ThemeEntity GetTheme(ReferenceEntity reference)
         {
+            var skipNb = Current.Arbo.Count();
+
+            if (!reference.Arbo.Skip(skipNb).Any())
+                return null;
+
+            int themeId =  reference.Arbo.Skip(skipNb).FirstOrDefault();
+
             var element = ThemeElement(themeId);
 
             return GetTheme(element);

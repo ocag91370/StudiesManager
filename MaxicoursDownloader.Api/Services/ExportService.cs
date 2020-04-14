@@ -121,7 +121,7 @@ namespace MaxicoursDownloader.Api.Services
 
         private string GetFilename(ItemModel item)
         {
-            return $"{item.Id} - {item.Name.CleanName()}.pdf";
+            return $"{item.SubjectSummary.SchoolLevel.Tag} - {item.SubjectSummary.Tag} - {item.Category.Tag} - {item.Theme.Tag} - {item.Id} - {item.Tag}.pdf";
         }
     }
 }

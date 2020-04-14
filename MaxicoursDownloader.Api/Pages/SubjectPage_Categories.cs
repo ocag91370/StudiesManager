@@ -49,8 +49,10 @@ namespace MaxicoursDownloader.Api.Pages
             };
         }
 
-        private CategoryEntity GetCategory(string categoryId)
+        private CategoryEntity GetCategory(ReferenceEntity reference)
         {
+            var categoryId = reference.CategoryId;
+
             var element = CategoryElement(categoryId);
 
             return GetCategory(element);
