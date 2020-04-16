@@ -40,6 +40,9 @@ namespace MaxicoursDownloader.Api.Pages
 
         private ThemeEntity GetTheme(ReferenceEntity reference)
         {
+            if (reference.ThemeId == 0)
+                return null;
+
             var skipNb = Current.Arbo.Count();
 
             if (!reference.Arbo.Skip(skipNb).Any())

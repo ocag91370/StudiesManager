@@ -32,14 +32,16 @@ namespace MaxicoursDownloader.Api.Pages
 
             var elementList = ContainerElement.FindElements(By.XPath($"//*[contains(@class, '{categoryId}  overable')]//*[@class = 'label']/a"));
 
-            var itemList = new ConcurrentBag<ItemEntity>();
-            Parallel.ForEach(elementList, (element) =>
-            {
-                var item = GetItem(categoryList, themeList, element);
-                itemList.Add(item);
-            });
+            //var itemList = new ConcurrentBag<ItemEntity>();
+            //Parallel.ForEach(elementList, (element, state, index) =>
+            //{
+            //    var item = GetItem(categoryList, themeList, element, index);
+            //    itemList.Add(item);
+            //});
 
-            var result = itemList.ToList();
+            //var result = itemList.ToList();
+
+            var result = elementList.Select((element, index) => GetItem(categoryList, themeList, element, index)).ToList();
 
             return result;
         }
@@ -75,7 +77,7 @@ namespace MaxicoursDownloader.Api.Pages
             return entity;
         }
 
-        private ItemEntity GetItem(List<CategoryEntity> categoryList, List<ThemeEntity> themeList, IWebElement element)
+        private ItemEntity GetItem(List<CategoryEntity> categoryList, List<ThemeEntity> themeList, IWebElement element, int index)
         {
             var url = element.GetAttribute("href");
             var reference = FromUrl(url);
@@ -93,7 +95,8 @@ namespace MaxicoursDownloader.Api.Pages
                 Id = reference.ItemId,
                 Tag = name.CleanName(),
                 Name = name,
-                Url = url
+                Url = url,
+                Index = index + 1
             };
 
             return entity;

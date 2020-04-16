@@ -2,10 +2,12 @@
 using MaxicoursDownloader.Api.Contracts;
 using MaxicoursDownloader.Api.Interfaces;
 using MaxicoursDownloader.Api.Models;
+using MaxicoursDownloader.Api.Repositories;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,6 +19,7 @@ namespace MaxicoursDownloader.Api.Services
         private readonly IMaxicoursService _maxicoursService;
         private readonly IPdfConverterService _pdfConverterService;
         private readonly IDirectoryService _directoryService;
+        private readonly string _basePath = @"C:\Travail\Maxicours\Export\Temp";
 
         public ExportService(IMapper mapper, IMaxicoursService maxicoursService, IPdfConverterService pdfConverterService, IDirectoryService directoryService)
         {
@@ -26,7 +29,7 @@ namespace MaxicoursDownloader.Api.Services
             _directoryService = directoryService;
         }
 
-        public int ExportLesson(string levelTag, int subjectId, string categoryId, int lessonId)
+        public ExportResultModel ExportLesson(string levelTag, int subjectId, string categoryId, int lessonId)
         {
             try
             {
@@ -40,19 +43,20 @@ namespace MaxicoursDownloader.Api.Services
             }
         }
 
-        public int ExportLessons(string levelTag, string categoryId)
+        public ExportResultModel ExportLessons(string levelTag, string categoryId)
         {
             try
             {
                 var subjectList = _maxicoursService.GetAllSubjects(levelTag);
 
-                int count = 0;
-                Parallel.ForEach(subjectList, (subject) => {
+                var resultList = new ConcurrentBag<ExportResultModel>();
+                subjectList.ForEach((subject) =>
+                {
                     var itemList = _maxicoursService.GetItemsOfCategory(levelTag, subject.Id, categoryId);
-                    count += ExportLessons(itemList);
+                    resultList.Add(ExportLessons(itemList));
                 });
 
-                return count;
+                return ExportResultFactory.Create(resultList.Sum(o => o.NbItems), resultList.Sum(o => o.NbFiles), resultList.Sum(o => o.NbDuplicates));
             }
             catch (Exception ex)
             {
@@ -60,7 +64,7 @@ namespace MaxicoursDownloader.Api.Services
             }
         }
 
-        public int ExportLessons(string levelTag, int subjectId, string categoryId)
+        public ExportResultModel ExportLessons(string levelTag, int subjectId, string categoryId)
         {
             try
             {
@@ -74,12 +78,12 @@ namespace MaxicoursDownloader.Api.Services
             }
         }
 
-        public int ExportLessons(string levelTag, int subjectId, string categoryId, int themeId)
+        public ExportResultModel ExportLessons(string levelTag, int subjectId, string categoryId, int themeId)
         {
             try
             {
                 var itemList = _maxicoursService.GetItemsOfCategory(levelTag, subjectId, categoryId)
-                    .Where(o => o.Id == themeId)
+                    .Where(o => o.Theme.Id == themeId)
                     .ToList();
 
                 return ExportLessons(itemList);
@@ -90,13 +94,13 @@ namespace MaxicoursDownloader.Api.Services
             }
         }
 
-        private int ExportLesson(LessonModel lesson)
+        private ExportResultModel ExportLesson(LessonModel lesson)
         {
             try
             {
-                SaveAsPdf(lesson);
+                var nbFiles = SaveAsPdf(lesson);
 
-                return 1;
+                return ExportResultFactory.Create(1, nbFiles, 0);
             }
             catch (Exception ex)
             {
@@ -104,7 +108,7 @@ namespace MaxicoursDownloader.Api.Services
             }
         }
 
-        private int ExportLessons(List<ItemModel> itemList)
+        private ExportResultModel ExportLessons(List<ItemModel> itemList)
         {
             try
             {
@@ -113,12 +117,17 @@ namespace MaxicoursDownloader.Api.Services
                     var lesson = _maxicoursService.GetLesson(item);
                     lessonList.Add(lesson);
                 });
+                var nbLessons = lessonList.Count();
+                var nbDistincts = lessonList.Select(o => o.Item.Id).Distinct().Count();
 
-                Parallel.ForEach(lessonList, (lesson) => {
-                    SaveAsPdf(lesson);
+                var fileList = new ConcurrentBag<int>();
+                Parallel.ForEach(lessonList, (lesson) =>
+                {
+                    fileList.Add(SaveAsPdf(lesson));
                 });
+                var nbFiles = fileList.Sum(o => o);
 
-                return itemList.Count();
+                return ExportResultFactory.Create(nbLessons, nbLessons - nbDistincts, nbFiles);
             }
             catch (Exception ex)
             {
@@ -131,25 +140,33 @@ namespace MaxicoursDownloader.Api.Services
             _maxicoursService.Dispose();
         }
 
-        private void SaveAsPdf(LessonModel lesson)
+        private int SaveAsPdf(LessonModel lesson)
         {
             try
             {
                 var filename = GetFilename(lesson.Item);
 
                 _pdfConverterService.SaveUrlAsPdf(lesson.PrintUrl, filename);
+
+                //return File.Exists(filename) ? 1 : 0;
+                return 1;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
 
-                throw ex;
+                return 0;
             }
         }
 
         private string GetFilename(ItemModel item)
         {
-            return $"{item.SubjectSummary.SchoolLevel.Tag} - {item.SubjectSummary.Tag} - {item.Category.Tag} - {item.Theme.Tag} - {item.Id} - {item.Tag}.pdf";
+            var index = item.Index.ToString().PadLeft(3, '0');
+
+            var filename = $"{item.SubjectSummary.SchoolLevel.Tag} - {item.SubjectSummary.Tag} - {item.Category.Tag} - {index} - {item?.Theme?.Tag ?? item.SubjectSummary.Tag} - {item.Id} - {item.Tag}.pdf";
+            var result = Path.Combine(_basePath, filename);
+
+            return result;
         }
     }
 }

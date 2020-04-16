@@ -20,5 +20,7 @@ namespace MaxicoursDownloader.Api.Models
         public string Name { get; set; }
 
         public string Url { get; set; }
+
+        public int Index { get; set; }
     }
 }

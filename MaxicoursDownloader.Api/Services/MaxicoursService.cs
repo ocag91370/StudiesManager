@@ -17,13 +17,11 @@ namespace MaxicoursDownloader.Api.Services
     public class MaxicoursService : IMaxicoursService
     {
         private readonly IMapper _mapper;
-        private readonly IPdfConverterService _pdfConverterService;
         private IWebDriver Driver;
 
-        public MaxicoursService(IMapper mapper, IPdfConverterService pdfConverterService)
+        public MaxicoursService(IMapper mapper)
         {
             _mapper = mapper;
-            _pdfConverterService = pdfConverterService;
 
             Driver = WebDriverFactory.CreateWebDriver(WebBrowserType.Chrome);
         }
@@ -56,11 +54,6 @@ namespace MaxicoursDownloader.Api.Services
         public List<SubjectSummaryModel> GetAllSubjects(string levelTag)
         {
             var schoolLevel = GetSchoolLevel(levelTag);
-            //var schoolLevel = new SchoolLevelModel
-            //{
-            //    Tag = levelTag,
-            //    Url = UrlRepository.Urls["SchoolLevelWithToken"] + levelTag
-            //};
 
             var schoolLevelPage = new SchoolLevelPage(Driver, _mapper.Map<SchoolLevelEntity>(schoolLevel));
             var result = _mapper.Map<List<SubjectSummaryModel>>(schoolLevelPage.GetAllSubjects());

@@ -8,7 +8,7 @@ namespace MaxicoursDownloader.Api.Entities
 {
     public class ReferenceEntity
     {
-        public ReferenceEntity(List<int> arbo, int schoolLevelId, int subjectId, int themeId = int.MinValue, string categoryId = null, int itemId = int.MinValue)
+        public ReferenceEntity(List<int> arbo, int schoolLevelId, int subjectId, int themeId = 0, string categoryId = null, int itemId = 0)
         {
             Arbo = arbo;
             SchoolLevelId = schoolLevelId;

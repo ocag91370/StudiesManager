@@ -84,49 +84,46 @@ namespace MaxicoursDownloader.Api.Pages
         {
             var idList = path.Split('/').Where(o => int.TryParse(o, out var value)).Select(o => int.Parse(o)).ToList();
 
-            var themeList = idList.Skip(2);
-            if (themeList.Any())
-                return new ReferenceEntity(idList, idList.First(), idList.Skip(1).First(), themeList.First());
+            var schoolLevelId = idList?.FirstOrDefault() ?? 0;
+            var subjectId = idList?.Skip(1)?.FirstOrDefault() ?? 0;
+            var themeId = idList?.Skip(2)?.FirstOrDefault() ?? 0;
 
-            return new ReferenceEntity(idList, idList.First(), idList.Skip(1).First());
+            return new ReferenceEntity(idList, schoolLevelId, subjectId, themeId);
         }
 
         public ReferenceEntity FromQuizzUrl(string path)
         {
             var idList = path.Split('/').Where(o => int.TryParse(o, out var value)).Select(o => int.Parse(o)).ToList();
 
-            int themeId = (idList.Skip(2).Any()) ? idList.Last() : int.MinValue;
+            var schoolLevelId = idList?.FirstOrDefault() ?? 0;
+            var subjectId = idList?.Skip(1)?.LastOrDefault() ?? 0;
+            var themeId = idList?.Skip(2)?.LastOrDefault() ?? 0;
 
-            return new ReferenceEntity(idList, idList.First(), idList.Skip(1).Last(), themeId, "serie-qcm");
+            return new ReferenceEntity(idList, schoolLevelId, subjectId, themeId, "serie-qcm");
         }
 
         public ReferenceEntity FromCategoryUrl(string path, string categoryId)
         {
             var idList = path.Split('/').Where(o => int.TryParse(o, out var value)).Select(o => int.Parse(o)).ToList();
 
-            return new ReferenceEntity(idList, idList.First(), idList.Skip(1).First(), idList.Skip(2).SkipLast(1).Last(), categoryId, idList.Last());
+            var schoolLevelId = idList?.FirstOrDefault() ?? 0;
+            var subjectId = idList?.Skip(1)?.FirstOrDefault() ?? 0;
+            var themeId = idList?.Skip(2)?.SkipLast(1)?.LastOrDefault() ?? 0;
+            var ItemId = idList?.LastOrDefault() ?? 0;
+
+            return new ReferenceEntity(idList, schoolLevelId, subjectId, themeId, categoryId, ItemId);
         }
 
-        public List<int> GetIdList(string path)
-        {
-            var idList = path.Split('/').Where(o => int.TryParse(o, out var value)).Select(o => int.Parse(o)).ToList();
+        //private ReferenceEntity FromUrl(string path, string categoryId)
+        //{
+        //    var idList = path.Split('/').Where(o => int.TryParse(o, out var value)).Select(o => int.Parse(o)).ToList();
 
-            return idList;
-        }
+        //    var schoolLevelId = idList?.FirstOrDefault() ?? 0;
+        //    var subjectId = idList?.Skip(1)?.FirstOrDefault() ?? 0;
+        //    var themeId = idList?.Skip(2)?.SkipLast(1)?.LastOrDefault() ?? 0;
+        //    var ItemId = idList?.LastOrDefault() ?? 0;
 
-        public int GetSchoolLevelId(string path)
-        {
-            return GetIdList(path).First();
-        }
-
-        public int GetSubjectId(string path)
-        {
-            return GetIdList(path).Skip(1).First();
-        }
-
-        public List<int> GetThemeList(string path)
-        {
-            return GetIdList(path).Skip(2).ToList();
-        }
+        //    return new ReferenceEntity(idList, schoolLevelId, subjectId, themeId, categoryId, ItemId);
+        //}
     }
 }

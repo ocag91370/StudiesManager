@@ -23,17 +23,17 @@ namespace MaxicoursDownloader.Api.Controllers
         }
 
         [HttpGet]
-        [Route("schoollevels/{levelTag}")]
+        [Route("schoollevels/{levelTag}/lessons")]
         public IActionResult ExportSchoolLevelLessons(string levelTag)
         {
             try
             {
-                var count = _exportService.ExportLessons(levelTag, "fiche");
+                var exportResult = _exportService.ExportLessons(levelTag, "fiche");
 
-                if (count <= 0)
+                if (exportResult.NbFiles <= 0)
                     return NotFound();
 
-                return Ok($"{count} lesson(s) successfully exported.");
+                return Ok($"{exportResult.NbFiles} lesson(s) successfully exported.");
             }
             catch (Exception ex)
             {
@@ -42,17 +42,17 @@ namespace MaxicoursDownloader.Api.Controllers
         }
 
         [HttpGet]
-        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}")]
+        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/lessons")]
         public IActionResult ExportSubjectLessons(string levelTag, int subjectId)
         {
             try
             {
-                var count = _exportService.ExportLessons(levelTag, subjectId, "fiche");
+                var exportResult = _exportService.ExportLessons(levelTag, subjectId, "fiche");
 
-                if (count <= 0)
+                if (exportResult.NbFiles <= 0)
                     return NotFound();
 
-                return Ok($"{count} lesson(s) successfully exported.");
+                return Ok($"{exportResult.NbFiles} lesson(s) successfully exported.");
             }
             catch (Exception ex)
             {
@@ -61,17 +61,24 @@ namespace MaxicoursDownloader.Api.Controllers
         }
 
         [HttpGet]
-        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/themes/{themeId}")]
+        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/themes/{themeId}/lessons")]
         public IActionResult ExportThemeLessons(string levelTag, int subjectId, int themeId)
         {
             try
             {
-                var count = _exportService.ExportLessons(levelTag, subjectId, "fiche", themeId);
+                var exportResult = _exportService.ExportLessons(levelTag, subjectId, "fiche", themeId);
 
-                if (count <= 0)
+                if (exportResult.NbFiles <= 0)
                     return NotFound();
 
-                return Ok($"{count} lesson(s) successfully exported.");
+                var result = new
+                {
+                    Lessons = $"{exportResult.NbItems} lesson(s) identified.",
+                    Duplicates = $"{exportResult.NbDuplicates} lesson(s) identified.",
+                    Files = $"{exportResult.NbFiles} lesson(s) successfully exported."
+                };
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
@@ -85,9 +92,9 @@ namespace MaxicoursDownloader.Api.Controllers
         {
             try
             {
-                var count = _exportService.ExportLesson(levelTag, subjectId, "fiche", lessonId);
+                var exportResult = _exportService.ExportLesson(levelTag, subjectId, "fiche", lessonId);
 
-                if (count <= 0)
+                if (exportResult.NbFiles <= 0)
                     return NotFound();
 
                 return Ok("Lesson successfully exported.");

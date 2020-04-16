@@ -51,7 +51,7 @@ namespace MaxicoursDownloader.Api.Repositories
         {
             var idList = path.Split('/').Where(o => int.TryParse(o, out var value)).Select(o => int.Parse(o)).ToList();
 
-            int themeId = idList.Skip(2).Any() ? idList.Last() : int.MinValue;
+            int themeId = idList.Skip(2)?.LastOrDefault() ?? 0;
 
             return new ReferenceModel(idList, idList.First(), idList.Skip(1).First(), themeId);
         }
@@ -60,7 +60,7 @@ namespace MaxicoursDownloader.Api.Repositories
         {
             var idList = path.Split('/').Where(o => int.TryParse(o, out var value)).Select(o => int.Parse(o)).ToList();
 
-            int themeId = idList.Skip(2).Any() ? idList.Last() : int.MinValue;
+            int themeId = idList.Skip(2)?.LastOrDefault() ?? 0;
 
             return new ReferenceModel(idList, idList.First(), idList.Skip(1).Last(), themeId, "serie-qcm");
         }
