@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace MaxicoursDownloader.Api.Services
@@ -29,11 +30,11 @@ namespace MaxicoursDownloader.Api.Services
             _directoryService = directoryService;
         }
 
-        public ExportResultModel ExportLesson(string levelTag, int subjectId, string categoryId, int lessonId)
+        public ExportResultModel ExportLesson(string levelTag, int subjectId, int lessonId)
         {
             try
             {
-                var lesson = _maxicoursService.GetLesson(levelTag, subjectId, categoryId, lessonId);
+                var lesson = _maxicoursService.GetLesson(levelTag, subjectId, lessonId);
 
                 return ExportLesson(lesson);
             }
@@ -43,20 +44,22 @@ namespace MaxicoursDownloader.Api.Services
             }
         }
 
-        public ExportResultModel ExportLessons(string levelTag, string categoryId)
+        public ExportResultModel ExportLessons(string levelTag)
         {
             try
             {
+                string categoryId = CategoryRepository.Types["lesson"];
+
                 var subjectList = _maxicoursService.GetAllSubjects(levelTag);
 
-                var resultList = new ConcurrentBag<ExportResultModel>();
+                var resultList = new List<ExportResultModel>();
                 subjectList.ForEach((subject) =>
                 {
                     var itemList = _maxicoursService.GetItemsOfCategory(levelTag, subject.Id, categoryId);
                     resultList.Add(ExportLessons(itemList));
                 });
 
-                return ExportResultFactory.Create(resultList.Sum(o => o.NbItems), resultList.Sum(o => o.NbFiles), resultList.Sum(o => o.NbDuplicates));
+                return ExportResultFactory.Create(resultList);
             }
             catch (Exception ex)
             {
@@ -64,13 +67,26 @@ namespace MaxicoursDownloader.Api.Services
             }
         }
 
-        public ExportResultModel ExportLessons(string levelTag, int subjectId, string categoryId)
+        public ExportResultModel ExportLessons(string levelTag, int subjectId)
         {
             try
             {
+                string categoryId = CategoryRepository.Types["lesson"];
+
                 var itemList = _maxicoursService.GetItemsOfCategory(levelTag, subjectId, categoryId);
+                var groupByThemeIdItemList = itemList.GroupBy(
+                    o => o.Theme?.Id,
+                    o => o,
+                    (themeId, itemList) => new { ThemeId = themeId, ItemList = itemList.ToList() }
+                    ).ToList();
 
-                return ExportLessons(itemList);
+                var resultList = new List<ExportResultModel>();
+                groupByThemeIdItemList.ForEach((group) =>
+                {
+                    resultList.Add(ExportLessons(group.ItemList));
+                });
+
+                return ExportResultFactory.Create(resultList);
             }
             catch (Exception ex)
             {
@@ -78,10 +94,12 @@ namespace MaxicoursDownloader.Api.Services
             }
         }
 
-        public ExportResultModel ExportLessons(string levelTag, int subjectId, string categoryId, int themeId)
+        public ExportResultModel ExportLessons(string levelTag, int subjectId, int themeId)
         {
             try
             {
+                string categoryId = CategoryRepository.Types["lesson"];
+
                 var itemList = _maxicoursService.GetItemsOfCategory(levelTag, subjectId, categoryId)
                     .Where(o => o.Theme.Id == themeId)
                     .ToList();
@@ -100,7 +118,7 @@ namespace MaxicoursDownloader.Api.Services
             {
                 var nbFiles = SaveAsPdf(lesson);
 
-                return ExportResultFactory.Create(1, nbFiles, 0);
+                return ExportResultFactory.Create(1, 0, nbFiles);
             }
             catch (Exception ex)
             {
@@ -113,7 +131,8 @@ namespace MaxicoursDownloader.Api.Services
             try
             {
                 var lessonList = new ConcurrentBag<LessonModel>();
-                Parallel.ForEach(itemList, (item) => {
+                Parallel.ForEach(itemList, (item) =>
+                {
                     var lesson = _maxicoursService.GetLesson(item);
                     lessonList.Add(lesson);
                 });
@@ -125,9 +144,117 @@ namespace MaxicoursDownloader.Api.Services
                 {
                     fileList.Add(SaveAsPdf(lesson));
                 });
-                var nbFiles = fileList.Sum(o => o);
+                var nbFiles = fileList.ToList().Sum(o => o);
 
                 return ExportResultFactory.Create(nbLessons, nbLessons - nbDistincts, nbFiles);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private ExportResultModel ExportSummarySheet(SummarySheetModel summarySheet)
+        {
+            try
+            {
+                var item = summarySheet.Item;
+                var index = item.Index.ToString().PadLeft(3, '0');
+
+                var filename = $"{item.SubjectSummary.SchoolLevel.Tag} - {item.SubjectSummary.Tag} - {item.Category.Tag} - {index} - {item?.Theme?.Tag ?? item.SubjectSummary.Tag} - {item.Id} - {item.Tag}.pdf";
+                var result = Path.Combine(_basePath, filename);
+
+                using (WebClient client = new WebClient())
+                {
+                    // Download data.
+                    byte[] arr = client.DownloadData(summarySheet.PrintUrl);
+
+                    File.WriteAllBytes(result, arr);
+
+                }
+
+                return ExportResultFactory.Create(1, 0, 1);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public ExportResultModel ExportSummarySheet(string levelTag, int subjectId, int summarySheetId)
+        {
+            try
+            {
+                string categoryId = CategoryRepository.Types["summary_sheet"];
+
+                var summarySheet = _maxicoursService.GetSummarySheet(levelTag, subjectId, summarySheetId);
+
+                return ExportSummarySheet(summarySheet);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private ExportResultModel ExportSummarySheets(List<ItemModel> itemList)
+        {
+            try
+            {
+                var summarySheetList = itemList.Select(item => _maxicoursService.GetSummarySheet(item)).ToList();
+                var fileList = summarySheetList.Select(summarySheet => ExportSummarySheet(summarySheet)).ToList();
+
+                return ExportResultFactory.Create(fileList);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public ExportResultModel ExportSummarySheets(string levelTag)
+        {
+            try
+            {
+                string categoryId = CategoryRepository.Types["summary_sheet"];
+
+                var subjectList = _maxicoursService.GetAllSubjects(levelTag);
+
+                var resultList = new List<ExportResultModel>();
+                subjectList.ForEach((subject) =>
+                {
+                    var itemList = _maxicoursService.GetItemsOfCategory(levelTag, subject.Id, categoryId);
+                    resultList.Add(ExportSummarySheets(itemList));
+                });
+
+                return ExportResultFactory.Create(resultList);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public ExportResultModel ExportSummarySheets(string levelTag, int subjectId)
+        {
+            try
+            {
+                string categoryId = CategoryRepository.Types["summary_sheet"];
+
+                var itemList = _maxicoursService.GetItemsOfCategory(levelTag, subjectId, categoryId);
+                var groupByThemeIdItemList = itemList.GroupBy(
+                    o => o.Theme?.Id,
+                    o => o,
+                    (themeId, itemList) => new { ThemeId = themeId, ItemList = itemList.ToList() }
+                    ).ToList();
+
+                var resultList = new List<ExportResultModel>();
+                groupByThemeIdItemList.ForEach((group) =>
+                {
+                    resultList.Add(ExportSummarySheets(group.ItemList));
+                });
+
+                return ExportResultFactory.Create(resultList);
             }
             catch (Exception ex)
             {
@@ -144,11 +271,8 @@ namespace MaxicoursDownloader.Api.Services
         {
             try
             {
-                var filename = GetFilename(lesson.Item);
+                _pdfConverterService.SaveAsPdf(lesson);
 
-                _pdfConverterService.SaveUrlAsPdf(lesson.PrintUrl, filename);
-
-                //return File.Exists(filename) ? 1 : 0;
                 return 1;
             }
             catch (Exception ex)
@@ -157,16 +281,6 @@ namespace MaxicoursDownloader.Api.Services
 
                 return 0;
             }
-        }
-
-        private string GetFilename(ItemModel item)
-        {
-            var index = item.Index.ToString().PadLeft(3, '0');
-
-            var filename = $"{item.SubjectSummary.SchoolLevel.Tag} - {item.SubjectSummary.Tag} - {item.Category.Tag} - {index} - {item?.Theme?.Tag ?? item.SubjectSummary.Tag} - {item.Id} - {item.Tag}.pdf";
-            var result = Path.Combine(_basePath, filename);
-
-            return result;
         }
     }
 }

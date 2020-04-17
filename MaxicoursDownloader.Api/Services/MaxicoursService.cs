@@ -121,14 +121,14 @@ namespace MaxicoursDownloader.Api.Services
             return result;
         }
 
-        public ItemModel GetItem(string levelTag, int subjectId, string categoryId, int lessonId)
+        public ItemModel GetItem(string levelTag, int subjectId, string categoryId, int itemId)
         {
             var subjectList = GetAllSubjects(levelTag);
 
             var subjectSummary = subjectList.FirstOrDefault(o => o.Id == subjectId);
             var subjectPage = new SubjectPage(Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
 
-            var result = _mapper.Map<ItemModel>(subjectPage.GetItem(categoryId, lessonId));
+            var result = _mapper.Map<ItemModel>(subjectPage.GetItem(categoryId, itemId));
 
             return result;
         }
@@ -137,9 +137,14 @@ namespace MaxicoursDownloader.Api.Services
 
         #region Lesson
 
-        public LessonModel GetLesson(string levelTag, int subjectId, string categoryId, int lessonId)
+        public List<ItemModel> GetLessons(string levelTag, int subjectId)
         {
-            var item = GetItem(levelTag, subjectId, categoryId, lessonId);
+            return GetItemsOfCategory(levelTag, subjectId, CategoryRepository.Types["lesson"]);
+        }
+
+        public LessonModel GetLesson(string levelTag, int subjectId, int lessonId)
+        {
+            var item = GetItem(levelTag, subjectId, CategoryRepository.Types["lesson"], lessonId);
 
             var lessonPage = new LessonPage(Driver, _mapper.Map<ItemEntity>(item));
 
@@ -155,6 +160,44 @@ namespace MaxicoursDownloader.Api.Services
             var result = _mapper.Map<LessonModel>(lessonPage.GetLesson());
 
             return result;
+        }
+
+        #endregion
+
+        #region Summary Sheets
+
+        public List<ItemModel> GetSummarySheets(string levelTag, int subjectId)
+        {
+            return GetItemsOfCategory(levelTag, subjectId, CategoryRepository.Types["summary_sheet"]);
+        }
+
+        public SummarySheetModel GetSummarySheet(string levelTag, int subjectId, int summarySheetId)
+        {
+            var item = GetItem(levelTag, subjectId, CategoryRepository.Types["summary_sheet"], summarySheetId);
+
+            var summarySheetPage = new SummarySheetPage(Driver, _mapper.Map<ItemEntity>(item));
+
+            var result = _mapper.Map<SummarySheetModel>(summarySheetPage.GetSummarySheet());
+
+            return result;
+        }
+
+        public SummarySheetModel GetSummarySheet(ItemModel item)
+        {
+            var summarySheetPage = new SummarySheetPage(Driver, _mapper.Map<ItemEntity>(item));
+
+            var result = _mapper.Map<SummarySheetModel>(summarySheetPage.GetSummarySheet());
+
+            return result;
+        }
+
+        #endregion
+
+        #region Tests
+
+        public List<ItemModel> GetTests(string levelTag, int subjectId)
+        {
+            return GetItemsOfCategory(levelTag, subjectId, CategoryRepository.Types["test"]);
         }
 
         #endregion

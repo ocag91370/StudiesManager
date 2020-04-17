@@ -9,8 +9,8 @@ namespace MaxicoursDownloader.Api.Repositories
     {
         //public static readonly string Token = "8a2h90iqc1beguudv1covmqau0";
         //public static readonly string Token = "rsakhq5fql2kpk6fd3k10cd5v0";
-        //public static readonly string Token = "7alf0ehjdig1n5r9fo8psi6ef3";
-        public static readonly string Token = "3s96rl321tqepsbvogqk5iukt5";
+        public static readonly string Token = "7alf0ehjdig1n5r9fo8psi6ef3";
+        //public static readonly string Token = "3s96rl321tqepsbvogqk5iukt5";
 
         public static readonly Dictionary<string, string> Urls = new Dictionary<string, string>
         {

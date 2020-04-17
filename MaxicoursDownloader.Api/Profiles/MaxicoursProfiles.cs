@@ -33,6 +33,9 @@ namespace MaxicoursDownloader.Api.Profiles
             CreateMap<LessonEntity, LessonModel>()
                 .ReverseMap();
 
+            CreateMap<SummarySheetEntity, SummarySheetModel>()
+                 .ReverseMap();
+
             CreateMap<SubjectEntity, SubjectModel>()
                 .ReverseMap();
 

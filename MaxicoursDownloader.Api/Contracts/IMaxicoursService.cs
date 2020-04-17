@@ -23,8 +23,18 @@ namespace MaxicoursDownloader.Api.Contracts
 
         public List<ItemModel> GetItemsOfCategory(string levelTag, int subjectId, string categoryId);
 
-        LessonModel GetLesson(string levelTag, int subjectId, string categoryId, int lessonId);
+        public List<ItemModel> GetLessons(string levelTag, int subjectId);
+
+        LessonModel GetLesson(string levelTag, int subjectId, int lessonId);
 
         LessonModel GetLesson(ItemModel item);
+
+        List<ItemModel> GetSummarySheets(string levelTag, int subjectId);
+
+        SummarySheetModel GetSummarySheet(string levelTag, int subjectId, int summarySheetId);
+
+        SummarySheetModel GetSummarySheet(ItemModel item);
+
+        List<ItemModel> GetTests(string levelTag, int subjectId);
     }
 }

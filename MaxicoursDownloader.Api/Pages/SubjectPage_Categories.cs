@@ -1,11 +1,8 @@
 ﻿using MaxicoursDownloader.Api.Entities;
 using MaxicoursDownloader.Api.Extensions;
-using MaxicoursDownloader.Api.Models;
 using OpenQA.Selenium;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MaxicoursDownloader.Api.Pages
 {
@@ -25,16 +22,6 @@ namespace MaxicoursDownloader.Api.Pages
         public void SelectCategory(string categoryId)
         {
             CategoryElement(categoryId)?.Click();
-        }
-
-        public void SelectLessonCategory()
-        {
-            SelectCategory("fiche");
-        }
-
-        public void SelectVideoCategory()
-        {
-            SelectCategory("video");
         }
 
         private CategoryEntity GetCategory(IWebElement categoryElement)

@@ -4,8 +4,8 @@
     {
         public int NbItems { get; set; }
 
-        public int NbFiles { get; set; }
-
         public int NbDuplicates { get; set; }
+
+        public int NbFiles { get; set; }
     }
 }
