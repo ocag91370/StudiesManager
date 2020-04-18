@@ -195,6 +195,26 @@ namespace MaxicoursDownloader.Api.Services
 
         #region Tests
 
+        public TestModel GetTest(ItemModel item)
+        {
+            var testPage = new TestPage(Driver, _mapper.Map<ItemEntity>(item));
+
+            var result = _mapper.Map<TestModel>(testPage.GetTest());
+
+            return result;
+        }
+
+        public TestModel GetTest(string levelTag, int subjectId, int testId)
+        {
+            var item = GetItem(levelTag, subjectId, CategoryRepository.Types["test"], testId);
+
+            var testPage = new TestPage(Driver, _mapper.Map<ItemEntity>(item));
+
+            var result = _mapper.Map<TestModel>(testPage.GetTest());
+
+            return result;
+        }
+
         public List<ItemModel> GetTests(string levelTag, int subjectId)
         {
             return GetItemsOfCategory(levelTag, subjectId, CategoryRepository.Types["test"]);

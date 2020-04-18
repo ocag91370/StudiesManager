@@ -190,5 +190,50 @@ namespace MaxicoursDownloader.Api.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+        [HttpGet]
+        [Route("schoollevels/{levelTag}/tests")]
+        public IActionResult ExportSchoolLevelTests(string levelTag)
+        {
+            try
+            {
+                var exportResult = _exportService.ExportTests(levelTag);
+
+                if (exportResult.NbFiles <= 0)
+                    return NotFound();
+
+                var result = new
+                {
+                    Tests = $"{exportResult.NbItems} test(s) identified.",
+                    Duplicates = $"{exportResult.NbDuplicates} test(s) identified.",
+                    Files = $"{exportResult.NbFiles} test(s) successfully exported."
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/tests/{testId:int}")]
+        public IActionResult ExportSummaryTest(string levelTag, int subjectId, int testId)
+        {
+            try
+            {
+                var exportResult = _exportService.ExportTest(levelTag, subjectId, testId);
+
+                if (exportResult.NbFiles <= 0)
+                    return NotFound();
+
+                return Ok("Test successfully exported.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
     }
 }

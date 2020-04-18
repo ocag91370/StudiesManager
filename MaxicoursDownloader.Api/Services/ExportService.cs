@@ -166,7 +166,6 @@ namespace MaxicoursDownloader.Api.Services
 
                 using (WebClient client = new WebClient())
                 {
-                    // Download data.
                     byte[] arr = client.DownloadData(summarySheet.PrintUrl);
 
                     File.WriteAllBytes(result, arr);
@@ -255,6 +254,92 @@ namespace MaxicoursDownloader.Api.Services
                 });
 
                 return ExportResultFactory.Create(resultList);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private ExportResultModel ExportTest(TestModel test)
+        {
+            try
+            {
+                var item = test.Item;
+                var index = item.Index.ToString().PadLeft(3, '0');
+
+                var workFilename = Path.Combine(_basePath, $"{item.SubjectSummary.SchoolLevel.Tag} - {item.SubjectSummary.Tag} - {item.Category.Tag} - {index} - {item?.Theme?.Tag ?? item.SubjectSummary.Tag} - {item.Id} - {item.Tag} - sujet.pdf");
+                using (WebClient client = new WebClient())
+                {
+                    byte[] arr = client.DownloadData(test.WorkUrl);
+
+                    File.WriteAllBytes(workFilename, arr);
+
+                }
+
+                var correctionFilename = Path.Combine(_basePath, $"{item.SubjectSummary.SchoolLevel.Tag} - {item.SubjectSummary.Tag} - {item.Category.Tag} - {index} - {item?.Theme?.Tag ?? item.SubjectSummary.Tag} - {item.Id} - {item.Tag} - correction.pdf");
+                using (WebClient client = new WebClient())
+                {
+                    byte[] arr = client.DownloadData(test.CorrectionUrl);
+
+                    File.WriteAllBytes(correctionFilename, arr);
+
+                }
+
+                return ExportResultFactory.Create(1, 0, 1);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public ExportResultModel ExportTest(string levelTag, int subjectId, int testId)
+        {
+            try
+            {
+                string categoryId = CategoryRepository.Types["test"];
+
+                var test = _maxicoursService.GetTest(levelTag, subjectId, testId);
+
+                return ExportTest(test);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public ExportResultModel ExportTests(string levelTag)
+        {
+            try
+            {
+                string categoryId = CategoryRepository.Types["test"];
+
+                var subjectList = _maxicoursService.GetAllSubjects(levelTag);
+
+                var resultList = new List<ExportResultModel>();
+                subjectList.ForEach((subject) =>
+                {
+                    var itemList = _maxicoursService.GetItemsOfCategory(levelTag, subject.Id, categoryId);
+                    resultList.Add(ExportTests(itemList));
+                });
+
+                return ExportResultFactory.Create(resultList);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+        private ExportResultModel ExportTests(List<ItemModel> itemList)
+        {
+            try
+            {
+                var testList = itemList.Select(item => _maxicoursService.GetTest(item)).ToList();
+                var fileList = testList.Select(test => ExportTest(test)).ToList();
+
+                return ExportResultFactory.Create(fileList);
             }
             catch (Exception ex)
             {

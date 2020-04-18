@@ -18,5 +18,9 @@ namespace MaxicoursDownloader.Api.Interfaces
         ExportResultModel ExportSummarySheets(string levelTag);
 
         ExportResultModel ExportSummarySheets(string levelTag, int subjectId);
+
+        ExportResultModel ExportTest(string levelTag, int subjectId, int testId);
+
+        ExportResultModel ExportTests(string levelTag);
     }
 }

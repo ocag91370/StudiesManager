@@ -73,7 +73,7 @@ namespace MaxicoursDownloader.Api.Pages
                         case var parcours_pivot when path.Contains("/exercices/pazapa"):
                             return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], CategoryRepository.Types["pazapa"]);
                         case var parcours_pivot when path.Contains("/exercices/controle_pdf"):
-                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], CategoryRepository.Types["controle_pdf"]);
+                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], CategoryRepository.Types["test"]);
                     }
                     break;
             }

@@ -35,6 +35,10 @@ namespace MaxicoursDownloader.Api.Contracts
 
         SummarySheetModel GetSummarySheet(ItemModel item);
 
+        TestModel GetTest(ItemModel item);
+
+        TestModel GetTest(string levelTag, int subjectId, int testId);
+
         List<ItemModel> GetTests(string levelTag, int subjectId);
     }
 }
