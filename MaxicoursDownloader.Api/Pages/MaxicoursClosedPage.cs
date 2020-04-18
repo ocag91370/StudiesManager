@@ -1,5 +1,7 @@
 ﻿using MaxicoursDownloader.Api.Extensions;
 using MaxicoursDownloader.Api.Models;
+using MaxicoursDownloader.Models;
+using Microsoft.Extensions.Options;
 using OpenQA.Selenium;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +14,7 @@ namespace MaxicoursDownloader.Api.Pages
 
         private IWebElement ContainerElement => Driver.FindElement(By.ClassName("main"));
 
-        public MaxicoursClosedPage(IWebDriver driver) : base(driver, HomeUrl)
+        public MaxicoursClosedPage(MaxicoursSettingsModel settings, IWebDriver driver) : base(settings, driver, HomeUrl)
         {
         }
 

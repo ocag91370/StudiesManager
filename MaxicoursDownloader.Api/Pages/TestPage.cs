@@ -1,5 +1,7 @@
 ﻿using MaxicoursDownloader.Api.Entities;
 using MaxicoursDownloader.Api.Models;
+using MaxicoursDownloader.Models;
+using Microsoft.Extensions.Options;
 using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
@@ -18,7 +20,7 @@ namespace MaxicoursDownloader.Api.Pages
 
         private IWebElement CorrectionElement => ContainerElement.FindElement(By.XPath($"//*[@class = 'telechargement']/a[@title = 'LE CORRIGÉ']"));
 
-        public TestPage(IWebDriver driver, ItemEntity item) : base(driver, item.Url)
+        public TestPage(MaxicoursSettingsModel settings, IWebDriver driver, ItemEntity item) : base(settings, driver, item.Url)
         {
             _item = item;
         }

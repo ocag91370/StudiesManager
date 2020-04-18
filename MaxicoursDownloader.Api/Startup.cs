@@ -6,6 +6,7 @@ using AutoMapper;
 using MaxicoursDownloader.Api.Contracts;
 using MaxicoursDownloader.Api.Interfaces;
 using MaxicoursDownloader.Api.Services;
+using MaxicoursDownloader.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -19,9 +20,11 @@ namespace MaxicoursDownloader.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup()
         {
-            Configuration = configuration;
+            var builder = new ConfigurationBuilder().AddJsonFile("appSettings.json", false, true);
+            Configuration = builder.Build();
+            //Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
@@ -31,9 +34,17 @@ namespace MaxicoursDownloader.Api
         {
             services.AddControllers();
 
+            // Add functionality to inject IOptions<T>
+            services.AddOptions();
+
+            // Add our Config object so it can be injected
+            services.Configure<MaxicoursSettingsModel>(Configuration.GetSection("MaxicoursSettings"));
+
+            // *If* you need access to generic IConfiguration this is **required**
+            services.AddSingleton<IConfiguration>(Configuration);
+
             // AutoMapper
             services.AddAutoMapper(typeof(Startup));
-            //services.AddControllersWithViews();
 
             // Register using generic types
             services.AddTransient<IMaxicoursService, MaxicoursService>();

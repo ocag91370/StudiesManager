@@ -1,6 +1,6 @@
 ﻿using MaxicoursDownloader.Api.Extensions;
 using MaxicoursDownloader.Api.Models;
-using MaxicoursDownloader.Api.Repositories;
+using MaxicoursDownloader.Models;
 using OpenQA.Selenium;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,11 +13,7 @@ namespace MaxicoursDownloader.Api.Pages
 
         private IEnumerable<IWebElement> SchoolLevelListElements => ContainerElement.FindElements(By.XPath("//li/a"));
 
-        public MaxicoursHomePage(IWebDriver driver) : base (driver, UrlRepository.Urls["Home"])
-        {
-        }
-
-        public MaxicoursHomePage(IWebDriver driver, string url) : base(driver, url)
+        public MaxicoursHomePage(MaxicoursSettingsModel settings, IWebDriver driver, string url) : base(settings, driver, url)
         {
         }
 

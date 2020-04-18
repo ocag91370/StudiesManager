@@ -1,7 +1,4 @@
-﻿using MaxicoursDownloader.Api.Contracts;
-using MaxicoursDownloader.Api.Interfaces;
-using MaxicoursDownloader.Api.Repositories;
-using MaxicoursDownloader.Api.Services;
+﻿using MaxicoursDownloader.Api.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;

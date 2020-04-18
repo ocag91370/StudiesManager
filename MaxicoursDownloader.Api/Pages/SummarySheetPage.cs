@@ -1,5 +1,7 @@
 ﻿using MaxicoursDownloader.Api.Entities;
 using MaxicoursDownloader.Api.Models;
+using MaxicoursDownloader.Models;
+using Microsoft.Extensions.Options;
 using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
@@ -18,7 +20,7 @@ namespace MaxicoursDownloader.Api.Pages
 
         private IWebElement AudioElement => ContainerElement.FindElement(By.XPath($"//*[@class = 'audio-position']/a"));
 
-        public SummarySheetPage(IWebDriver driver, ItemEntity item) : base(driver, item.Url + "&act=audio")
+        public SummarySheetPage(MaxicoursSettingsModel settings, IWebDriver driver, ItemEntity item) : base(settings, driver, item.Url + "&act=audio")
         {
             _item = item;
         }

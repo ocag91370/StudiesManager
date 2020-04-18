@@ -2,13 +2,21 @@
 using MaxicoursDownloader.Api.Extensions;
 using MaxicoursDownloader.Api.Interfaces;
 using MaxicoursDownloader.Api.Models;
+using MaxicoursDownloader.Models;
+using Microsoft.Extensions.Options;
 using System.IO;
 
 namespace MaxicoursDownloader.Api.Services
 {
     public class PdfConverterService : IPdfConverterService
     {
-        private readonly string _basePath = @"C:\Travail\Maxicours\Export\Temp";
+        private readonly MaxicoursSettingsModel _maxicoursSettings;
+
+        public PdfConverterService(IOptions<MaxicoursSettingsModel> configuration)
+        {
+            _maxicoursSettings = configuration.Value;
+
+        }
 
         public void SaveAsPdf(LessonModel lesson)
         {
@@ -109,7 +117,7 @@ namespace MaxicoursDownloader.Api.Services
             var index = item.Index.ToString().PadLeft(3, '0');
 
             var filename = $"{item.SubjectSummary.SchoolLevel.Tag} - {item.SubjectSummary.Tag} - {item.Category.Tag} - {index} - {item?.Theme?.Tag ?? item.SubjectSummary.Tag} - {item.Id} - {item.Tag}.pdf";
-            var result = Path.Combine(_basePath, filename);
+            var result = Path.Combine(_maxicoursSettings.ExportPath, filename);
 
             return result;
         }

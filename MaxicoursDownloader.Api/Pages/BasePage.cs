@@ -1,8 +1,7 @@
 ﻿using MaxicoursDownloader.Api.Entities;
-using MaxicoursDownloader.Api.Repositories;
+using MaxicoursDownloader.Models;
 using OpenQA.Selenium;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
@@ -18,15 +17,19 @@ namespace MaxicoursDownloader.Api.Pages
 
         public IWebDriver Driver { get; set; }
 
+        private readonly MaxicoursSettingsModel _maxicoursSettings;
+
         public BasePage(IWebDriver driver)
         {
             Driver = driver;
             Url = string.Empty;
             Current = null;
+            _maxicoursSettings = null;
         }
 
-        public BasePage(IWebDriver driver, string url)
+        public BasePage(MaxicoursSettingsModel maxicoursSettings, IWebDriver driver, string url)
         {
+            _maxicoursSettings = maxicoursSettings;
             Driver = driver;
             Url = url;
             Current = FromUrl(url);
@@ -61,19 +64,19 @@ namespace MaxicoursDownloader.Api.Pages
                     switch (path)
                     {
                         case var parcours_pivot when path.Contains("/prod/parcours"):
-                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], CategoryRepository.Types["path"]);
+                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["path"]);
                         case var parcours_pivot when path.Contains("/cours/fiche-synthese"):
-                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], CategoryRepository.Types["summary_sheet"]);
+                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["summary_sheet"]);
                         case var parcours_pivot when path.Contains("/cours/fiche"):
-                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], CategoryRepository.Types["lesson"]);
+                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["lesson"]);
                         case var parcours_pivot when path.Contains("/cours/video"):
-                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], CategoryRepository.Types["video"]);
+                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["video"]);
                         case var parcours_pivot when path.Contains("/exercices/enonce_corrige_video"):
-                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], CategoryRepository.Types["video_correction"]);
+                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["video_correction"]);
                         case var parcours_pivot when path.Contains("/exercices/pazapa"):
-                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], CategoryRepository.Types["pazapa"]);
+                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["pazapa"]);
                         case var parcours_pivot when path.Contains("/exercices/controle_pdf"):
-                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], CategoryRepository.Types["test"]);
+                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["test"]);
                     }
                     break;
             }

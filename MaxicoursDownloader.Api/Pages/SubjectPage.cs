@@ -1,5 +1,7 @@
 ﻿using MaxicoursDownloader.Api.Entities;
 using MaxicoursDownloader.Api.Models;
+using MaxicoursDownloader.Models;
+using Microsoft.Extensions.Options;
 using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
@@ -14,7 +16,7 @@ namespace MaxicoursDownloader.Api.Pages
 
         private IWebElement ContainerElement => Driver.FindElement(By.XPath("//*[@class = 'lsi-arbo']"));
 
-        public SubjectPage(IWebDriver driver, SubjectSummaryEntity subjectSummary) : base(driver, subjectSummary.Url)
+        public SubjectPage(MaxicoursSettingsModel settings, IWebDriver driver, SubjectSummaryEntity subjectSummary) : base(settings, driver, subjectSummary.Url)
         {
             _subjectSummary = subjectSummary;
         }

@@ -1,5 +1,7 @@
 ﻿using MaxicoursDownloader.Api.Entities;
 using MaxicoursDownloader.Api.Extensions;
+using MaxicoursDownloader.Models;
+using Microsoft.Extensions.Options;
 using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
@@ -18,7 +20,7 @@ namespace MaxicoursDownloader.Api.Pages
 
         private IEnumerable<IWebElement> SubjectElementList => ContainerElement.FindElements(By.XPath("//*[@class='td-label']/a"));
 
-        public SchoolLevelPage(IWebDriver driver, SchoolLevelEntity schoolLevelEntity) : base(driver, schoolLevelEntity.Url)
+        public SchoolLevelPage(MaxicoursSettingsModel settings, IWebDriver driver, SchoolLevelEntity schoolLevelEntity) : base(settings, driver, schoolLevelEntity.Url)
         {
             _schoolLevelEntity = schoolLevelEntity;
         }

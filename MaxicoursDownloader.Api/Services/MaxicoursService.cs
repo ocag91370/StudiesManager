@@ -2,10 +2,10 @@
 using MaxicoursDownloader.Api.Contracts;
 using MaxicoursDownloader.Api.Entities;
 using MaxicoursDownloader.Api.Extensions;
-using MaxicoursDownloader.Api.Interfaces;
 using MaxicoursDownloader.Api.Models;
 using MaxicoursDownloader.Api.Pages;
-using MaxicoursDownloader.Api.Repositories;
+using MaxicoursDownloader.Models;
+using Microsoft.Extensions.Options;
 using OpenQA.Selenium;
 using StudiesManager.Services;
 using System;
@@ -16,11 +16,13 @@ namespace MaxicoursDownloader.Api.Services
 {
     public class MaxicoursService : IMaxicoursService
     {
+        private readonly MaxicoursSettingsModel _maxicoursSettings;
         private readonly IMapper _mapper;
         private IWebDriver Driver;
 
-        public MaxicoursService(IMapper mapper)
+        public MaxicoursService(IOptions<MaxicoursSettingsModel> configuration, IMapper mapper)
         {
+            _maxicoursSettings = configuration.Value;
             _mapper = mapper;
 
             Driver = WebDriverFactory.CreateWebDriver(WebBrowserType.Chrome);
@@ -30,8 +32,7 @@ namespace MaxicoursDownloader.Api.Services
 
         public List<SchoolLevelModel> GetAllSchoolLevels()
         {
-            //var homePage = new MaxicoursHomePage(Driver);
-            var homePage = new MaxicoursHomePage(Driver, UrlRepository.Urls["HomeWithToken"]);
+            var homePage = new MaxicoursHomePage(_maxicoursSettings, Driver, _maxicoursSettings.StartUpUrl);
 
             var result = homePage.GetAllSchoolLevels();
 
@@ -55,7 +56,7 @@ namespace MaxicoursDownloader.Api.Services
         {
             var schoolLevel = GetSchoolLevel(levelTag);
 
-            var schoolLevelPage = new SchoolLevelPage(Driver, _mapper.Map<SchoolLevelEntity>(schoolLevel));
+            var schoolLevelPage = new SchoolLevelPage(_maxicoursSettings, Driver, _mapper.Map<SchoolLevelEntity>(schoolLevel));
             var result = _mapper.Map<List<SubjectSummaryModel>>(schoolLevelPage.GetAllSubjects());
 
             return result;
@@ -66,7 +67,7 @@ namespace MaxicoursDownloader.Api.Services
             var subjectList = GetAllSubjects(levelTag);
 
             var subjectSummary = subjectList.FirstOrDefault(o => o.Id == subjectId);
-            var subjectPage = new SubjectPage(Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
+            var subjectPage = new SubjectPage(_maxicoursSettings, Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
 
             var subject = _mapper.Map<SubjectModel>(subjectPage.GetSubject());
 
@@ -78,7 +79,7 @@ namespace MaxicoursDownloader.Api.Services
             var subjectList = GetAllSubjects(levelTag);
 
             var subjectSummary = subjectList.FirstOrDefault(o => o.Id == subjectId);
-            var subjectPage = new SubjectPage(Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
+            var subjectPage = new SubjectPage(_maxicoursSettings, Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
 
             var result = _mapper.Map<List<ThemeModel>>(subjectPage.GetAllThemes());
 
@@ -90,7 +91,7 @@ namespace MaxicoursDownloader.Api.Services
             var subjectList = GetAllSubjects(levelTag);
 
             var subjectSummary = subjectList.FirstOrDefault(o => o.Id == subjectId);
-            var subjectPage = new SubjectPage(Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
+            var subjectPage = new SubjectPage(_maxicoursSettings, Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
 
             var result = _mapper.Map<List<CategoryModel>>(subjectPage.GetAllCategories());
 
@@ -102,7 +103,7 @@ namespace MaxicoursDownloader.Api.Services
             var subjectList = GetAllSubjects(levelTag);
 
             var subjectSummary = subjectList.FirstOrDefault(o => o.Id == subjectId);
-            var subjectPage = new SubjectPage(Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
+            var subjectPage = new SubjectPage(_maxicoursSettings, Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
 
             var result = _mapper.Map<List<ItemModel>>(subjectPage.GetAllItems());
 
@@ -114,7 +115,7 @@ namespace MaxicoursDownloader.Api.Services
             var subjectList = GetAllSubjects(levelTag);
 
             var subjectSummary = subjectList.FirstOrDefault(o => o.Id == subjectId);
-            var subjectPage = new SubjectPage(Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
+            var subjectPage = new SubjectPage(_maxicoursSettings, Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
 
             var result = _mapper.Map<List<ItemModel>>(subjectPage.GetItemsOfCategory(categoryId));
 
@@ -126,7 +127,7 @@ namespace MaxicoursDownloader.Api.Services
             var subjectList = GetAllSubjects(levelTag);
 
             var subjectSummary = subjectList.FirstOrDefault(o => o.Id == subjectId);
-            var subjectPage = new SubjectPage(Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
+            var subjectPage = new SubjectPage(_maxicoursSettings, Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
 
             var result = _mapper.Map<ItemModel>(subjectPage.GetItem(categoryId, itemId));
 
@@ -139,12 +140,12 @@ namespace MaxicoursDownloader.Api.Services
 
         public List<ItemModel> GetLessons(string levelTag, int subjectId)
         {
-            return GetItemsOfCategory(levelTag, subjectId, CategoryRepository.Types["lesson"]);
+            return GetItemsOfCategory(levelTag, subjectId, _maxicoursSettings.Categories["lesson"]);
         }
 
         public LessonModel GetLesson(string levelTag, int subjectId, int lessonId)
         {
-            var item = GetItem(levelTag, subjectId, CategoryRepository.Types["lesson"], lessonId);
+            var item = GetItem(levelTag, subjectId, _maxicoursSettings.Categories["lesson"], lessonId);
 
             var lessonPage = new LessonPage(Driver, _mapper.Map<ItemEntity>(item));
 
@@ -168,14 +169,14 @@ namespace MaxicoursDownloader.Api.Services
 
         public List<ItemModel> GetSummarySheets(string levelTag, int subjectId)
         {
-            return GetItemsOfCategory(levelTag, subjectId, CategoryRepository.Types["summary_sheet"]);
+            return GetItemsOfCategory(levelTag, subjectId, _maxicoursSettings.Categories["summary_sheet"]);
         }
 
         public SummarySheetModel GetSummarySheet(string levelTag, int subjectId, int summarySheetId)
         {
-            var item = GetItem(levelTag, subjectId, CategoryRepository.Types["summary_sheet"], summarySheetId);
+            var item = GetItem(levelTag, subjectId, _maxicoursSettings.Categories["summary_sheet"], summarySheetId);
 
-            var summarySheetPage = new SummarySheetPage(Driver, _mapper.Map<ItemEntity>(item));
+            var summarySheetPage = new SummarySheetPage(_maxicoursSettings, Driver, _mapper.Map<ItemEntity>(item));
 
             var result = _mapper.Map<SummarySheetModel>(summarySheetPage.GetSummarySheet());
 
@@ -184,7 +185,7 @@ namespace MaxicoursDownloader.Api.Services
 
         public SummarySheetModel GetSummarySheet(ItemModel item)
         {
-            var summarySheetPage = new SummarySheetPage(Driver, _mapper.Map<ItemEntity>(item));
+            var summarySheetPage = new SummarySheetPage(_maxicoursSettings, Driver, _mapper.Map<ItemEntity>(item));
 
             var result = _mapper.Map<SummarySheetModel>(summarySheetPage.GetSummarySheet());
 
@@ -197,7 +198,7 @@ namespace MaxicoursDownloader.Api.Services
 
         public TestModel GetTest(ItemModel item)
         {
-            var testPage = new TestPage(Driver, _mapper.Map<ItemEntity>(item));
+            var testPage = new TestPage(_maxicoursSettings, Driver, _mapper.Map<ItemEntity>(item));
 
             var result = _mapper.Map<TestModel>(testPage.GetTest());
 
@@ -206,9 +207,9 @@ namespace MaxicoursDownloader.Api.Services
 
         public TestModel GetTest(string levelTag, int subjectId, int testId)
         {
-            var item = GetItem(levelTag, subjectId, CategoryRepository.Types["test"], testId);
+            var item = GetItem(levelTag, subjectId, _maxicoursSettings.Categories["test"], testId);
 
-            var testPage = new TestPage(Driver, _mapper.Map<ItemEntity>(item));
+            var testPage = new TestPage(_maxicoursSettings, Driver, _mapper.Map<ItemEntity>(item));
 
             var result = _mapper.Map<TestModel>(testPage.GetTest());
 
@@ -217,7 +218,7 @@ namespace MaxicoursDownloader.Api.Services
 
         public List<ItemModel> GetTests(string levelTag, int subjectId)
         {
-            return GetItemsOfCategory(levelTag, subjectId, CategoryRepository.Types["test"]);
+            return GetItemsOfCategory(levelTag, subjectId, _maxicoursSettings.Categories["test"]);
         }
 
         #endregion
