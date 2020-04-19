@@ -27,19 +27,19 @@ namespace MaxicoursDownloader.Api.Pages
 
         public string Title => TitleElement.Text;
 
-        public List<SubjectSummaryEntity> GetAllSubjects()
+        public List<SummarySubjectEntity> GetAllSummarySubjects()
         {
-            return SubjectElementList.Select(o => GetSubjectSummary(o)).ToList();
+            return SubjectElementList.Select(o => GetSummarySubject(o)).ToList();
         }
 
-        private SubjectSummaryEntity GetSubjectSummary(IWebElement subjectElement)
+        private SummarySubjectEntity GetSummarySubject(IWebElement subjectElement)
         {
             var url = subjectElement.GetAttribute("href");
             var name = subjectElement.GetAttribute("title");
 
             var reference = FromUrl(url);
             _schoolLevelEntity.Id = reference.SchoolLevelId;
-            return new SubjectSummaryEntity
+            return new SummarySubjectEntity
             {
                 SchoolLevel = _schoolLevelEntity,
                 Id = reference.SubjectId,

@@ -12,11 +12,11 @@ namespace MaxicoursDownloader.Api.Pages
 {
     public partial class SubjectPage : BasePage
     {
-        private readonly SubjectSummaryEntity _subjectSummary;
+        private readonly SummarySubjectEntity _subjectSummary;
 
         private IWebElement ContainerElement => Driver.FindElement(By.XPath("//*[@class = 'lsi-arbo']"));
 
-        public SubjectPage(MaxicoursSettingsModel settings, IWebDriver driver, SubjectSummaryEntity subjectSummary) : base(settings, driver, subjectSummary.Url)
+        public SubjectPage(MaxicoursSettingsModel settings, IWebDriver driver, SummarySubjectEntity subjectSummary) : base(settings, driver, subjectSummary.Url)
         {
             _subjectSummary = subjectSummary;
         }

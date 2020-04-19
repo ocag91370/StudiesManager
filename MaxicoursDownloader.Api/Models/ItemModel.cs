@@ -7,7 +7,7 @@ namespace MaxicoursDownloader.Api.Models
 {
     public class ItemModel
     {
-        public SubjectSummaryModel SubjectSummary { get; set; }
+        public SummarySubjectModel SubjectSummary { get; set; }
 
         public ThemeModel Theme { get; set; }
 

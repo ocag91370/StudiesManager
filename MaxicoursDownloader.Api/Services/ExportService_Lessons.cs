@@ -51,7 +51,7 @@ namespace MaxicoursDownloader.Api.Services
             {
                 string categoryId = _maxicoursSettings.Categories["lesson"];
 
-                var subjectList = _maxicoursService.GetAllSubjects(levelTag);
+                var subjectList = _maxicoursService.GetSummarySubjects(levelTag);
 
                 var resultList = new List<ExportResultModel>();
                 subjectList.ForEach((subject) =>

@@ -2,7 +2,7 @@
 
 namespace MaxicoursDownloader.Api.Models
 {
-    public class SubjectSummaryModel
+    public class SummarySubjectModel
     {
         public SchoolLevelModel SchoolLevel { get; set; }
 

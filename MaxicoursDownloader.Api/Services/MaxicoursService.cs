@@ -8,13 +8,13 @@ using MaxicoursDownloader.Models;
 using Microsoft.Extensions.Options;
 using OpenQA.Selenium;
 using StudiesManager.Services;
-using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace MaxicoursDownloader.Api.Services
 {
-    public class MaxicoursService : IMaxicoursService
+    public partial class MaxicoursService : IMaxicoursService
     {
         private readonly MaxicoursSettingsModel _maxicoursSettings;
         private readonly IMapper _mapper;
@@ -28,200 +28,261 @@ namespace MaxicoursDownloader.Api.Services
             Driver = WebDriverFactory.CreateWebDriver(WebBrowserType.Chrome);
         }
 
-        #region SchoolLevel
+        //#region SchoolLevel
 
-        public List<SchoolLevelModel> GetAllSchoolLevels()
+        //public List<SchoolLevelModel> GetAllSchoolLevels()
+        //{
+        //    var homePage = new MaxicoursHomePage(_maxicoursSettings, Driver, _maxicoursSettings.StartUpUrl);
+
+        //    var result = homePage.GetAllSchoolLevels();
+
+        //    return result;
+        //}
+
+        //public SchoolLevelModel GetSchoolLevel(string levelTag)
+        //{
+        //    var schoolLevelList = GetAllSchoolLevels();
+
+        //    var result = schoolLevelList.FirstOrDefault(o => o.Tag.IsSameAs(levelTag));
+
+        //    return result;
+        //}
+
+        //#endregion
+
+        //#region Subject
+
+        //public List<SubjectSummaryModel> GetSubjects(string levelTag)
+        //{
+        //    var schoolLevel = GetSchoolLevel(levelTag);
+
+        //    var schoolLevelPage = new SchoolLevelPage(_maxicoursSettings, Driver, _mapper.Map<SchoolLevelEntity>(schoolLevel));
+        //    var result = _mapper.Map<List<SubjectSummaryModel>>(schoolLevelPage.GetAllSubjects());
+
+        //    return result;
+        //}
+
+        //public SubjectModel GetSubject(string levelTag, int subjectId)
+        //{
+        //    var subjectList = GetAllSubjects(levelTag);
+
+        //    var subjectSummary = subjectList.FirstOrDefault(o => o.Id == subjectId);
+        //    var subjectPage = new SubjectPage(_maxicoursSettings, Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
+
+        //    var subject = _mapper.Map<SubjectModel>(subjectPage.GetSubject());
+
+        //    return subject;
+        //}
+
+        //public List<ThemeModel> GetThemes(string levelTag, int subjectId)
+        //{
+        //    var subjectList = GetAllSubjects(levelTag);
+
+        //    var subjectSummary = subjectList.FirstOrDefault(o => o.Id == subjectId);
+        //    var subjectPage = new SubjectPage(_maxicoursSettings, Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
+
+        //    var result = _mapper.Map<List<ThemeModel>>(subjectPage.GetAllThemes());
+
+        //    return result;
+        //}
+
+        //public List<CategoryModel> GetCategories(string levelTag, int subjectId)
+        //{
+        //    var subjectList = GetAllSubjects(levelTag);
+
+        //    var subjectSummary = subjectList.FirstOrDefault(o => o.Id == subjectId);
+        //    var subjectPage = new SubjectPage(_maxicoursSettings, Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
+
+        //    var result = _mapper.Map<List<CategoryModel>>(subjectPage.GetAllCategories());
+
+        //    return result;
+        //}
+
+        //public List<ItemModel> GetItems(string levelTag, int subjectId)
+        //{
+        //    var subjectList = GetAllSubjects(levelTag);
+
+        //    var subjectSummary = subjectList.FirstOrDefault(o => o.Id == subjectId);
+        //    var subjectPage = new SubjectPage(_maxicoursSettings, Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
+
+        //    var result = _mapper.Map<List<ItemModel>>(subjectPage.GetAllItems());
+
+        //    return result;
+        //}
+
+        //public List<ItemModel> GetItemsOfCategory(string levelTag, int subjectId, string categoryId)
+        //{
+        //    var subjectList = GetAllSubjects(levelTag);
+
+        //    var subjectSummary = subjectList.FirstOrDefault(o => o.Id == subjectId);
+        //    var subjectPage = new SubjectPage(_maxicoursSettings, Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
+
+        //    var result = _mapper.Map<List<ItemModel>>(subjectPage.GetItemsOfCategory(categoryId));
+
+        //    return result;
+        //}
+
+        //public ItemModel GetItem(string levelTag, int subjectId, string categoryId, int itemId)
+        //{
+        //    var subjectList = GetAllSubjects(levelTag);
+
+        //    var subjectSummary = subjectList.FirstOrDefault(o => o.Id == subjectId);
+        //    var subjectPage = new SubjectPage(_maxicoursSettings, Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
+
+        //    var result = _mapper.Map<ItemModel>(subjectPage.GetItem(categoryId, itemId));
+
+        //    return result;
+        //}
+
+        //#endregion
+
+        //#region Lesson
+
+        //public List<ItemModel> GetLessons(string levelTag, int subjectId)
+        //{
+        //    return GetItemsOfCategory(levelTag, subjectId, _maxicoursSettings.Categories["lesson"]);
+        //}
+
+        //public LessonModel GetLesson(string levelTag, int subjectId, int lessonId)
+        //{
+        //    var item = GetItem(levelTag, subjectId, _maxicoursSettings.Categories["lesson"], lessonId);
+
+        //    var lessonPage = new LessonPage(Driver, _mapper.Map<ItemEntity>(item));
+
+        //    var result = _mapper.Map<LessonModel>(lessonPage.GetLesson());
+
+        //    return result;
+        //}
+
+        //public LessonModel GetLesson(ItemModel item)
+        //{
+        //    var lessonPage = new LessonPage(Driver, _mapper.Map<ItemEntity>(item));
+
+        //    var result = _mapper.Map<LessonModel>(lessonPage.GetLesson());
+
+        //    return result;
+        //}
+
+        //#endregion
+
+        //#region Summary Sheets
+
+        //public List<ItemModel> GetSummarySheets(string levelTag, int subjectId)
+        //{
+        //    return GetItemsOfCategory(levelTag, subjectId, _maxicoursSettings.Categories["summary_sheet"]);
+        //}
+
+        //public SummarySheetModel GetSummarySheet(string levelTag, int subjectId, int summarySheetId)
+        //{
+        //    var item = GetItem(levelTag, subjectId, _maxicoursSettings.Categories["summary_sheet"], summarySheetId);
+
+        //    var summarySheetPage = new SummarySheetPage(_maxicoursSettings, Driver, _mapper.Map<ItemEntity>(item));
+
+        //    var result = _mapper.Map<SummarySheetModel>(summarySheetPage.GetSummarySheet());
+
+        //    return result;
+        //}
+
+        //public SummarySheetModel GetSummarySheet(ItemModel item)
+        //{
+        //    var summarySheetPage = new SummarySheetPage(_maxicoursSettings, Driver, _mapper.Map<ItemEntity>(item));
+
+        //    var result = _mapper.Map<SummarySheetModel>(summarySheetPage.GetSummarySheet());
+
+        //    return result;
+        //}
+
+        //#endregion
+
+        //#region Tests
+
+        //public TestModel GetTest(ItemModel item)
+        //{
+        //    var testPage = new TestPage(_maxicoursSettings, Driver, _mapper.Map<ItemEntity>(item));
+
+        //    var result = _mapper.Map<TestModel>(testPage.GetTest());
+
+        //    return result;
+        //}
+
+        //public TestModel GetTest(string levelTag, int subjectId, int testId)
+        //{
+        //    var item = GetItem(levelTag, subjectId, _maxicoursSettings.Categories["test"], testId);
+
+        //    var testPage = new TestPage(_maxicoursSettings, Driver, _mapper.Map<ItemEntity>(item));
+
+        //    var result = _mapper.Map<TestModel>(testPage.GetTest());
+
+        //    return result;
+        //}
+
+        //public List<ItemModel> GetTests(string levelTag, int subjectId)
+        //{
+        //    return GetItemsOfCategory(levelTag, subjectId, _maxicoursSettings.Categories["test"]);
+        //}
+
+        //#endregion
+
+        private MaxicoursHomePage GetHomePage()
         {
             var homePage = new MaxicoursHomePage(_maxicoursSettings, Driver, _maxicoursSettings.StartUpUrl);
+            Debug.Assert(homePage.IsNotNull());
 
-            var result = homePage.GetAllSchoolLevels();
-
-            return result;
+            return homePage;
         }
 
-        public SchoolLevelModel GetSchoolLevel(string levelTag)
-        {
-            var schoolLevelList = GetAllSchoolLevels();
-
-            var result = schoolLevelList.FirstOrDefault(o => o.Tag.IsSameAs(levelTag));
-
-            return result;
-        }
-
-        #endregion
-
-        #region Subject
-
-        public List<SubjectSummaryModel> GetAllSubjects(string levelTag)
+        private SchoolLevelPage GetSchoolLevelPage(string levelTag)
         {
             var schoolLevel = GetSchoolLevel(levelTag);
 
             var schoolLevelPage = new SchoolLevelPage(_maxicoursSettings, Driver, _mapper.Map<SchoolLevelEntity>(schoolLevel));
-            var result = _mapper.Map<List<SubjectSummaryModel>>(schoolLevelPage.GetAllSubjects());
+            Debug.Assert(schoolLevelPage.IsNotNull());
 
-            return result;
+            return schoolLevelPage;
         }
 
-        public SubjectModel GetSubject(string levelTag, int subjectId)
+        private SubjectPage GetSubjectPage(SummarySubjectEntity subjectSummary)
         {
-            var subjectList = GetAllSubjects(levelTag);
+            var subjectPage = new SubjectPage(_maxicoursSettings, Driver, subjectSummary);
+            Debug.Assert(subjectPage.IsNotNull());
 
-            var subjectSummary = subjectList.FirstOrDefault(o => o.Id == subjectId);
-            var subjectPage = new SubjectPage(_maxicoursSettings, Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
-
-            var subject = _mapper.Map<SubjectModel>(subjectPage.GetSubject());
-
-            return subject;
+            return subjectPage;
         }
 
-        public List<ThemeModel> GetAllThemes(string levelTag, int subjectId)
+        public SubjectPage GetSubjectPage(string levelTag, int subjectId)
         {
-            var subjectList = GetAllSubjects(levelTag);
+            var subjectSummary = GetSummarySubject(levelTag, subjectId);
+            Debug.Assert(subjectSummary.IsNotNull());
 
-            var subjectSummary = subjectList.FirstOrDefault(o => o.Id == subjectId);
-            var subjectPage = new SubjectPage(_maxicoursSettings, Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
+            var subjectPage = GetSubjectPage(_mapper.Map<SummarySubjectEntity>(subjectSummary));
+            Debug.Assert(subjectPage.IsNotNull());
 
-            var result = _mapper.Map<List<ThemeModel>>(subjectPage.GetAllThemes());
-
-            return result;
+            return subjectPage;
         }
 
-        public List<CategoryModel> GetAllCategories(string levelTag, int subjectId)
+        private LessonPage GetLessonPage(ItemEntity item)
         {
-            var subjectList = GetAllSubjects(levelTag);
+            var lessonPage = new LessonPage(Driver, item);
+            Debug.Assert(lessonPage.IsNotNull());
 
-            var subjectSummary = subjectList.FirstOrDefault(o => o.Id == subjectId);
-            var subjectPage = new SubjectPage(_maxicoursSettings, Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
-
-            var result = _mapper.Map<List<CategoryModel>>(subjectPage.GetAllCategories());
-
-            return result;
+            return lessonPage;
         }
 
-        public List<ItemModel> GetAllItems(string levelTag, int subjectId)
+        public SummarySheetPage GetSummarySheetPage(ItemEntity item)
         {
-            var subjectList = GetAllSubjects(levelTag);
+            var summarySheetPage = new SummarySheetPage(_maxicoursSettings, Driver, item);
+            Debug.Assert(summarySheetPage.IsNotNull());
 
-            var subjectSummary = subjectList.FirstOrDefault(o => o.Id == subjectId);
-            var subjectPage = new SubjectPage(_maxicoursSettings, Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
-
-            var result = _mapper.Map<List<ItemModel>>(subjectPage.GetAllItems());
-
-            return result;
+            return summarySheetPage;
         }
 
-        public List<ItemModel> GetItemsOfCategory(string levelTag, int subjectId, string categoryId)
+        public TestPage GetTestPage(ItemEntity item)
         {
-            var subjectList = GetAllSubjects(levelTag);
+            var testPage = new TestPage(_maxicoursSettings, Driver, item);
+            Debug.Assert(testPage.IsNotNull());
 
-            var subjectSummary = subjectList.FirstOrDefault(o => o.Id == subjectId);
-            var subjectPage = new SubjectPage(_maxicoursSettings, Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
-
-            var result = _mapper.Map<List<ItemModel>>(subjectPage.GetItemsOfCategory(categoryId));
-
-            return result;
+            return testPage;
         }
-
-        public ItemModel GetItem(string levelTag, int subjectId, string categoryId, int itemId)
-        {
-            var subjectList = GetAllSubjects(levelTag);
-
-            var subjectSummary = subjectList.FirstOrDefault(o => o.Id == subjectId);
-            var subjectPage = new SubjectPage(_maxicoursSettings, Driver, _mapper.Map<SubjectSummaryEntity>(subjectSummary));
-
-            var result = _mapper.Map<ItemModel>(subjectPage.GetItem(categoryId, itemId));
-
-            return result;
-        }
-
-        #endregion
-
-        #region Lesson
-
-        public List<ItemModel> GetLessons(string levelTag, int subjectId)
-        {
-            return GetItemsOfCategory(levelTag, subjectId, _maxicoursSettings.Categories["lesson"]);
-        }
-
-        public LessonModel GetLesson(string levelTag, int subjectId, int lessonId)
-        {
-            var item = GetItem(levelTag, subjectId, _maxicoursSettings.Categories["lesson"], lessonId);
-
-            var lessonPage = new LessonPage(Driver, _mapper.Map<ItemEntity>(item));
-
-            var result = _mapper.Map<LessonModel>(lessonPage.GetLesson());
-
-            return result;
-        }
-
-        public LessonModel GetLesson(ItemModel item)
-        {
-            var lessonPage = new LessonPage(Driver, _mapper.Map<ItemEntity>(item));
-
-            var result = _mapper.Map<LessonModel>(lessonPage.GetLesson());
-
-            return result;
-        }
-
-        #endregion
-
-        #region Summary Sheets
-
-        public List<ItemModel> GetSummarySheets(string levelTag, int subjectId)
-        {
-            return GetItemsOfCategory(levelTag, subjectId, _maxicoursSettings.Categories["summary_sheet"]);
-        }
-
-        public SummarySheetModel GetSummarySheet(string levelTag, int subjectId, int summarySheetId)
-        {
-            var item = GetItem(levelTag, subjectId, _maxicoursSettings.Categories["summary_sheet"], summarySheetId);
-
-            var summarySheetPage = new SummarySheetPage(_maxicoursSettings, Driver, _mapper.Map<ItemEntity>(item));
-
-            var result = _mapper.Map<SummarySheetModel>(summarySheetPage.GetSummarySheet());
-
-            return result;
-        }
-
-        public SummarySheetModel GetSummarySheet(ItemModel item)
-        {
-            var summarySheetPage = new SummarySheetPage(_maxicoursSettings, Driver, _mapper.Map<ItemEntity>(item));
-
-            var result = _mapper.Map<SummarySheetModel>(summarySheetPage.GetSummarySheet());
-
-            return result;
-        }
-
-        #endregion
-
-        #region Tests
-
-        public TestModel GetTest(ItemModel item)
-        {
-            var testPage = new TestPage(_maxicoursSettings, Driver, _mapper.Map<ItemEntity>(item));
-
-            var result = _mapper.Map<TestModel>(testPage.GetTest());
-
-            return result;
-        }
-
-        public TestModel GetTest(string levelTag, int subjectId, int testId)
-        {
-            var item = GetItem(levelTag, subjectId, _maxicoursSettings.Categories["test"], testId);
-
-            var testPage = new TestPage(_maxicoursSettings, Driver, _mapper.Map<ItemEntity>(item));
-
-            var result = _mapper.Map<TestModel>(testPage.GetTest());
-
-            return result;
-        }
-
-        public List<ItemModel> GetTests(string levelTag, int subjectId)
-        {
-            return GetItemsOfCategory(levelTag, subjectId, _maxicoursSettings.Categories["test"]);
-        }
-
-        #endregion
 
         public void Dispose()
         {

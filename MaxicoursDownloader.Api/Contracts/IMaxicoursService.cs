@@ -11,15 +11,15 @@ namespace MaxicoursDownloader.Api.Contracts
 
         SchoolLevelModel GetSchoolLevel(string levelTag);
 
-        List<SubjectSummaryModel> GetAllSubjects(string levelTag);
+        List<SummarySubjectModel> GetSummarySubjects(string levelTag);
 
         SubjectModel GetSubject(string levelTag, int subjectId);
 
-        List<ThemeModel> GetAllThemes(string levelTag, int subjectId);
+        List<ThemeModel> GetThemes(string levelTag, int subjectId);
 
-        List<CategoryModel> GetAllCategories(string levelTag, int subjectId);
+        List<CategoryModel> GetCategories(string levelTag, int subjectId);
 
-        List<ItemModel> GetAllItems(string levelTag, int subjectId);
+        List<ItemModel> GetItems(string levelTag, int subjectId);
 
         public List<ItemModel> GetItemsOfCategory(string levelTag, int subjectId, string categoryId);
 

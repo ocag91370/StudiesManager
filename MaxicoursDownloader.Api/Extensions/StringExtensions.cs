@@ -79,7 +79,7 @@ namespace MaxicoursDownloader.Api.Extensions
             if (int.TryParse(@this.GetUrlParameter(key), out var value))
                 return value;
 
-            return null;
+            return new int?();
         }
 
         public static string DecodeUrl(this string @this)
