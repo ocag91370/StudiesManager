@@ -10,11 +10,11 @@ namespace MaxicoursDownloader.Api.Services
 {
     public partial class MaxicoursService : IMaxicoursService
     {
-        private readonly string _lessonCategoryKey = "lesson";
+        private readonly string _lessonsCategoryKey = "lessons";
 
         public LessonModel GetLesson(string levelTag, int subjectId, int lessonId)
         {
-            var item = GetItem(levelTag, subjectId, _maxicoursSettings.Categories[_lessonCategoryKey], lessonId);
+            var item = GetItem(levelTag, subjectId, _maxicoursSettings.Categories[_lessonsCategoryKey], lessonId);
             Debug.Assert(item.IsNotNull());
 
             var result = GetLesson(item);
@@ -36,7 +36,7 @@ namespace MaxicoursDownloader.Api.Services
 
         public List<ItemModel> GetLessons(string levelTag, int subjectId)
         {
-            var result = GetItemsOfCategory(levelTag, subjectId, _maxicoursSettings.Categories[_lessonCategoryKey]);
+            var result = GetItemsOfCategory(levelTag, subjectId, _maxicoursSettings.Categories[_lessonsCategoryKey]);
             Debug.Assert(result.IsNotNull());
 
             return result;

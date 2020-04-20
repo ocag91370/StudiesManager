@@ -17,6 +17,8 @@ namespace MaxicoursDownloader.Api.Services
 {
     public partial class ExportService : IExportService
     {
+        private readonly string _testsCategoryKey = "tests";
+
         private ExportResultModel ExportTest(TestModel test)
         {
             try
@@ -24,22 +26,11 @@ namespace MaxicoursDownloader.Api.Services
                 var item = test.Item;
                 var index = item.Index.ToString().PadLeft(3, '0');
 
-                var workFilename = Path.Combine(_maxicoursSettings.ExportPath, $"{item.SubjectSummary.SchoolLevel.Tag} - {item.SubjectSummary.Tag} - {item.Category.Tag} - {index} - {item?.Theme?.Tag ?? item.SubjectSummary.Tag} - {item.Id} - {item.Tag} - sujet.pdf");
+                var filename = Path.Combine(_maxicoursSettings.ExportPath, $"{item.SummarySubject.SchoolLevel.Tag} - {item.SummarySubject.Tag} - {item.Category.Tag} - {index} - {item?.Theme?.Tag ?? item.SummarySubject.Tag} - {item.Id} - {item.Tag}");
                 using (WebClient client = new WebClient())
                 {
-                    byte[] arr = client.DownloadData(test.WorkUrl);
-
-                    File.WriteAllBytes(workFilename, arr);
-
-                }
-
-                var correctionFilename = Path.Combine(_maxicoursSettings.ExportPath, $"{item.SubjectSummary.SchoolLevel.Tag} - {item.SubjectSummary.Tag} - {item.Category.Tag} - {index} - {item?.Theme?.Tag ?? item.SubjectSummary.Tag} - {item.Id} - {item.Tag} - correction.pdf");
-                using (WebClient client = new WebClient())
-                {
-                    byte[] arr = client.DownloadData(test.CorrectionUrl);
-
-                    File.WriteAllBytes(correctionFilename, arr);
-
+                    client.DownloadFile(new Uri(test.WorkUrl), $"{filename} - sujet.pdf");
+                    client.DownloadFile(new Uri(test.CorrectionUrl), $"{filename} - correction.pdf");
                 }
 
                 return new ExportResultModel(1, 0, 1);
@@ -54,7 +45,7 @@ namespace MaxicoursDownloader.Api.Services
         {
             try
             {
-                string categoryId = _maxicoursSettings.Categories["test"];
+                string categoryId = _maxicoursSettings.Categories[_testsCategoryKey];
 
                 var test = _maxicoursService.GetTest(levelTag, subjectId, testId);
 
@@ -70,7 +61,7 @@ namespace MaxicoursDownloader.Api.Services
         {
             try
             {
-                string categoryId = _maxicoursSettings.Categories["test"];
+                string categoryId = _maxicoursSettings.Categories[_testsCategoryKey];
 
                 var subjectList = _maxicoursService.GetSummarySubjects(levelTag);
 

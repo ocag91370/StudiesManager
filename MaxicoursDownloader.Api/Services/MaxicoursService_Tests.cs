@@ -16,9 +16,11 @@ namespace MaxicoursDownloader.Api.Services
 {
     public partial class MaxicoursService : IMaxicoursService
     {
+        private readonly string _testsCategoryKey = "tests";
+
         public TestModel GetTest(string levelTag, int subjectId, int testId)
         {
-            var item = GetItem(levelTag, subjectId, _maxicoursSettings.Categories["test"], testId);
+            var item = GetItem(levelTag, subjectId, _maxicoursSettings.Categories[_testsCategoryKey], testId);
             Debug.Assert(item.IsNotNull());
 
             var result = GetTest(item);
@@ -43,7 +45,7 @@ namespace MaxicoursDownloader.Api.Services
 
         public List<ItemModel> GetTests(string levelTag, int subjectId)
         {
-            var result = GetItemsOfCategory(levelTag, subjectId, _maxicoursSettings.Categories["test"]);
+            var result = GetItemsOfCategory(levelTag, subjectId, _maxicoursSettings.Categories[_testsCategoryKey]);
             Debug.Assert(result.IsNotNull());
 
             return result;

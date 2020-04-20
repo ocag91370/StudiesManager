@@ -42,6 +42,7 @@ namespace MaxicoursDownloader.Api.Pages
             Driver.Navigate().GoToUrl(Url);
         }
 
+#pragma warning disable
         public ReferenceEntity FromUrl(string url)
         {
             var uri = new Uri(url);
@@ -64,25 +65,26 @@ namespace MaxicoursDownloader.Api.Pages
                     switch (path)
                     {
                         case var parcours_pivot when path.Contains("/prod/parcours"):
-                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["path"]);
+                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["paths"]);
                         case var parcours_pivot when path.Contains("/cours/fiche-synthese"):
-                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["summary_sheet"]);
+                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["summary_sheets"]);
                         case var parcours_pivot when path.Contains("/cours/fiche"):
-                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["lesson"]);
+                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["lessons"]);
                         case var parcours_pivot when path.Contains("/cours/video"):
-                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["video"]);
+                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["video_lessons"]);
                         case var parcours_pivot when path.Contains("/exercices/enonce_corrige_video"):
-                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["video_correction"]);
+                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["video_exercices"]);
                         case var parcours_pivot when path.Contains("/exercices/pazapa"):
                             return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["pazapa"]);
                         case var parcours_pivot when path.Contains("/exercices/controle_pdf"):
-                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["test"]);
+                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["tests"]);
                     }
                     break;
             }
 
             return null;
         }
+#pragma warning restore
 
         public ReferenceEntity FromArboUrl(string path)
         {

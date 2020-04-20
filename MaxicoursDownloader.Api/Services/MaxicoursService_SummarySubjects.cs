@@ -35,10 +35,10 @@ namespace MaxicoursDownloader.Api.Services
             var page = GetSchoolLevelPage(levelTag);
             Debug.Assert(page.IsNotNull());
 
-            var subjectSummaryList = page.GetAllSummarySubjects();
-            Debug.Assert(subjectSummaryList.IsNotNull());
+            var summarySubjectList = page.GetAllSummarySubjects();
+            Debug.Assert(summarySubjectList.IsNotNull());
 
-            var result = _mapper.Map<List<SummarySubjectModel>>(subjectSummaryList);
+            var result = _mapper.Map<List<SummarySubjectModel>>(summarySubjectList);
             Debug.Assert(result.IsNotNull());
 
             return result;

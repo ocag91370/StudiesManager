@@ -11,12 +11,12 @@ namespace MaxicoursDownloader.Api.Controllers
     [Route("maxicours/export")]
     public class ExportController : ControllerBase
     {
-        private readonly ILogger<ExportController> _logger;
+        //private readonly ILogger<ExportController> _logger;
         private readonly IExportService _exportService;
 
-        public ExportController(IExportService exportService, ILogger<ExportController> logger)
+        public ExportController(IExportService exportService/*, ILogger<ExportController> logger*/)
         {
-            _logger = logger;
+            //_logger = logger;
             _exportService = exportService;
         }
 
@@ -216,7 +216,7 @@ namespace MaxicoursDownloader.Api.Controllers
 
         [HttpGet]
         [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/tests/{testId:int}")]
-        public IActionResult ExportSummaryTest(string levelTag, int subjectId, int testId)
+        public IActionResult ExportTest(string levelTag, int subjectId, int testId)
         {
             try
             {
@@ -226,6 +226,51 @@ namespace MaxicoursDownloader.Api.Controllers
                     return NotFound();
 
                 return Ok("Test successfully exported.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("schoollevels/{levelTag}/videolessons")]
+        public IActionResult ExportSchoolLevelVideoLessons(string levelTag)
+        {
+            try
+            {
+                var exportResult = _exportService.ExportVideoLessons(levelTag);
+
+                if (exportResult.NbFiles <= 0)
+                    return NotFound();
+
+                var result = new
+                {
+                    Tests = $"{exportResult.NbItems} video lesson(s) identified.",
+                    Duplicates = $"{exportResult.NbDuplicates} video lesson(s) identified.",
+                    Files = $"{exportResult.NbFiles} video lesson(s) successfully exported."
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/videolessons/{videoLessonId:int}")]
+        public IActionResult ExportVideoLesson(string levelTag, int subjectId, int videoLessonId)
+        {
+            try
+            {
+                var exportResult = _exportService.ExportVideoLesson(levelTag, subjectId, videoLessonId);
+
+                if (exportResult.NbFiles <= 0)
+                    return NotFound();
+
+                return Ok("Video lesson successfully exported.");
             }
             catch (Exception ex)
             {

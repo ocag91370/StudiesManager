@@ -14,8 +14,6 @@ namespace MaxicoursDownloader.Api.Pages
     {
         private IWebElement ItemsContainerElement => ContainerElement.FindElement(By.XPath("//*[@class = 'lsi-crn-container']//*[@class = 'panes']"));
 
-        private IEnumerable<IWebElement> ItemElementList(string categoryId) => ItemsContainerElement.FindElements(By.XPath($"//*[contains(@class, '{categoryId}  overable')]"));
-
         private IWebElement ItemElement(string categoryId, int itemId) => ItemsContainerElement.FindElement(By.XPath($"//*[contains(@class, '{categoryId}  overable')][./td[@class = 'label']/a[contains(@href, 'oid={itemId}')]]"));
 
         public List<ItemEntity> GetAllItems()
@@ -65,7 +63,7 @@ namespace MaxicoursDownloader.Api.Pages
 
             var entity = new ItemEntity
             {
-                SubjectSummary = _subjectSummary,
+                SummarySubject = _summarySubject,
                 Theme = theme,
                 Category = category,
                 Id = reference.ItemId,
@@ -89,7 +87,7 @@ namespace MaxicoursDownloader.Api.Pages
 
             var entity = new ItemEntity
             {
-                SubjectSummary = _subjectSummary,
+                SummarySubject = _summarySubject,
                 Theme = theme,
                 Category = category,
                 Id = reference.ItemId,
@@ -100,37 +98,6 @@ namespace MaxicoursDownloader.Api.Pages
             };
 
             return entity;
-        }
-
-        private int GetThemeId(string url)
-        {
-            var parameter = url.GetUrlParameter("nid");
-            if (string.IsNullOrWhiteSpace(parameter))
-                parameter = url.GetUrlParameter("fromNid");
-
-            int.TryParse(parameter, out var value);
-
-            return value;
-        }
-
-        private int GetItemId(string url)
-        {
-            var parameter = url.GetUrlParameter("oid");
-            int.TryParse(parameter, out var value);
-
-            return value;
-        }
-
-        private string GetCategoryId(IWebElement element)
-        {
-            try
-            {
-                return element.GetAttribute("class").Split("  ")[0];
-            }
-            catch (Exception)
-            {
-                return string.Empty;
-            }
         }
     }
 }

@@ -7,7 +7,7 @@ namespace MaxicoursDownloader.Api.Entities
 {
     public class ItemEntity
     {
-        public SummarySubjectEntity SubjectSummary { get; set; }
+        public SummarySubjectEntity SummarySubject { get; set; }
 
         public ThemeEntity Theme { get; set; }
 

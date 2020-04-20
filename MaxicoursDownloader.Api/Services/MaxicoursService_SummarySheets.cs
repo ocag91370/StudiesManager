@@ -16,9 +16,11 @@ namespace MaxicoursDownloader.Api.Services
 {
     public partial class MaxicoursService : IMaxicoursService
     {
+        private readonly string _summarySheetsCategoryKey = "summary_sheets";
+
         public SummarySheetModel GetSummarySheet(string levelTag, int subjectId, int summarySheetId)
         {
-            var item = GetItem(levelTag, subjectId, _maxicoursSettings.Categories["summary_sheet"], summarySheetId);
+            var item = GetItem(levelTag, subjectId, _maxicoursSettings.Categories[_summarySheetsCategoryKey], summarySheetId);
             Debug.Assert(item.IsNotNull());
 
             var summarySheetPage = GetSummarySheetPage(_mapper.Map<ItemEntity>(item));
@@ -46,7 +48,7 @@ namespace MaxicoursDownloader.Api.Services
 
         public List<ItemModel> GetSummarySheets(string levelTag, int subjectId)
         {
-            var result = GetItemsOfCategory(levelTag, subjectId, _maxicoursSettings.Categories["summary_sheet"]);
+            var result = GetItemsOfCategory(levelTag, subjectId, _maxicoursSettings.Categories[_summarySheetsCategoryKey]);
             Debug.Assert(result.IsNotNull());
 
             return result;

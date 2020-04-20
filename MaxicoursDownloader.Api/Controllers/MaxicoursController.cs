@@ -13,12 +13,12 @@ namespace MaxicoursDownloader.Api.Controllers
     [Route("maxicours")]
     public class MaxicoursController : ControllerBase
     {
-        private readonly ILogger<MaxicoursController> _logger;
+        //private readonly ILogger<MaxicoursController> _logger;
         private readonly IMaxicoursService _maxicoursService;
 
-        public MaxicoursController(IMaxicoursService maxicoursService, ILogger<MaxicoursController> logger)
+        public MaxicoursController(IMaxicoursService maxicoursService/*, ILogger<MaxicoursController> logger*/)
         {
-            _logger = logger;
+            //_logger = logger;
             _maxicoursService = maxicoursService;
         }
 
@@ -89,8 +89,8 @@ namespace MaxicoursDownloader.Api.Controllers
 
                 var result = new
                 {
-                    subject.SubjectSummary.SchoolLevel,
-                    subject.SubjectSummary,
+                    subject.SummarySubject.SchoolLevel,
+                    subject.SummarySubject,
                     Subject = new
                     {
                         Themes = new
@@ -186,8 +186,8 @@ namespace MaxicoursDownloader.Api.Controllers
 
                 var result = new
                 {
-                    firstItem.SubjectSummary.SchoolLevel,
-                    firstItem.SubjectSummary,
+                    firstItem.SummarySubject.SchoolLevel,
+                    firstItem.SummarySubject,
                     firstItem.Theme,
                     firstItem.Category,
                     Items = new
@@ -222,8 +222,8 @@ namespace MaxicoursDownloader.Api.Controllers
 
                 var result = new
                 {
-                    firstItem.SubjectSummary.SchoolLevel,
-                    firstItem.SubjectSummary,
+                    firstItem.SummarySubject.SchoolLevel,
+                    firstItem.SummarySubject,
                     firstItem.Theme,
                     firstItem.Category,
                     Lesson = new
@@ -254,8 +254,8 @@ namespace MaxicoursDownloader.Api.Controllers
 
                 var result = new
                 {
-                    item.SubjectSummary.SchoolLevel,
-                    item.SubjectSummary,
+                    item.SummarySubject.SchoolLevel,
+                    item.SummarySubject,
                     item.Theme,
                     item.Category,
                     Lesson = new { item.Id, item.Tag, item.Name, item.Url, item.Index }
@@ -286,8 +286,8 @@ namespace MaxicoursDownloader.Api.Controllers
 
                 var result = new
                 {
-                    firstItem.SubjectSummary.SchoolLevel,
-                    firstItem.SubjectSummary,
+                    firstItem.SummarySubject.SchoolLevel,
+                    firstItem.SummarySubject,
                     firstItem.Theme,
                     firstItem.Category,
                     SummarySheets = new
@@ -322,8 +322,8 @@ namespace MaxicoursDownloader.Api.Controllers
 
                 var result = new
                 {
-                    firstItem.SubjectSummary.SchoolLevel,
-                    firstItem.SubjectSummary,
+                    firstItem.SummarySubject.SchoolLevel,
+                    firstItem.SummarySubject,
                     firstItem.Theme,
                     firstItem.Category,
                     Tests = new
@@ -341,18 +341,77 @@ namespace MaxicoursDownloader.Api.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("schoollevels/{levelTag}/videolessons")]
+        public IActionResult GetAllVideoLessons(string levelTag)
+        {
+            try
+            {
+                var summarySubjectList = _maxicoursService.GetSummarySubjects(levelTag);
+
+                if (!summarySubjectList.Any())
+                    return NotFound();
+
+                var itemList = summarySubjectList.SelectMany(summarySubject => _maxicoursService.GetVideoLessons(levelTag, summarySubject.Id)).ToList();
+
+                if (!itemList.Any())
+                    return NotFound();
+
+                var schoolLevel = summarySubjectList.First().SchoolLevel;
+                var result = new
+                {
+                    SchoolLevel = schoolLevel,
+                    Count = itemList.Count(),
+                    VideoLessons = itemList.Select(o => new { o.Id, o.Tag, o.Name, o.Url, o.Index })
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/videolessons")]
+        public IActionResult GetAllVideoLessons(string levelTag, int subjectId)
+        {
+            try
+            {
+                var itemList = _maxicoursService.GetVideoLessons(levelTag, subjectId);
+
+                if (!itemList.Any())
+                    return NotFound();
+
+                var firstItem = itemList?.FirstOrDefault();
+                if (firstItem.IsNull())
+                    return NotFound();
+
+                var result = new
+                {
+                    firstItem.SummarySubject.SchoolLevel,
+                    firstItem.SummarySubject,
+                    firstItem.Theme,
+                    firstItem.Category,
+                    VideoLessons = new
+                    {
+                        Count = itemList.Count(),
+                        Data = itemList.Select(o => new { o.Id, o.Tag, o.Name, o.Url, o.Index })
+                    }
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
         //[HttpGet]
         //[Route("schoollevels/{levelTag}/subjects/{subjectId:int}/paths")]
         //public IActionResult GetAllPaths(string levelTag, int subjectId)
-        //{
-        //    //var subjectList = _maxicoursService.GetSubject(levelTag, subjectName);
-
-        //    return Ok();
-        //}
-
-        //[HttpGet]
-        //[Route("schoollevels/{levelTag}/subjects/{subjectId:int}/lessons/videos")]
-        //public IActionResult GetAllVideosLessons(string levelTag, int subjectId)
         //{
         //    //var subjectList = _maxicoursService.GetSubject(levelTag, subjectName);
 

@@ -40,5 +40,11 @@ namespace MaxicoursDownloader.Api.Contracts
         TestModel GetTest(string levelTag, int subjectId, int testId);
 
         List<ItemModel> GetTests(string levelTag, int subjectId);
+
+        VideoLessonModel GetVideoLesson(ItemModel item);
+
+        VideoLessonModel GetVideoLesson(string levelTag, int subjectId, int testId);
+
+        List<ItemModel> GetVideoLessons(string levelTag, int subjectId);
     }
 }

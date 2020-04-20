@@ -17,6 +17,8 @@ namespace MaxicoursDownloader.Api.Services
 {
     public partial class ExportService : IExportService
     {
+        private readonly string _summarySheetsCategoryKey = "summary_sheet";
+
         private ExportResultModel ExportSummarySheet(SummarySheetModel summarySheet)
         {
             try
@@ -24,22 +26,11 @@ namespace MaxicoursDownloader.Api.Services
                 var item = summarySheet.Item;
                 var index = item.Index.ToString().PadLeft(3, '0');
 
-                var filename = Path.Combine(_maxicoursSettings.ExportPath, $"{item.SubjectSummary.SchoolLevel.Tag} - {item.SubjectSummary.Tag} - {item.Category.Tag} - {index} - {item?.Theme?.Tag ?? item.SubjectSummary.Tag} - {item.Id} - {item.Tag}");
-
-                var pdfFilename = $"{filename}.pdf";
+                var filename = Path.Combine(_maxicoursSettings.ExportPath, $"{item.SummarySubject.SchoolLevel.Tag} - {item.SummarySubject.Tag} - {item.Category.Tag} - {index} - {item?.Theme?.Tag ?? item.SummarySubject.Tag} - {item.Id} - {item.Tag}");
                 using (WebClient client = new WebClient())
                 {
-                    byte[] arr = client.DownloadData(summarySheet.PrintUrl);
-
-                    File.WriteAllBytes(pdfFilename, arr);
-                }
-
-                var audioFilename = $"{filename}.mp3";
-                using (WebClient client = new WebClient())
-                {
-                    byte[] arr = client.DownloadData(summarySheet.AudioUrl);
-
-                    File.WriteAllBytes(audioFilename, arr);
+                    client.DownloadFile(new Uri(summarySheet.PrintUrl), $"{filename}.pdf");
+                    client.DownloadFile(new Uri(summarySheet.AudioUrl), $"{filename}.mp3");
                 }
 
                 return new ExportResultModel(1, 0, 1);
@@ -54,7 +45,7 @@ namespace MaxicoursDownloader.Api.Services
         {
             try
             {
-                string categoryId = _maxicoursSettings.Categories["summary_sheet"];
+                string categoryId = _maxicoursSettings.Categories[_summarySheetsCategoryKey];
 
                 var summarySheet = _maxicoursService.GetSummarySheet(levelTag, subjectId, summarySheetId);
 
@@ -85,7 +76,7 @@ namespace MaxicoursDownloader.Api.Services
         {
             try
             {
-                string categoryId = _maxicoursSettings.Categories["summary_sheet"];
+                string categoryId = _maxicoursSettings.Categories[_summarySheetsCategoryKey];
 
                 var subjectList = _maxicoursService.GetSummarySubjects(levelTag);
 
@@ -108,7 +99,7 @@ namespace MaxicoursDownloader.Api.Services
         {
             try
             {
-                string categoryId = _maxicoursSettings.Categories["summary_sheet"];
+                string categoryId = _maxicoursSettings.Categories[_summarySheetsCategoryKey];
 
                 var itemList = _maxicoursService.GetItemsOfCategory(levelTag, subjectId, categoryId);
                 var groupByThemeIdItemList = itemList.GroupBy(
@@ -130,5 +121,5 @@ namespace MaxicoursDownloader.Api.Services
                 throw ex;
             }
         }
-   }
+    }
 }

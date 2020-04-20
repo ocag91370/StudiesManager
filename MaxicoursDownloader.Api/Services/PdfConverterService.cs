@@ -77,15 +77,15 @@ namespace MaxicoursDownloader.Api.Services
 
         private void SetHeader(LessonModel lesson, HtmlToPdf @this)
         {
-            //var title = $"{lesson.Item.SubjectSummary.SchoolLevel.Name} - {lesson.Item.SubjectSummary.Name} - {lesson.Item.Category.Name} - {lesson.Item.Name}";
+            //var title = $"{lesson.Item.SummarySubject.SchoolLevel.Name} - {lesson.Item.SummarySubject.Name} - {lesson.Item.Category.Name} - {lesson.Item.Name}";
 
             //@this.PrintOptions.Header = new HtmlHeaderFooter()
             //{
             //    Height = 15,
             //    FontFamily = "Comic Sans MS, cursive",
-            //    //HtmlFragment = $"<div style='margin-left: 20px; margin-right: 20px; border-top: 1px solid lightgrey; border-bottom: 1px solid lightgrey'><center style='padding-top: 5px; padding-bottom: 5px'><i>{lesson.Item.SubjectSummary.SchoolLevel.Name} - {lesson.Item.SubjectSummary.Name} - {lesson.Item.Category.Name} - {lesson.Item.Name}<i></center></div>",
+            //    //HtmlFragment = $"<div style='margin-left: 20px; margin-right: 20px; border-top: 1px solid lightgrey; border-bottom: 1px solid lightgrey'><center style='padding-top: 5px; padding-bottom: 5px'><i>{lesson.Item.SummarySubject.SchoolLevel.Name} - {lesson.Item.SummarySubject.Name} - {lesson.Item.Category.Name} - {lesson.Item.Name}<i></center></div>",
             //    HtmlFragment = @$"<div style='margin-left: 50px; margin-right: 50px; border-top: 1px solid lightgrey; border-bottom: 1px solid lightgrey; color: gray'>
-	        //        <center style='padding-top: 5px; padding-bottom: 5px'>
+            //        <center style='padding-top: 5px; padding-bottom: 5px'>
             //            <i>{title}" + @"<i>
             //        </center>
             //        </div>",
@@ -95,7 +95,7 @@ namespace MaxicoursDownloader.Api.Services
 
         private void SetFooter(LessonModel lesson, HtmlToPdf @this)
         {
-            var title = $"{lesson.Item.SubjectSummary.SchoolLevel.Name} - {lesson.Item.SubjectSummary.Name} - {lesson.Item.Category.Name} - {lesson.Item.Name}";
+            var title = $"{lesson.Item.SummarySubject.SchoolLevel.Name} - {lesson.Item.SummarySubject.Name} - {lesson.Item.Category.Name} - {lesson.Item.Name}";
 
             @this.PrintOptions.Footer = new HtmlHeaderFooter()
             {
@@ -116,7 +116,7 @@ namespace MaxicoursDownloader.Api.Services
         {
             var index = item.Index.ToString().PadLeft(3, '0');
 
-            var filename = $"{item.SubjectSummary.SchoolLevel.Tag} - {item.SubjectSummary.Tag} - {item.Category.Tag} - {index} - {item?.Theme?.Tag ?? item.SubjectSummary.Tag} - {item.Id} - {item.Tag}.pdf";
+            var filename = $"{item.SummarySubject.SchoolLevel.Tag} - {item.SummarySubject.Tag} - {item.Category.Tag} - {index} - {item?.Theme?.Tag ?? item.SummarySubject.Tag} - {item.Id} - {item.Tag}.pdf";
             var result = Path.Combine(_maxicoursSettings.ExportPath, filename);
 
             return result;

@@ -17,15 +17,15 @@ namespace MaxicoursDownloader.Api.Services
 {
     public partial class ExportService : IExportService
     {
-        private readonly string _lessonsCategoryKey = "lessons";
+        private readonly string _videoLessonsCategoryKey = "video_lessons";
 
-        public ExportResultModel ExportLesson(string levelTag, int subjectId, int lessonId)
+        public ExportResultModel ExportVideoLesson(string levelTag, int subjectId, int lessonId)
         {
             try
             {
-                var lesson = _maxicoursService.GetLesson(levelTag, subjectId, lessonId);
+                var videoLesson = _maxicoursService.GetVideoLesson(levelTag, subjectId, lessonId);
 
-                return ExportLesson(lesson);
+                return ExportVideoLesson(videoLesson);
             }
             catch (Exception ex)
             {
@@ -33,13 +33,21 @@ namespace MaxicoursDownloader.Api.Services
             }
         }
 
-        private ExportResultModel ExportLesson(LessonModel lesson)
+        private ExportResultModel ExportVideoLesson(VideoLessonModel videoLesson)
         {
             try
             {
-                var nbFiles = SaveAsPdf(lesson);
+                var item = videoLesson.Item;
+                var index = item.Index.ToString().PadLeft(3, '0');
 
-                return new ExportResultModel(1, 0, nbFiles);
+                var videoFilename = Path.Combine(_maxicoursSettings.ExportPath, $"{item.SummarySubject.SchoolLevel.Tag} - {item.SummarySubject.Tag} - {item.Category.Tag} - {index} - {item?.Theme?.Tag ?? item.SummarySubject.Tag} - {item.Id} - {item.Tag}.mp4");
+                var uri = new Uri(videoLesson.VideoUrl);
+                using (WebClient client = new WebClient())
+                {
+                    client.DownloadFile(uri, videoFilename);
+                }
+
+                return new ExportResultModel(1, 0, 1);
             }
             catch (Exception ex)
             {
@@ -47,11 +55,11 @@ namespace MaxicoursDownloader.Api.Services
             }
         }
 
-        public ExportResultModel ExportLessons(string levelTag)
+        public ExportResultModel ExportVideoLessons(string levelTag)
         {
             try
             {
-                string categoryId = _maxicoursSettings.Categories[_lessonsCategoryKey];
+                string categoryId = _maxicoursSettings.Categories[_videoLessonsCategoryKey];
 
                 var subjectList = _maxicoursService.GetSummarySubjects(levelTag);
 
@@ -59,7 +67,7 @@ namespace MaxicoursDownloader.Api.Services
                 subjectList.ForEach((subject) =>
                 {
                     var itemList = _maxicoursService.GetItemsOfCategory(levelTag, subject.Id, categoryId);
-                    resultList.Add(ExportLessons(itemList));
+                    resultList.Add(ExportVideoLessons(itemList));
                 });
 
                 return new ExportResultModel(resultList);
@@ -70,11 +78,11 @@ namespace MaxicoursDownloader.Api.Services
             }
         }
 
-        public ExportResultModel ExportLessons(string levelTag, int subjectId)
+        public ExportResultModel ExportVideoLessons(string levelTag, int subjectId)
         {
             try
             {
-                string categoryId = _maxicoursSettings.Categories[_lessonsCategoryKey];
+                string categoryId = _maxicoursSettings.Categories[_videoLessonsCategoryKey];
 
                 var itemList = _maxicoursService.GetItemsOfCategory(levelTag, subjectId, categoryId);
                 var groupByThemeIdItemList = itemList.GroupBy(
@@ -86,7 +94,7 @@ namespace MaxicoursDownloader.Api.Services
                 var resultList = new List<ExportResultModel>();
                 groupByThemeIdItemList.ForEach((group) =>
                 {
-                    resultList.Add(ExportLessons(group.ItemList));
+                    resultList.Add(ExportVideoLessons(group.ItemList));
                 });
 
                 return new ExportResultModel(resultList);
@@ -97,17 +105,17 @@ namespace MaxicoursDownloader.Api.Services
             }
         }
 
-        public ExportResultModel ExportLessons(string levelTag, int subjectId, int themeId)
+        public ExportResultModel ExportVideoLessons(string levelTag, int subjectId, int themeId)
         {
             try
             {
-                string categoryId = _maxicoursSettings.Categories[_lessonsCategoryKey];
+                string categoryId = _maxicoursSettings.Categories[_videoLessonsCategoryKey];
 
                 var itemList = _maxicoursService.GetItemsOfCategory(levelTag, subjectId, categoryId)
                     .Where(o => o.Theme.Id == themeId)
                     .ToList();
 
-                return ExportLessons(itemList);
+                return ExportVideoLessons(itemList);
             }
             catch (Exception ex)
             {
@@ -115,7 +123,7 @@ namespace MaxicoursDownloader.Api.Services
             }
         }
 
-        private ExportResultModel ExportLessons(List<ItemModel> itemList)
+        private ExportResultModel ExportVideoLessons(List<ItemModel> itemList)
         {
             try
             {
@@ -140,22 +148,6 @@ namespace MaxicoursDownloader.Api.Services
             catch (Exception ex)
             {
                 throw ex;
-            }
-        }
-
-        private int SaveAsPdf(LessonModel lesson)
-        {
-            try
-            {
-                _pdfConverterService.SaveAsPdf(lesson);
-
-                return 1;
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.Message);
-
-                return 0;
             }
         }
     }
