@@ -49,7 +49,7 @@ namespace MaxicoursDownloader.Api.Services
             var subjectPage = GetSubjectPage(levelTag, subjectId);
             Debug.Assert(subjectPage.IsNotNull());
 
-            var item = subjectPage.GetItem(categoryId, itemId);
+            var item = subjectPage.GetItemOfCategory(categoryId, itemId);
             Debug.Assert(item.IsNotNull());
 
             var result = _mapper.Map<ItemModel>(item);

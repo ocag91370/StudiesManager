@@ -37,6 +37,9 @@ namespace MaxicoursDownloader.Api.Services
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(videoLesson.VideoUrl))
+                    return new ExportResultModel(1, 0, 0);
+
                 var item = videoLesson.Item;
                 var index = item.Index.ToString().PadLeft(3, '0');
 
@@ -127,23 +130,10 @@ namespace MaxicoursDownloader.Api.Services
         {
             try
             {
-                var lessonList = new ConcurrentBag<LessonModel>();
-                Parallel.ForEach(itemList, (item) =>
-                {
-                    var lesson = _maxicoursService.GetLesson(item);
-                    lessonList.Add(lesson);
-                });
-                var nbLessons = lessonList.Count();
-                var nbDistincts = lessonList.Select(o => o.Item.Id).Distinct().Count();
+                var videoLessonList = itemList.Select(item => _maxicoursService.GetVideoLesson(item)).ToList();
+                var fileList = videoLessonList.Select(videoLesson => ExportVideoLesson(videoLesson)).ToList();
 
-                var fileList = new ConcurrentBag<int>();
-                Parallel.ForEach(lessonList, (lesson) =>
-                {
-                    fileList.Add(SaveAsPdf(lesson));
-                });
-                var nbFiles = fileList.ToList().Sum(o => o);
-
-                return new ExportResultModel(nbLessons, nbLessons - nbDistincts, nbFiles);
+                return new ExportResultModel(fileList);
             }
             catch (Exception ex)
             {

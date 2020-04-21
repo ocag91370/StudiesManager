@@ -23,7 +23,7 @@ namespace MaxicoursDownloader.Api.Pages
 
         public VideoLessonEntity GetVideoLesson()
         {
-            var videoElement = Driver.FindElement(By.XPath("//*[@class = 'mxc-jp-jplayer']//video"), 1000);
+            var videoElement = Driver.FindElement(By.XPath("//*[@class = 'mxc-jp-jplayer']//video[@src]"), 1000, 5);
             var videoUrl = videoElement.GetAttribute("src");
 
             return new VideoLessonEntity

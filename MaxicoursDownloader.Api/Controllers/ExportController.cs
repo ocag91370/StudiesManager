@@ -260,6 +260,32 @@ namespace MaxicoursDownloader.Api.Controllers
         }
 
         [HttpGet]
+        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/videolessons")]
+        public IActionResult ExportSubjectVideoLessons(string levelTag, int subjectId)
+        {
+            try
+            {
+                var exportResult = _exportService.ExportVideoLessons(levelTag, subjectId);
+
+                if (exportResult.NbFiles <= 0)
+                    return NotFound();
+
+                var result = new
+                {
+                    Tests = $"{exportResult.NbItems} video lesson(s) identified.",
+                    Duplicates = $"{exportResult.NbDuplicates} video lesson(s) identified.",
+                    Files = $"{exportResult.NbFiles} video lesson(s) successfully exported."
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
         [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/videolessons/{videoLessonId:int}")]
         public IActionResult ExportVideoLesson(string levelTag, int subjectId, int videoLessonId)
         {
