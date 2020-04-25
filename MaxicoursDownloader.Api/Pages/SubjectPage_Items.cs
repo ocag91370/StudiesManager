@@ -16,7 +16,12 @@ namespace MaxicoursDownloader.Api.Pages
 
         public List<ItemEntity> GetAllItems()
         {
-            var result = GetItemsOfCategory(string.Empty);
+            var categoryList = GetAllCategories();
+            var themeList = GetAllThemes();
+
+            var elementList = ContainerElement.FindElements(By.XPath($"//*[contains(@class,'  overable')]//*[@class = 'label']/a"));
+
+            var result = elementList.Select((element, index) => GetItem(categoryList, themeList, element, index)).ToList();
 
             return result;
         }

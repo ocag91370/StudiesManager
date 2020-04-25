@@ -1,9 +1,11 @@
 ﻿using MaxicoursDownloader.Api.Contracts;
 using MaxicoursDownloader.Api.Extensions;
+using MaxicoursDownloader.Api.Models;
 using MaxicoursDownloader.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 
@@ -159,6 +161,142 @@ namespace MaxicoursDownloader.Api.Controllers
                 {
                     Count = categoryList.Count(),
                     Themes = categoryList.Select(o => new { o.Id, o.Tag, o.Name })
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("schoollevels/{levelTag}/detail")]
+        public IActionResult GetSchoolLevelDetail(string levelTag)
+        {
+            try
+            {
+                var subjectList = _maxicoursService.GetSummarySubjects(levelTag);
+
+                if (subjectList.IsNull())
+                    return NotFound();
+
+                if (!subjectList.Any())
+                    return NotFound();
+
+                var itemList = new List<ItemModel>();
+                subjectList.ForEach(subject => itemList.AddRange(_maxicoursService.GetItems(levelTag, subject.Id)));
+
+                var groupByCategory = itemList.GroupBy(
+                    o => o.Category.Name,
+                    o => o,
+                    (categoryName, categoryItemList) => new
+                    {
+                        CategoryName = categoryName,
+                        NbItems = categoryItemList.Count(),
+                    })
+                    .ToList();
+
+                var groupBySubject = itemList.GroupBy(
+                    o => o.SummarySubject.Name,
+                    o => o,
+                    (subjectName, subjectItemList) => new
+                    {
+                        SubjectName = subjectName,
+                        NbItems = subjectItemList.Count(),
+                        Categories = subjectItemList.GroupBy(
+                            o => o.Category.Name,
+                            o => o,
+                            (categoryName, categoryItemList) => new
+                            {
+                                CategoryName = categoryName,
+                                NbItems = categoryItemList.Count(),
+                            })
+                            .ToList()
+                    })
+                    .ToList();
+
+                var schoolLevel = subjectList?.FirstOrDefault()?.SchoolLevel;
+                if (schoolLevel.IsNull())
+                    return NotFound();
+
+                var result = new
+                {
+                    School = schoolLevel.Name,
+                    NbItems = itemList.Count(),
+                    Categories = groupByCategory,
+                    Subjects = groupBySubject
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("schoollevels/{levelTag}/items")]
+        public IActionResult GetSchoolLevelLessons(string levelTag)
+        {
+            try
+            {
+                var subjectList = _maxicoursService.GetSummarySubjects(levelTag);
+
+                if (subjectList.IsNull())
+                    return NotFound();
+
+                if (!subjectList.Any())
+                    return NotFound();
+
+                var itemList = new List<ItemModel>();
+                subjectList.ForEach(subject => itemList.AddRange(_maxicoursService.GetItems(levelTag, subject.Id)));
+
+                var groupByCategory = itemList.GroupBy(
+                    o => o.Category.Name,
+                    o => o,
+                    (categoryName, categoryItemList) => new
+                    {
+                        CategoryName = categoryName,
+                        NbItems = categoryItemList.Count(),
+                        Items = categoryItemList.Select(o => new { o.Id, o.Name, o.Url, SubjectId = o.SummarySubject.Id, SubjectName = o.SummarySubject.Name })
+                    })
+                    .ToList();
+
+                var groupBySubject = itemList.GroupBy(
+                    o => o.SummarySubject.Name,
+                    o => o,
+                    (subjectName, subjectItemList) => new
+                    {
+                        SubjectName = subjectName,
+                        NbItems = subjectItemList.Count(),
+                        Items = subjectItemList.Select(o => new { o.Id, o.Tag, o.Name, o.Url, o.Index }),
+                        Categories = subjectItemList.GroupBy(
+                            o => o.Category.Name,
+                            o => o,
+                            (categoryName, categoryItemList) => new
+                            {
+                                CategoryName = categoryName,
+                                NbItems = categoryItemList.Count(),
+                                Items = categoryItemList.Select(o => new { o.Id, o.Name, o.Url })
+                            })
+                            .ToList()
+                    })
+                    .ToList();
+
+                var schoolLevel = subjectList?.FirstOrDefault()?.SchoolLevel;
+                if (schoolLevel.IsNull())
+                    return NotFound();
+
+                var result = new
+                {
+                    School = schoolLevel.Name,
+                    NbItems = itemList.Count(),
+                    Categories = groupByCategory,
+                    Subjects = groupBySubject,
+                    Items = itemList
                 };
 
                 return Ok(result);

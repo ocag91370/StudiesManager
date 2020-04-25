@@ -20,6 +20,8 @@ namespace MaxicoursDownloader.Api.Controllers
             _exportService = exportService;
         }
 
+        #region Cours
+
         [HttpGet]
         [Route("schoollevels/{levelTag}/lessons")]
         public IActionResult ExportSchoolLevelLessons(string levelTag)
@@ -117,6 +119,10 @@ namespace MaxicoursDownloader.Api.Controllers
             }
         }
 
+        #endregion
+
+        #region Fiches de synthèse
+
         [HttpGet]
         [Route("schoollevels/{levelTag}/summarysheets")]
         public IActionResult ExportSchoolLevelSummarySheets(string levelTag)
@@ -188,6 +194,10 @@ namespace MaxicoursDownloader.Api.Controllers
             }
         }
 
+        #endregion
+
+        #region Contrôles
+
         [HttpGet]
         [Route("schoollevels/{levelTag}/tests")]
         public IActionResult ExportSchoolLevelTests(string levelTag)
@@ -232,6 +242,10 @@ namespace MaxicoursDownloader.Api.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+        #endregion
+
+        #region Cours vidéo
 
         [HttpGet]
         [Route("schoollevels/{levelTag}/videolessons")]
@@ -329,5 +343,7 @@ namespace MaxicoursDownloader.Api.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+
+        #endregion
     }
 }

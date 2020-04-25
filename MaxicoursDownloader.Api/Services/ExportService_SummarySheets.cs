@@ -17,7 +17,7 @@ namespace MaxicoursDownloader.Api.Services
 {
     public partial class ExportService : IExportService
     {
-        private readonly string _summarySheetsCategoryKey = "summary_sheet";
+        private readonly string _summarySheetsCategoryKey = "summary_sheets";
 
         private ExportResultModel ExportSummarySheet(SummarySheetModel summarySheet)
         {

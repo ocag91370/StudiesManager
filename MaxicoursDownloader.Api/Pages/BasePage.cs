@@ -70,6 +70,8 @@ namespace MaxicoursDownloader.Api.Pages
                             return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["summary_sheets"]);
                         case var parcours_pivot when path.Contains("/cours/fiche"):
                             return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["lessons"]);
+                        case var parcours_pivot when path.Contains("/cours/video-interactive"):
+                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["interactive_videos"]);
                         case var parcours_pivot when path.Contains("/cours/video"):
                             return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["video_lessons"]);
                         case var parcours_pivot when path.Contains("/exercices/enonce_corrige_video"):
