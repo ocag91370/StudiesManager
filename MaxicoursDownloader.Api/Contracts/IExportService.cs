@@ -30,5 +30,13 @@ namespace MaxicoursDownloader.Api.Interfaces
         ExportResultModel ExportVideoLessons(string levelTag, int subjectId);
 
         ExportResultModel ExportVideoLessons(string levelTag, int subjectId, int themeId);
+
+        ExportResultModel ExportVideoExercise(string levelTag, int subjectId, int videoExerciseId);
+
+        ExportResultModel ExportVideoExercises(string levelTag);
+
+        ExportResultModel ExportVideoExercises(string levelTag, int subjectId);
+
+        ExportResultModel ExportVideoExercises(string levelTag, int subjectId, int themeId);
     }
 }

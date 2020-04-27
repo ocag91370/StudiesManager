@@ -28,10 +28,10 @@ namespace MaxicoursDownloader.Api.Services
             var page = GetVideoLessonPage(_mapper.Map<ItemEntity>(item));
             Debug.Assert(page.IsNotNull());
 
-            var videoLessonList = page.GetVideoLesson();
-            Debug.Assert(videoLessonList.IsNotNull());
+            var videoLesson = page.GetVideoLesson();
+            Debug.Assert(videoLesson.IsNotNull());
 
-            var result = _mapper.Map<VideoLessonModel>(videoLessonList);
+            var result = _mapper.Map<VideoLessonModel>(videoLesson);
             Debug.Assert(result.IsNotNull());
 
             return result;

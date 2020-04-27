@@ -73,6 +73,14 @@ namespace MaxicoursDownloader.Api.Services
             return lessonPage;
         }
 
+        private VideoExercisePage GetVideoExercisePage(ItemEntity item)
+        {
+            var videoExercisePage = new VideoExercisePage(_maxicoursSettings, Driver, item);
+            Debug.Assert(videoExercisePage.IsNotNull());
+
+            return videoExercisePage;
+        }
+
         private VideoLessonPage GetVideoLessonPage(ItemEntity item)
         {
             var videoLessonPage = new VideoLessonPage(_maxicoursSettings, Driver, item);

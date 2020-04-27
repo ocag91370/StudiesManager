@@ -345,5 +345,106 @@ namespace MaxicoursDownloader.Api.Controllers
         }
 
         #endregion
+
+        #region Exercice vidéo
+
+        [HttpGet]
+        [Route("schoollevels/{levelTag}/videoexercises")]
+        public IActionResult ExportSchoolLevelVideoExercises(string levelTag)
+        {
+            try
+            {
+                var exportResult = _exportService.ExportVideoExercises(levelTag);
+
+                if (exportResult.NbFiles <= 0)
+                    return NotFound();
+
+                var result = new
+                {
+                    Tests = $"{exportResult.NbItems} video exercises(s) identified.",
+                    Duplicates = $"{exportResult.NbDuplicates} video exercises(s) identified.",
+                    Files = $"{exportResult.NbFiles} video exercises(s) successfully exported."
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/videoexercises")]
+        public IActionResult ExportSubjectVideoExercises(string levelTag, int subjectId)
+        {
+            try
+            {
+                var exportResult = _exportService.ExportVideoExercises(levelTag, subjectId);
+
+                if (exportResult.NbFiles <= 0)
+                    return NotFound();
+
+                var result = new
+                {
+                    Tests = $"{exportResult.NbItems} video exercises(s) identified.",
+                    Duplicates = $"{exportResult.NbDuplicates} video exercises(s) identified.",
+                    Files = $"{exportResult.NbFiles} video exercises(s) successfully exported."
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/themes/{themeId:int}/videoexercises")]
+        public IActionResult ExportThemeVideoExercises(string levelTag, int subjectId, int themeId)
+        {
+            try
+            {
+                var exportResult = _exportService.ExportVideoExercises(levelTag, subjectId, themeId);
+
+                if (exportResult.NbFiles <= 0)
+                    return NotFound();
+
+                var result = new
+                {
+                    Tests = $"{exportResult.NbItems} video exercises(s) identified.",
+                    Duplicates = $"{exportResult.NbDuplicates} video exercises(s) identified.",
+                    Files = $"{exportResult.NbFiles} video exercises(s) successfully exported."
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/videoexercises/{videoexerciseId:int}")]
+        public IActionResult ExportVideoExercise(string levelTag, int subjectId, int videoexerciseId)
+        {
+            try
+            {
+                var exportResult = _exportService.ExportVideoExercise(levelTag, subjectId, videoexerciseId);
+
+                if (exportResult.NbFiles <= 0)
+                    return NotFound();
+
+                return Ok("Video exercises successfully exported.");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        #endregion
     }
 }
