@@ -40,7 +40,7 @@ namespace MaxicoursDownloader.Api.Pages
             var solution = GetHtmlPage(subject + GetSeparator("Solution") + SolutionElement.GetOuterHtml());
 
             VideoSolutionButtonElement.Click();
-            var videoSolutionElement = Driver.FindElement(By.XPath("//*[@class = 'mxc-jp-jplayer']//video[@src]"), 1000, 5);
+            var videoSolutionElement = Driver.FindElement(By.XPath("//*[@class = 'mxc-jp-jplayer']//video[@src]"), 1, 5);
             var videoUrl = videoSolutionElement.GetAttribute("src");
 
             return new VideoExerciseEntity

@@ -40,16 +40,22 @@ namespace MaxicoursDownloader.Api.Services
                 if (!videoExercise.IsOk())
                     return new ExportResultModel(1, 0, 0);
 
-                _pdfConverterService.SaveAsPdf(videoExercise);
-
                 var item = videoExercise.Item;
                 var index = item.Index.ToString().PadLeft(3, '0');
                 var filename = Path.Combine(_maxicoursSettings.ExportPath, $"{item.SummarySubject.SchoolLevel.Tag} - {item.SummarySubject.Tag} - {item.Category.Tag} - {index} - {item?.Theme?.Tag ?? item.SummarySubject.Tag} - {item.Id} - {item.Tag}");
 
-                var uri = new Uri(videoExercise.VideoUrl);
-                using (WebClient client = new WebClient())
+                if (videoExercise.IsTextOk())
                 {
-                    client.DownloadFile(uri, $"{filename} - solution.mp4");
+                    _pdfConverterService.SaveAsPdf(videoExercise);
+                }
+
+                if (videoExercise.IsVideoOk())
+                {
+                    var uri = new Uri(videoExercise.VideoUrl);
+                    using (WebClient client = new WebClient())
+                    {
+                        client.DownloadFile(uri, $"{filename} - solution.mp4");
+                    }
                 }
 
                 return new ExportResultModel(1, 0, 1);

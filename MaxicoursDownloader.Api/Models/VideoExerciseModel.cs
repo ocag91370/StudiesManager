@@ -14,9 +14,19 @@ namespace MaxicoursDownloader.Api.Models
 
         public string VideoUrl { get; set; }
 
+        public bool IsTextOk()
+        {
+            return !string.IsNullOrWhiteSpace(Subject) && !string.IsNullOrWhiteSpace(Solution);
+        }
+
+        public bool IsVideoOk()
+        {
+            return !string.IsNullOrWhiteSpace(VideoUrl);
+        }
+
         public bool IsOk()
         {
-            return !string.IsNullOrWhiteSpace(Subject) && !string.IsNullOrWhiteSpace(Solution) && !string.IsNullOrWhiteSpace(VideoUrl);
+            return IsTextOk() || IsVideoOk();
         }
     }
 }
