@@ -17,7 +17,7 @@ namespace MaxicoursDownloader.Api.Services
 {
     public partial class ExportService : IExportService
     {
-        private readonly string _videoExercisesCategoryKey = "video_lessons";
+        private readonly string _videoExercisesCategoryKey = "video_exercises";
 
         public ExportResultModel ExportVideoExercise(string levelTag, int subjectId, int lessonId)
         {
@@ -37,17 +37,19 @@ namespace MaxicoursDownloader.Api.Services
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(videoExercise.VideoUrl))
+                if (!videoExercise.IsOk())
                     return new ExportResultModel(1, 0, 0);
+
+                _pdfConverterService.SaveAsPdf(videoExercise);
 
                 var item = videoExercise.Item;
                 var index = item.Index.ToString().PadLeft(3, '0');
+                var filename = Path.Combine(_maxicoursSettings.ExportPath, $"{item.SummarySubject.SchoolLevel.Tag} - {item.SummarySubject.Tag} - {item.Category.Tag} - {index} - {item?.Theme?.Tag ?? item.SummarySubject.Tag} - {item.Id} - {item.Tag}");
 
-                var videoFilename = Path.Combine(_maxicoursSettings.ExportPath, $"{item.SummarySubject.SchoolLevel.Tag} - {item.SummarySubject.Tag} - {item.Category.Tag} - {index} - {item?.Theme?.Tag ?? item.SummarySubject.Tag} - {item.Id} - {item.Tag}.mp4");
                 var uri = new Uri(videoExercise.VideoUrl);
                 using (WebClient client = new WebClient())
                 {
-                    client.DownloadFile(uri, videoFilename);
+                    client.DownloadFile(uri, $"{filename} - solution.mp4");
                 }
 
                 return new ExportResultModel(1, 0, 1);

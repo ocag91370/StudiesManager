@@ -16,11 +16,15 @@ namespace MaxicoursDownloader.Api.Pages
 
         private IWebElement ContainerElement => Driver.FindElement(By.XPath("//*[@id = 'ECV']"));
 
-        private IWebElement SolutionElement => ContainerElement.FindElement(By.XPath("//*[@id = 'solutionTexte']"));
+        private IWebElement TitleElement => ContainerElement.FindElement(By.Id("titre"));
 
-        private IWebElement SubjectElement => ContainerElement.FindElement(By.XPath("//*[@class = 'enonce']"));
+        private IWebElement TextSolutionButtonElement => ContainerElement.FindElement(By.Id("voir-solution"));
 
-        private IWebElement VideoElement => ContainerElement.FindElement(By.XPath("//*[@class = 'enonce']"));
+        private IWebElement VideoSolutionButtonElement => ContainerElement.FindElement(By.Id("voir-video"));
+
+        private IWebElement SubjectElement => Driver.FindElement(By.ClassName("enonce"));
+
+        private IWebElement SolutionElement => Driver.FindElement(By.ClassName("solutionContenu"));
 
         public VideoExercisePage(MaxicoursSettingsModel settings, IWebDriver driver, ItemEntity item) : base(settings, driver, item.Url)
         {
@@ -29,19 +33,31 @@ namespace MaxicoursDownloader.Api.Pages
 
         public VideoExerciseEntity GetVideoExercise()
         {
-            var subject = SubjectElement.Text;
-            var solution = SolutionElement.Text;
+            var title = TitleElement.Text;
 
-            //var videoElement = Driver.FindElement(By.XPath("//*[@class = 'mxc-jp-jplayer']//video[@src]"), 1000, 5);
-            var videoUrl = VideoElement.GetAttribute("src");
+            var subject = GetHtmlPage(GetSeparator("Enoncé") + SubjectElement.GetOuterHtml());
+
+            var solution = GetHtmlPage(subject + GetSeparator("Solution") + SolutionElement.GetOuterHtml());
+
+            VideoSolutionButtonElement.Click();
+            var videoSolutionElement = Driver.FindElement(By.XPath("//*[@class = 'mxc-jp-jplayer']//video[@src]"), 1000, 5);
+            var videoUrl = videoSolutionElement.GetAttribute("src");
 
             return new VideoExerciseEntity
             {
                 Item = _item,
+                Title = title,
                 Subject = subject,
                 Solution = solution,
                 VideoUrl = videoUrl
             };
+        }
+
+        public string GetSeparator(string title)
+        {
+            var html = $"<div style='border-top: 2px dotted #cacaca; border-bottom: 2px dotted #cacaca; margin-top: 20px; margin-bottom: 20px; padding-top: 5px; padding-bottom: 5px;'><span style='font-family: Verdana,Arial,Helvetica,sans-serif; font-size: 13pt; font-weight: bold; color: #555;'>{title}</span></div>";
+
+            return html;
         }
     }
 }

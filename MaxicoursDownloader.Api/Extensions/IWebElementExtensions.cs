@@ -20,5 +20,33 @@ namespace MaxicoursDownloader.Api.Extensions
                 return false;
             }
         }
+
+        public static string GetInnerHtml(this IWebElement @this)
+        {
+            try
+            {
+                var result = @this.GetAttribute("innerHTML").Replace("\r", "").Replace("\n", "")    ;
+
+                return result;
+            }
+            catch (NoSuchElementException)
+            {
+                return string.Empty;
+            }
+        }
+
+        public static string GetOuterHtml(this IWebElement @this)
+        {
+            try
+            {
+                var result = @this.GetAttribute("outerHTML").Replace("\r", "").Replace("\n", "");
+
+                return result;
+            }
+            catch (NoSuchElementException)
+            {
+                return string.Empty;
+            }
+        }
     }
 }

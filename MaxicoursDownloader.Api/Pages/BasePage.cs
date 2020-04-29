@@ -1,4 +1,5 @@
 ﻿using MaxicoursDownloader.Api.Entities;
+using MaxicoursDownloader.Api.Extensions;
 using MaxicoursDownloader.Models;
 using OpenQA.Selenium;
 using System;
@@ -75,7 +76,7 @@ namespace MaxicoursDownloader.Api.Pages
                         case var parcours_pivot when path.Contains("/cours/video"):
                             return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["video_lessons"]);
                         case var parcours_pivot when path.Contains("/exercices/enonce_corrige_video"):
-                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["video_exercices"]);
+                            return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["video_exercises"]);
                         case var parcours_pivot when path.Contains("/exercices/pazapa"):
                             return FromCategoryUrl(HttpUtility.ParseQueryString(uri.Query)["_vp"], _maxicoursSettings.Categories["pazapa"]);
                         case var parcours_pivot when path.Contains("/exercices/controle_pdf"):
@@ -133,5 +134,15 @@ namespace MaxicoursDownloader.Api.Pages
 
         //    return new ReferenceEntity(idList, schoolLevelId, subjectId, themeId, categoryId, ItemId);
         //}
+
+        public string GetHtmlPage(string template)
+        {
+            string head = string.Join("", Driver.FindElements(By.XPath("//*[@rel='stylesheet']")).AsEnumerable().Select(o => o.GetOuterHtml()));
+            string body = template.Replace("../../../../../", UrlPrefix);
+            
+            var html = @$"<html><head>{head}</head><body>{body}</body></html>";
+
+            return html;
+        }
     }
 }

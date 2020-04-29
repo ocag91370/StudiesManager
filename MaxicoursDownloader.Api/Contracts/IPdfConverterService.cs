@@ -9,5 +9,7 @@ namespace MaxicoursDownloader.Api.Interfaces
         void SaveUrlAsPdf(string url, string filename);
 
         void SaveHtmlAsPdf(string html, string filename);
+
+        void SaveAsPdf(VideoExerciseModel videoExercise);
     }
 }

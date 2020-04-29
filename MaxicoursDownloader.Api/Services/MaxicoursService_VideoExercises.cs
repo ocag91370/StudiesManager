@@ -10,7 +10,7 @@ namespace MaxicoursDownloader.Api.Services
 {
     public partial class MaxicoursService : IMaxicoursService
     {
-        private readonly string _videoExercisesCategoryKey = "video_exercices";
+        private readonly string _videoExercisesCategoryKey = "video_exercises";
 
         public VideoExerciseModel GetVideoExercise(string levelTag, int subjectId, int exerciseId)
         {
@@ -37,9 +37,17 @@ namespace MaxicoursDownloader.Api.Services
             return result;
         }
 
-        public List<ItemModel> VideoExerciseModels(string levelTag, int subjectId)
+        public List<ItemModel> GetVideoExercises(string levelTag, int subjectId)
         {
             var result = GetItemsOfCategory(levelTag, subjectId, _maxicoursSettings.Categories[_videoExercisesCategoryKey]);
+            Debug.Assert(result.IsNotNull());
+
+            return result;
+        }
+
+        public List<ItemModel> GetVideoExercises(SummarySubjectModel summarySubject)
+        {
+            var result = GetItemsOfCategory(summarySubject, _maxicoursSettings.Categories[_videoExercisesCategoryKey]);
             Debug.Assert(result.IsNotNull());
 
             return result;

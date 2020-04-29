@@ -86,6 +86,22 @@ namespace MaxicoursDownloader.Api.Services
             return result;
         }
 
+        public List<ItemModel> GetItemsOfCategory(SummarySubjectModel summarySubject, string categoryId)
+        {
+            var summarySubjectEntity = _mapper.Map<SummarySubjectEntity>(summarySubject);
+
+            var subjectPage = GetSubjectPage(summarySubjectEntity);
+            Debug.Assert(subjectPage.IsNotNull());
+
+            var itemList = subjectPage.GetItemsOfCategory(categoryId);
+            Debug.Assert(itemList.IsNotNull());
+
+            var result = _mapper.Map<List<ItemModel>>(itemList);
+            Debug.Assert(result.IsNotNull());
+
+            return result;
+        }
+
         public List<ThemeModel> GetThemes(string levelTag, int subjectId)
         {
             var subjectPage = GetSubjectPage(levelTag, subjectId);

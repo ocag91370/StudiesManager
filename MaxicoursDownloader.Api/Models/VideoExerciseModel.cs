@@ -6,10 +6,17 @@ namespace MaxicoursDownloader.Api.Models
     {
         public ItemModel Item { get; set; }
 
+        public string Title { get; set; }
+
         public string Subject { get; set; }
 
         public string Solution { get; set; }
 
         public string VideoUrl { get; set; }
+
+        public bool IsOk()
+        {
+            return !string.IsNullOrWhiteSpace(Subject) && !string.IsNullOrWhiteSpace(Solution) && !string.IsNullOrWhiteSpace(VideoUrl);
+        }
     }
 }
