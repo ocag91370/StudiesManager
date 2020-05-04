@@ -7,7 +7,7 @@ namespace MaxicoursDownloader.Api.Contracts
 {
     public interface IMaxicoursService : IDisposable
     {
-        List<SchoolLevelModel> GetAllSchoolLevels();
+        List<SchoolLevelModel> GetSchoolLevels();
 
         SchoolLevelModel GetSchoolLevel(string levelTag);
 
@@ -49,7 +49,9 @@ namespace MaxicoursDownloader.Api.Contracts
 
         VideoExerciseModel GetVideoExercise(ItemModel item);
 
-        VideoExerciseModel GetVideoExercise(string levelTag, int subjectId, int testId);
+        VideoExerciseModel GetVideoExercise(string levelTag, int subjectId, int itemId);
+
+        VideoExerciseModel GetVideoExercise(string levelTag, int subjectId, ItemKeyModel itemKey);
 
         List<ItemModel> GetVideoExercises(string levelTag, int subjectId);
 

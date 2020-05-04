@@ -1,5 +1,6 @@
 ﻿using MaxicoursDownloader.Api.Models;
 using System;
+using System.Collections.Generic;
 
 namespace MaxicoursDownloader.Api.Interfaces
 {
@@ -30,6 +31,8 @@ namespace MaxicoursDownloader.Api.Interfaces
         ExportResultModel ExportVideoLessons(string levelTag, int subjectId);
 
         ExportResultModel ExportVideoLessons(string levelTag, int subjectId, int themeId);
+
+        ExportResultModel ExportVideoExercises(string levelTag, int subjectId, List<ItemKeyModel> itemKeyList);
 
         ExportResultModel ExportVideoExercise(string levelTag, int subjectId, int videoExerciseId);
 

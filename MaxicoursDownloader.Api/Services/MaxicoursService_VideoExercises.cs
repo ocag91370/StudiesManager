@@ -12,9 +12,20 @@ namespace MaxicoursDownloader.Api.Services
     {
         private readonly string _videoExercisesCategoryKey = "video_exercises";
 
-        public VideoExerciseModel GetVideoExercise(string levelTag, int subjectId, int exerciseId)
+        public VideoExerciseModel GetVideoExercise(string levelTag, int subjectId, int itemId)
         {
-            var item = GetItem(levelTag, subjectId, _maxicoursSettings.Categories[_videoExercisesCategoryKey], exerciseId);
+            var item = GetItem(levelTag, subjectId, _maxicoursSettings.Categories[_videoExercisesCategoryKey], itemId);
+            Debug.Assert(item.IsNotNull());
+
+            var result = GetVideoExercise(item);
+            Debug.Assert(result.IsNotNull());
+
+            return result;
+        }
+
+        public VideoExerciseModel GetVideoExercise(string levelTag, int subjectId, ItemKeyModel itemKey)
+        {
+            var item = GetItem(levelTag, subjectId, _maxicoursSettings.Categories[_videoExercisesCategoryKey], itemKey);
             Debug.Assert(item.IsNotNull());
 
             var result = GetVideoExercise(item);

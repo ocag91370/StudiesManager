@@ -45,6 +45,13 @@ namespace MaxicoursDownloader.Api.Pages
             return result;
         }
 
+        public ItemEntity GetItemOfCategory(string categoryId, ItemKeyModel itemKey)
+        {
+            var result = GetItemsOfCategory(categoryId).FirstOrDefault(o => o.Id == itemKey.Id && o.Index == itemKey.Index);
+
+            return result;
+        }
+
         private ItemEntity GetItem(List<CategoryEntity> categoryList, List<ThemeEntity> themeList, IWebElement element, int index)
         {
             var url = element.GetAttribute("href");

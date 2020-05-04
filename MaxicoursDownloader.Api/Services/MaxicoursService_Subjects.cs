@@ -58,6 +58,20 @@ namespace MaxicoursDownloader.Api.Services
             return result;
         }
 
+        public ItemModel GetItem(string levelTag, int subjectId, string categoryId, ItemKeyModel itemKey)
+        {
+            var subjectPage = GetSubjectPage(levelTag, subjectId);
+            Debug.Assert(subjectPage.IsNotNull());
+
+            var item = subjectPage.GetItemOfCategory(categoryId, itemKey);
+            Debug.Assert(item.IsNotNull());
+
+            var result = _mapper.Map<ItemModel>(item);
+            Debug.Assert(result.IsNotNull());
+
+            return result;
+        }
+
         public List<ItemModel> GetItems(string levelTag, int subjectId)
         {
             var subjectPage = GetSubjectPage(levelTag, subjectId);

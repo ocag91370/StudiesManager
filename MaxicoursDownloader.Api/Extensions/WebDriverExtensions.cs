@@ -37,7 +37,8 @@ namespace MaxicoursDownloader.Api.Extensions
                     return element;
             }
 
-            return driver.FindElement(by);
+            return null;
+            //return driver.FindElement(by);
         }
     }
 }

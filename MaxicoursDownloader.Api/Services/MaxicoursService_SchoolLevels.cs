@@ -10,7 +10,7 @@ namespace MaxicoursDownloader.Api.Services
 {
     public partial class MaxicoursService : IMaxicoursService
     {
-        public List<SchoolLevelModel> GetAllSchoolLevels()
+        public List<SchoolLevelModel> GetSchoolLevels()
         {
             var page = GetHomePage();
             Debug.Assert(page.IsNotNull());
@@ -23,7 +23,7 @@ namespace MaxicoursDownloader.Api.Services
 
         public SchoolLevelModel GetSchoolLevel(string levelTag)
         {
-            var schoolLevelList = GetAllSchoolLevels();
+            var schoolLevelList = GetSchoolLevels();
             Debug.Assert(schoolLevelList.IsNotNull());
 
             var result = schoolLevelList.FirstOrDefault(o => o.Tag.IsSameAs(levelTag));
