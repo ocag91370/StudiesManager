@@ -37,6 +37,17 @@ namespace MaxicoursDownloader.Api.Services
             return result;
         }
 
+        public VideoLessonModel GetVideoLesson(string levelTag, int subjectId, ItemKeyModel itemKey)
+        {
+            var item = GetItem(levelTag, subjectId, _maxicoursSettings.Categories[_videoLessonsCategoryKey], itemKey);
+            Debug.Assert(item.IsNotNull());
+
+            var result = GetVideoLesson(item);
+            Debug.Assert(result.IsNotNull());
+
+            return result;
+        }
+
         public List<ItemModel> GetVideoLessons(string levelTag, int subjectId)
         {
             var result = GetItemsOfCategory(levelTag, subjectId, _maxicoursSettings.Categories[_videoLessonsCategoryKey]);

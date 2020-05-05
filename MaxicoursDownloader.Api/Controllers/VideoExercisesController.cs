@@ -1,7 +1,9 @@
-﻿using MaxicoursDownloader.Api.Contracts;
+﻿using AutoMapper;
+using MaxicoursDownloader.Api.Contracts;
 using MaxicoursDownloader.Api.Extensions;
 using MaxicoursDownloader.Api.Interfaces;
 using MaxicoursDownloader.Api.Models;
+using MaxicoursDownloader.Api.Models.Result;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -16,11 +18,13 @@ namespace MaxicoursDownloader.Api.Controllers
     {
         private readonly IMaxicoursService _maxicoursService;
         private readonly IExportService _exportService;
+        private readonly IMapper _mapper;
 
-        public VideoExercisesController(IMaxicoursService maxicoursService, IExportService exportService)
+        public VideoExercisesController(IMaxicoursService maxicoursService, IExportService exportService, IMapper mapper)
         {
             _maxicoursService = maxicoursService;
             _exportService = exportService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -102,21 +106,27 @@ namespace MaxicoursDownloader.Api.Controllers
                 if (!itemList.Any())
                     return NotFound();
 
-                var firstItem = itemList?.FirstOrDefault();
-                if (firstItem.IsNull())
-                    return NotFound();
-
                 var result = new
                 {
-                    firstItem.SummarySubject.SchoolLevel,
-                    firstItem.SummarySubject,
-                    VideoExercises = new
-                    {
-                        Count = itemList.Count(),
-                        Ids = itemList.Select(o => new { o.Id, o.Index })
-                    }
+                    Count = _mapper.Map<SubjectCountResultModel>(itemList),
+                    Result = _mapper.Map<SubjectKeyResultModel>(itemList)
                 };
+                /*
+                                var firstItem = itemList?.FirstOrDefault();
+                                if (firstItem.IsNull())
+                                    return NotFound();
 
+                                var result = new
+                                {
+                                    firstItem.SummarySubject.SchoolLevel,
+                                    firstItem.SummarySubject,
+                                    VideoExercises = new
+                                    {
+                                        Count = itemList.Count(),
+                                        Ids = itemList.Select(o => new { o.Id, o.Index })
+                                    }
+                                };
+                */
                 return Ok(result);
             }
             catch (Exception ex)
@@ -138,36 +148,42 @@ namespace MaxicoursDownloader.Api.Controllers
 
                 var itemList = summarySubjectList.SelectMany(summarySubject => _maxicoursService.GetVideoExercises(summarySubject)).ToList();
 
-                if (!itemList.Any())
-                    return NotFound();
-
-                var schoolLevel = summarySubjectList.First().SchoolLevel;
-
                 var result = new
                 {
-                    SchoolLevel = new { schoolLevel.Id, schoolLevel.Name },
-                    NbSubjects = summarySubjectList.Count(),
-                    NbVideoExercises = itemList.Count(),
-                    Subjects = itemList.GroupBy(
-                        o => o.SummarySubject.Id,
-                        o => o,
-                        (subjectId, subjectItemList) =>
-                        {
-                            var subject = summarySubjectList.FirstOrDefault(o => o.Id == subjectId);
-                            return new
-                            {
-                                Subject = new
-                                {
-                                    subject.Id,
-                                    subject.Name,
-                                    NbVideoExercises = subjectItemList.Count(),
-                                    Ids = subjectItemList.Select(o => new { o.Id, o.Index })
-                                }
-                            };
-                        })
-                        .ToList()
+                    Count = _mapper.Map<SchoolLevelCountResultModel>(itemList),
+                    Result = _mapper.Map<SchoolLevelKeyResultModel>(itemList)
                 };
+                /*
+                                if (!itemList.Any())
+                                    return NotFound();
 
+                                var schoolLevel = summarySubjectList.First().SchoolLevel;
+
+                                var result = new
+                                {
+                                    SchoolLevel = new { schoolLevel.Id, schoolLevel.Name },
+                                    NbSubjects = summarySubjectList.Count(),
+                                    NbVideoExercises = itemList.Count(),
+                                    Subjects = itemList.GroupBy(
+                                        o => o.SummarySubject.Id,
+                                        o => o,
+                                        (subjectId, subjectItemList) =>
+                                        {
+                                            var subject = summarySubjectList.FirstOrDefault(o => o.Id == subjectId);
+                                            return new
+                                            {
+                                                Subject = new
+                                                {
+                                                    subject.Id,
+                                                    subject.Name,
+                                                    NbVideoExercises = subjectItemList.Count(),
+                                                    Ids = subjectItemList.Select(o => new { o.Id, o.Index })
+                                                }
+                                            };
+                                        })
+                                        .ToList()
+                                };
+                */
 
                 return Ok(result);
             }

@@ -108,6 +108,25 @@ namespace MaxicoursDownloader.Api.Services
             }
         }
 
+        public ExportResultModel ExportVideoLessons(string levelTag, int subjectId, List<ItemKeyModel> itemKeyList)
+        {
+            try
+            {
+                var resultList = new List<ExportResultModel>();
+                itemKeyList.ForEach((itemKey) =>
+                {
+                    var item = _maxicoursService.GetVideoLesson(levelTag, subjectId, itemKey);
+                    resultList.Add(ExportVideoLesson(item));
+                });
+
+                return new ExportResultModel(resultList);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         public ExportResultModel ExportVideoLessons(string levelTag, int subjectId, int themeId)
         {
             try

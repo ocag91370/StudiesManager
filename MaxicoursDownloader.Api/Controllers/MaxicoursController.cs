@@ -412,7 +412,7 @@ namespace MaxicoursDownloader.Api.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
-
+/*
         [HttpGet]
         [Route("schoollevels/{levelTag}/videolessons")]
         public IActionResult GetVideoLessons(string levelTag)
@@ -480,7 +480,7 @@ namespace MaxicoursDownloader.Api.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
-
+*/
         [HttpGet]
         [Route("schoollevels/{levelTag}/videoexercises")]
         public IActionResult GetVideoExercises(string levelTag)

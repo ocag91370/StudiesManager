@@ -23,17 +23,6 @@ namespace MaxicoursDownloader.Api.Services
             return result;
         }
 
-        public VideoExerciseModel GetVideoExercise(string levelTag, int subjectId, ItemKeyModel itemKey)
-        {
-            var item = GetItem(levelTag, subjectId, _maxicoursSettings.Categories[_videoExercisesCategoryKey], itemKey);
-            Debug.Assert(item.IsNotNull());
-
-            var result = GetVideoExercise(item);
-            Debug.Assert(result.IsNotNull());
-
-            return result;
-        }
-
         public VideoExerciseModel GetVideoExercise(ItemModel item)
         {
             var page = GetVideoExercisePage(_mapper.Map<ItemEntity>(item));
@@ -43,6 +32,17 @@ namespace MaxicoursDownloader.Api.Services
             Debug.Assert(videoExercise.IsNotNull());
 
             var result = _mapper.Map<VideoExerciseModel>(videoExercise);
+            Debug.Assert(result.IsNotNull());
+
+            return result;
+        }
+
+        public VideoExerciseModel GetVideoExercise(string levelTag, int subjectId, ItemKeyModel itemKey)
+        {
+            var item = GetItem(levelTag, subjectId, _maxicoursSettings.Categories[_videoExercisesCategoryKey], itemKey);
+            Debug.Assert(item.IsNotNull());
+
+            var result = GetVideoExercise(item);
             Debug.Assert(result.IsNotNull());
 
             return result;
