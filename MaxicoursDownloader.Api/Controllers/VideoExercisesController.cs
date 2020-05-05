@@ -125,6 +125,58 @@ namespace MaxicoursDownloader.Api.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("schoollevels/{levelTag}/videoexercises/ids")]
+        public IActionResult GetIdsOfVideoExercises(string levelTag)
+        {
+            try
+            {
+                var summarySubjectList = _maxicoursService.GetSummarySubjects(levelTag);
+
+                if (!summarySubjectList.Any())
+                    return NotFound();
+
+                var itemList = summarySubjectList.SelectMany(summarySubject => _maxicoursService.GetVideoExercises(summarySubject)).ToList();
+
+                if (!itemList.Any())
+                    return NotFound();
+
+                var schoolLevel = summarySubjectList.First().SchoolLevel;
+
+                var result = new
+                {
+                    SchoolLevel = new { schoolLevel.Id, schoolLevel.Name },
+                    NbSubjects = summarySubjectList.Count(),
+                    NbVideoExercises = itemList.Count(),
+                    Subjects = itemList.GroupBy(
+                        o => o.SummarySubject.Id,
+                        o => o,
+                        (subjectId, subjectItemList) =>
+                        {
+                            var subject = summarySubjectList.FirstOrDefault(o => o.Id == subjectId);
+                            return new
+                            {
+                                Subject = new
+                                {
+                                    subject.Id,
+                                    subject.Name,
+                                    NbVideoExercises = subjectItemList.Count(),
+                                    Ids = subjectItemList.Select(o => new { o.Id, o.Index })
+                                }
+                            };
+                        })
+                        .ToList()
+                };
+
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
         [HttpPost]
         [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/videoexercises/export")]
         public IActionResult ExportVideoExercises(string levelTag, int subjectId, [FromBody]List<ItemKeyModel> itemKeyList)
