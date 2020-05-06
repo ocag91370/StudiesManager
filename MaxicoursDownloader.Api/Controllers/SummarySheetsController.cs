@@ -12,24 +12,24 @@ namespace MaxicoursDownloader.Api.Controllers
 {
     [ApiController]
     [Route("maxicours")]
-    public class LessonsController : ControllerBase
+    public class SummarySheetsController : ControllerBase
     {
         private readonly IMaxicoursService _maxicoursService;
         private readonly IMapper _mapper;
 
-        public LessonsController(IMaxicoursService maxicoursService, IMapper mapper)
+        public SummarySheetsController(IMaxicoursService maxicoursService, IMapper mapper)
         {
             _maxicoursService = maxicoursService;
             _mapper = mapper;
         }
 
         [HttpGet]
-        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/lessons")]
-        public IActionResult GetLessons(string levelTag, int subjectId)
+        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/summarysheets")]
+        public IActionResult GetSummarySheets(string levelTag, int subjectId)
         {
             try
             {
-                var itemList = _maxicoursService.GetLessons(levelTag, subjectId);
+                var itemList = _maxicoursService.GetSummarySheets(levelTag, subjectId);
 
                 if (!itemList.Any())
                     return NotFound();
@@ -60,12 +60,12 @@ namespace MaxicoursDownloader.Api.Controllers
         }
 
         [HttpGet]
-        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/lessons/{lessonId:int}")]
-        public IActionResult GetLesson(string levelTag, int subjectId, int lessonId)
+        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/summarysheets/{summarySheetId:int}")]
+        public IActionResult GetSummarySheet(string levelTag, int subjectId, int summarySheetId)
         {
             try
             {
-                var item = _maxicoursService.GetLessons(levelTag, subjectId).FirstOrDefault(o => o.Id == lessonId);
+                var item = _maxicoursService.GetSummarySheets(levelTag, subjectId).FirstOrDefault(o => o.Id == summarySheetId);
 
                 if (item.IsNull())
                     return NotFound();
@@ -88,8 +88,8 @@ namespace MaxicoursDownloader.Api.Controllers
         }
 
         [HttpGet]
-        [Route("schoollevels/{levelTag}/lessons/ids")]
-        public IActionResult GetIdsOfLessons(string levelTag)
+        [Route("schoollevels/{levelTag}/summarysheets/ids")]
+        public IActionResult GetIdsOfSummarySheets(string levelTag)
         {
             try
             {
@@ -98,7 +98,7 @@ namespace MaxicoursDownloader.Api.Controllers
                 if (!summarySubjectList.Any())
                     return NotFound();
 
-                var itemList = summarySubjectList.SelectMany(summarySubject => _maxicoursService.GetLessons(summarySubject)).ToList();
+                var itemList = summarySubjectList.SelectMany(summarySubject => _maxicoursService.GetSummarySheets(summarySubject)).ToList();
 
                 if (!itemList.Any())
                     return NotFound();
@@ -118,12 +118,12 @@ namespace MaxicoursDownloader.Api.Controllers
         }
 
         [HttpGet]
-        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/lessons/ids")]
-        public IActionResult GetIdsOfLessons(string levelTag, int subjectId)
+        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/summarysheets/ids")]
+        public IActionResult GetIdsOfSummarySheets(string levelTag, int subjectId)
         {
             try
             {
-                var itemList = _maxicoursService.GetLessons(levelTag, subjectId);
+                var itemList = _maxicoursService.GetSummarySheets(levelTag, subjectId);
 
                 if (!itemList.Any())
                     return NotFound();

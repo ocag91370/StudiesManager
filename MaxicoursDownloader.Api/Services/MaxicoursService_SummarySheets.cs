@@ -53,5 +53,24 @@ namespace MaxicoursDownloader.Api.Services
 
             return result;
         }
+
+        public SummarySheetModel GetSummarySheet(string levelTag, int subjectId, ItemKeyModel itemKey)
+        {
+            var item = GetItem(levelTag, subjectId, _maxicoursSettings.Categories[_summarySheetsCategoryKey], itemKey);
+            Debug.Assert(item.IsNotNull());
+
+            var result = GetSummarySheet(item);
+            Debug.Assert(result.IsNotNull());
+
+            return result;
+        }
+
+        public List<ItemModel> GetSummarySheets(SummarySubjectModel summarySubject)
+        {
+            var result = GetItemsOfCategory(summarySubject, _maxicoursSettings.Categories[_summarySheetsCategoryKey]);
+            Debug.Assert(result.IsNotNull());
+
+            return result;
+        }
     }
 }

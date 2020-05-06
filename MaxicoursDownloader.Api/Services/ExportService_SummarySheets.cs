@@ -121,5 +121,42 @@ namespace MaxicoursDownloader.Api.Services
                 throw ex;
             }
         }
+
+        public ExportResultModel ExportSummarySheets(string levelTag, int subjectId, int themeId)
+        {
+            try
+            {
+                string categoryId = _maxicoursSettings.Categories[_summarySheetsCategoryKey];
+
+                var itemList = _maxicoursService.GetItemsOfCategory(levelTag, subjectId, categoryId)
+                    .Where(o => o.Theme.Id == themeId)
+                    .ToList();
+
+                return ExportSummarySheets(itemList);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        public ExportResultModel ExportSummarySheets(string levelTag, int subjectId, List<ItemKeyModel> itemKeyList)
+        {
+            try
+            {
+                var resultList = new List<ExportResultModel>();
+                itemKeyList.ForEach((itemKey) =>
+                {
+                    var item = _maxicoursService.GetSummarySheet(levelTag, subjectId, itemKey);
+                    resultList.Add(ExportSummarySheet(item));
+                });
+
+                return new ExportResultModel(resultList);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

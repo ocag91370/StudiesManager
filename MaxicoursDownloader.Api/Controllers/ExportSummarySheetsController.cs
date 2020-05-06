@@ -12,22 +12,22 @@ namespace MaxicoursDownloader.Api.Controllers
 {
     [ApiController]
     [Route("maxicours")]
-    public class ExportLessonsController : ControllerBase
+    public class ExportSummarySheetsController : ControllerBase
     {
         private readonly IExportService _exportService;
 
-        public ExportLessonsController(IExportService exportService)
+        public ExportSummarySheetsController(IExportService exportService)
         {
             _exportService = exportService;
         }
 
         [HttpGet]
-        [Route("schoollevels/{levelTag}/lessons/export")]
-        public IActionResult ExportSchoolLevelLessons(string levelTag)
+        [Route("schoollevels/{levelTag}/summarysheets/export")]
+        public IActionResult ExportSchoolLevelSummarySheets(string levelTag)
         {
             try
             {
-                var exportResult = _exportService.ExportLessons(levelTag);
+                var exportResult = _exportService.ExportSummarySheets(levelTag);
 
                 if (exportResult.NbFiles <= 0)
                     return NotFound();
@@ -47,12 +47,12 @@ namespace MaxicoursDownloader.Api.Controllers
         }
 
         [HttpGet]
-        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/lessons/export")]
-        public IActionResult ExportSubjectLessons(string levelTag, int subjectId)
+        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/summarysheets/export")]
+        public IActionResult ExportSubjectSummarySheets(string levelTag, int subjectId)
         {
             try
             {
-                var exportResult = _exportService.ExportLessons(levelTag, subjectId);
+                var exportResult = _exportService.ExportSummarySheets(levelTag, subjectId);
 
                 if (exportResult.NbFiles <= 0)
                     return NotFound();
@@ -72,12 +72,12 @@ namespace MaxicoursDownloader.Api.Controllers
         }
 
         [HttpGet]
-        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/themes/{themeId}/lessons/export")]
-        public IActionResult ExportThemeLessons(string levelTag, int subjectId, int themeId)
+        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/themes/{themeId}/summarysheets/export")]
+        public IActionResult ExportSummarySheets(string levelTag, int subjectId, int themeId)
         {
             try
             {
-                var exportResult = _exportService.ExportLessons(levelTag, subjectId, themeId);
+                var exportResult = _exportService.ExportSummarySheets(levelTag, subjectId, themeId);
 
                 if (exportResult.NbFiles <= 0)
                     return NotFound();
@@ -97,17 +97,17 @@ namespace MaxicoursDownloader.Api.Controllers
         }
 
         [HttpGet]
-        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/lessons/{lessonId:int}")]
-        public IActionResult ExportLesson(string levelTag, int subjectId, int lessonId)
+        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/summarysheets/{summarySheetId:int}")]
+        public IActionResult ExportSummarySheet(string levelTag, int subjectId, int summarySheetId)
         {
             try
             {
-                var exportResult = _exportService.ExportLesson(levelTag, subjectId, lessonId);
+                var exportResult = _exportService.ExportSummarySheet(levelTag, subjectId, summarySheetId);
 
                 if (exportResult.NbFiles <= 0)
                     return NotFound();
 
-                return Ok("Lesson successfully exported.");
+                return Ok("Item successfully exported.");
             }
             catch (Exception ex)
             {
@@ -116,12 +116,12 @@ namespace MaxicoursDownloader.Api.Controllers
         }
 
         [HttpPost]
-        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/lessons/export")]
-        public IActionResult ExportLessons(string levelTag, int subjectId, [FromBody]List<ItemKeyModel> itemKeyList)
+        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/summarysheets/export")]
+        public IActionResult ExportSummarySheets(string levelTag, int subjectId, [FromBody]List<ItemKeyModel> itemKeyList)
         {
             try
             {
-                var exportResult = _exportService.ExportLessons(levelTag, subjectId, itemKeyList);
+                var exportResult = _exportService.ExportSummarySheets(levelTag, subjectId, itemKeyList);
 
                 if (exportResult.NbFiles <= 0)
                     return NotFound();
