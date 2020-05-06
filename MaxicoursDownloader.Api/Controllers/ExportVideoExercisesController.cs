@@ -12,22 +12,22 @@ namespace MaxicoursDownloader.Api.Controllers
 {
     [ApiController]
     [Route("maxicours")]
-    public class ExportVideoLessonsController : ControllerBase
+    public class ExportVideoExercisesController : ControllerBase
     {
         private readonly IExportService _exportService;
 
-        public ExportVideoLessonsController(IExportService exportService)
+        public ExportVideoExercisesController(IExportService exportService)
         {
             _exportService = exportService;
         }
 
         [HttpPost]
-        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/videolessons/export")]
-        public IActionResult ExportVideoLessons(string levelTag, int subjectId, [FromBody]List<ItemKeyModel> itemKeyList)
+        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/videoexercises/export")]
+        public IActionResult ExportVideoExercises(string levelTag, int subjectId, [FromBody]List<ItemKeyModel> itemKeyList)
         {
             try
             {
-                var exportResult = _exportService.ExportVideoLessons(levelTag, subjectId, itemKeyList);
+                var exportResult = _exportService.ExportVideoExercises(levelTag, subjectId, itemKeyList);
 
                 if (exportResult.NbFiles <= 0)
                     return NotFound();

@@ -17,13 +17,11 @@ namespace MaxicoursDownloader.Api.Controllers
     public class VideoExercisesController : ControllerBase
     {
         private readonly IMaxicoursService _maxicoursService;
-        private readonly IExportService _exportService;
         private readonly IMapper _mapper;
 
-        public VideoExercisesController(IMaxicoursService maxicoursService, IExportService exportService, IMapper mapper)
+        public VideoExercisesController(IMaxicoursService maxicoursService, IMapper mapper)
         {
             _maxicoursService = maxicoursService;
-            _exportService = exportService;
             _mapper = mapper;
         }
 
@@ -111,22 +109,7 @@ namespace MaxicoursDownloader.Api.Controllers
                     Count = _mapper.Map<SubjectCountResultModel>(itemList),
                     Result = _mapper.Map<SubjectKeyResultModel>(itemList)
                 };
-                /*
-                                var firstItem = itemList?.FirstOrDefault();
-                                if (firstItem.IsNull())
-                                    return NotFound();
 
-                                var result = new
-                                {
-                                    firstItem.SummarySubject.SchoolLevel,
-                                    firstItem.SummarySubject,
-                                    VideoExercises = new
-                                    {
-                                        Count = itemList.Count(),
-                                        Ids = itemList.Select(o => new { o.Id, o.Index })
-                                    }
-                                };
-                */
                 return Ok(result);
             }
             catch (Exception ex)
@@ -148,67 +131,13 @@ namespace MaxicoursDownloader.Api.Controllers
 
                 var itemList = summarySubjectList.SelectMany(summarySubject => _maxicoursService.GetVideoExercises(summarySubject)).ToList();
 
-                var result = new
-                {
-                    Count = _mapper.Map<SchoolLevelCountResultModel>(itemList),
-                    Result = _mapper.Map<SchoolLevelKeyResultModel>(itemList)
-                };
-                /*
-                                if (!itemList.Any())
-                                    return NotFound();
-
-                                var schoolLevel = summarySubjectList.First().SchoolLevel;
-
-                                var result = new
-                                {
-                                    SchoolLevel = new { schoolLevel.Id, schoolLevel.Name },
-                                    NbSubjects = summarySubjectList.Count(),
-                                    NbVideoExercises = itemList.Count(),
-                                    Subjects = itemList.GroupBy(
-                                        o => o.SummarySubject.Id,
-                                        o => o,
-                                        (subjectId, subjectItemList) =>
-                                        {
-                                            var subject = summarySubjectList.FirstOrDefault(o => o.Id == subjectId);
-                                            return new
-                                            {
-                                                Subject = new
-                                                {
-                                                    subject.Id,
-                                                    subject.Name,
-                                                    NbVideoExercises = subjectItemList.Count(),
-                                                    Ids = subjectItemList.Select(o => new { o.Id, o.Index })
-                                                }
-                                            };
-                                        })
-                                        .ToList()
-                                };
-                */
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
-            }
-        }
-
-        [HttpPost]
-        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/videoexercises/export")]
-        public IActionResult ExportVideoExercises(string levelTag, int subjectId, [FromBody]List<ItemKeyModel> itemKeyList)
-        {
-            try
-            {
-                var exportResult = _exportService.ExportVideoExercises(levelTag, subjectId, itemKeyList);
-
-                if (exportResult.NbFiles <= 0)
+                if (!itemList.Any())
                     return NotFound();
 
                 var result = new
                 {
-                    Tests = $"{exportResult.NbItems} video exercises(s) identified.",
-                    Duplicates = $"{exportResult.NbDuplicates} video exercises(s) identified.",
-                    Files = $"{exportResult.NbFiles} video exercises(s) successfully exported."
+                    Count = _mapper.Map<SchoolLevelCountResultModel>(itemList),
+                    Result = _mapper.Map<SchoolLevelKeyResultModel>(itemList)
                 };
 
                 return Ok(result);

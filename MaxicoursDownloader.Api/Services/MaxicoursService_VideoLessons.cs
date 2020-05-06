@@ -55,5 +55,13 @@ namespace MaxicoursDownloader.Api.Services
 
             return result;
         }
+
+        public List<ItemModel> GetVideoLessons(SummarySubjectModel summarySubject)
+        {
+            var result = GetItemsOfCategory(summarySubject, _maxicoursSettings.Categories[_videoLessonsCategoryKey]);
+            Debug.Assert(result.IsNotNull());
+
+            return result;
+        }
     }
 }

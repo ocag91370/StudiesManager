@@ -1,6 +1,8 @@
-﻿using MaxicoursDownloader.Api.Contracts;
+﻿using AutoMapper;
+using MaxicoursDownloader.Api.Contracts;
 using MaxicoursDownloader.Api.Extensions;
 using MaxicoursDownloader.Api.Interfaces;
+using MaxicoursDownloader.Api.Models.Result;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
@@ -13,47 +15,12 @@ namespace MaxicoursDownloader.Api.Controllers
     public class LessonsController : ControllerBase
     {
         private readonly IMaxicoursService _maxicoursService;
-        private readonly IExportService _exportService;
+        private readonly IMapper _mapper;
 
-        public LessonsController(IMaxicoursService maxicoursService, IExportService exportService)
+        public LessonsController(IMaxicoursService maxicoursService, IMapper mapper)
         {
             _maxicoursService = maxicoursService;
-        }
-
-        #region Export
-
-        [HttpGet]
-        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/lessons/ids")]
-        public IActionResult GetIdsOfLessons(string levelTag, int subjectId)
-        {
-            try
-            {
-                var itemList = _maxicoursService.GetLessons(levelTag, subjectId);
-
-                if (!itemList.Any())
-                    return NotFound();
-
-                var firstItem = itemList?.FirstOrDefault();
-                if (firstItem.IsNull())
-                    return NotFound();
-
-                var result = new
-                {
-                    firstItem.SummarySubject.SchoolLevel,
-                    firstItem.SummarySubject,
-                    Lessons = new
-                    {
-                        Count = itemList.Count(),
-                        Ids = itemList.Select(o => o.Id)
-                    }
-                };
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
-            }
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -120,26 +87,26 @@ namespace MaxicoursDownloader.Api.Controllers
             }
         }
 
-        #endregion
-
-        #region Export
-
         [HttpGet]
-        [Route("schoollevels/{levelTag}/lessons/export")]
-        public IActionResult ExportSchoolLevelLessons(string levelTag)
+        [Route("schoollevels/{levelTag}/lessons/ids")]
+        public IActionResult GetIdsOfLessons(string levelTag)
         {
             try
             {
-                var exportResult = _exportService.ExportLessons(levelTag);
+                var summarySubjectList = _maxicoursService.GetSummarySubjects(levelTag);
 
-                if (exportResult.NbFiles <= 0)
+                if (!summarySubjectList.Any())
+                    return NotFound();
+
+                var itemList = summarySubjectList.SelectMany(summarySubject => _maxicoursService.GetLessons(summarySubject)).ToList();
+
+                if (!itemList.Any())
                     return NotFound();
 
                 var result = new
                 {
-                    Lessons = $"{exportResult.NbItems} lesson(s) identified.",
-                    Duplicates = $"{exportResult.NbDuplicates} lesson(s) identified.",
-                    Files = $"{exportResult.NbFiles} lesson(s) successfully exported."
+                    Count = _mapper.Map<SchoolLevelCountResultModel>(itemList),
+                    Result = _mapper.Map<SchoolLevelKeyResultModel>(itemList)
                 };
 
                 return Ok(result);
@@ -151,21 +118,20 @@ namespace MaxicoursDownloader.Api.Controllers
         }
 
         [HttpGet]
-        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/lessons/export")]
-        public IActionResult ExportSubjectLessons(string levelTag, int subjectId)
+        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/lessons/ids")]
+        public IActionResult GetIdsOfLessons(string levelTag, int subjectId)
         {
             try
             {
-                var exportResult = _exportService.ExportLessons(levelTag, subjectId);
+                var itemList = _maxicoursService.GetLessons(levelTag, subjectId);
 
-                if (exportResult.NbFiles <= 0)
+                if (!itemList.Any())
                     return NotFound();
 
                 var result = new
                 {
-                    Lessons = $"{exportResult.NbItems} lesson(s) identified.",
-                    Duplicates = $"{exportResult.NbDuplicates} lesson(s) identified.",
-                    Files = $"{exportResult.NbFiles} lesson(s) successfully exported."
+                    Count = _mapper.Map<SubjectCountResultModel>(itemList),
+                    Result = _mapper.Map<SubjectKeyResultModel>(itemList)
                 };
 
                 return Ok(result);
@@ -175,52 +141,5 @@ namespace MaxicoursDownloader.Api.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
-
-        [HttpGet]
-        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/themes/{themeId}/lessons/export")]
-        public IActionResult ExportThemeLessons(string levelTag, int subjectId, int themeId)
-        {
-            try
-            {
-                var exportResult = _exportService.ExportLessons(levelTag, subjectId, themeId);
-
-                if (exportResult.NbFiles <= 0)
-                    return NotFound();
-
-                var result = new
-                {
-                    Lessons = $"{exportResult.NbItems} lesson(s) identified.",
-                    Duplicates = $"{exportResult.NbDuplicates} lesson(s) identified.",
-                    Files = $"{exportResult.NbFiles} lesson(s) successfully exported."
-                };
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
-            }
-        }
-
-        [HttpGet]
-        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/lessons/{lessonId:int}")]
-        public IActionResult ExportLesson(string levelTag, int subjectId, int lessonId)
-        {
-            try
-            {
-                var exportResult = _exportService.ExportLesson(levelTag, subjectId, lessonId);
-
-                if (exportResult.NbFiles <= 0)
-                    return NotFound();
-
-                return Ok("Lesson successfully exported.");
-            }
-            catch (Exception ex)
-            {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
-            }
-        }
-
-        #endregion
     }
 }

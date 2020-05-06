@@ -41,5 +41,24 @@ namespace MaxicoursDownloader.Api.Services
 
             return result;
         }
+
+        public LessonModel GetLesson(string levelTag, int subjectId, ItemKeyModel itemKey)
+        {
+            var item = GetItem(levelTag, subjectId, _maxicoursSettings.Categories[_lessonsCategoryKey], itemKey);
+            Debug.Assert(item.IsNotNull());
+
+            var result = GetLesson(item);
+            Debug.Assert(result.IsNotNull());
+
+            return result;
+        }
+
+        public List<ItemModel> GetLessons(SummarySubjectModel summarySubject)
+        {
+            var result = GetItemsOfCategory(summarySubject, _maxicoursSettings.Categories[_lessonsCategoryKey]);
+            Debug.Assert(result.IsNotNull());
+
+            return result;
+        }
     }
 }

@@ -37,7 +37,11 @@ namespace MaxicoursDownloader.Api.Contracts
 
         LessonModel GetLesson(string levelTag, int subjectId, int lessonId);
 
+        LessonModel GetLesson(string levelTag, int subjectId, ItemKeyModel itemKey);
+
         LessonModel GetLesson(ItemModel item);
+
+        List<ItemModel> GetLessons(SummarySubjectModel summarySubject);
 
         #endregion
 
@@ -71,6 +75,8 @@ namespace MaxicoursDownloader.Api.Contracts
 
         VideoLessonModel GetVideoLesson(string levelTag, int subjectId, ItemKeyModel itemKey);
 
+        List<ItemModel> GetVideoLessons(SummarySubjectModel summarySubject);
+
         #endregion
 
         #region Video exercises
@@ -81,9 +87,9 @@ namespace MaxicoursDownloader.Api.Contracts
 
         List<ItemModel> GetVideoExercises(string levelTag, int subjectId);
 
-        List<ItemModel> GetVideoExercises(SummarySubjectModel summarySubject);
-
         VideoExerciseModel GetVideoExercise(string levelTag, int subjectId, ItemKeyModel itemKey);
+
+        List<ItemModel> GetVideoExercises(SummarySubjectModel summarySubject);
 
         #endregion
     }

@@ -108,10 +108,10 @@ namespace MaxicoursDownloader.Api.Services
             //@this.PrintOptions.InputEncoding = Encoding.UTF8;
             @this.PrintOptions.Zoom = 100;
             @this.PrintOptions.CreatePdfFormsFromHtml = true;
-            @this.PrintOptions.MarginTop = 10;
+            @this.PrintOptions.MarginTop = 20;
             @this.PrintOptions.MarginBottom = 20;
-            @this.PrintOptions.MarginLeft = 0;
-            @this.PrintOptions.MarginRight = 0;
+            @this.PrintOptions.MarginLeft = 20;
+            @this.PrintOptions.MarginRight = 20;
             @this.PrintOptions.FirstPageNumber = 1;
         }
 
@@ -141,6 +141,15 @@ namespace MaxicoursDownloader.Api.Services
 
         private void SetHeader(ItemModel item, HtmlToPdf @this)
         {
+            var html = $"<div style='font-family: Verdana,Arial,Helvetica,sans-serif; font-weight: bold; font-size: 13pt; color: #712958; text-align: center;'>{item.Name}</div>";
+
+            @this.PrintOptions.Header = new HtmlHeaderFooter()
+            {
+                Height = 15,
+                FontFamily = "Comic Sans MS, cursive",
+                HtmlFragment = html,
+                DrawDividerLine = false,
+            };
         }
 
         private void SetFooter(ItemModel item, HtmlToPdf @this)
