@@ -50,5 +50,24 @@ namespace MaxicoursDownloader.Api.Services
 
             return result;
         }
+
+        public TestModel GetTest(string levelTag, int subjectId, ItemKeyModel itemKey)
+        {
+            var item = GetItem(levelTag, subjectId, _maxicoursSettings.Categories[_testsCategoryKey], itemKey);
+            Debug.Assert(item.IsNotNull());
+
+            var result = GetTest(item);
+            Debug.Assert(result.IsNotNull());
+
+            return result;
+        }
+
+        public List<ItemModel> GetTests(SummarySubjectModel summarySubject)
+        {
+            var result = GetItemsOfCategory(summarySubject, _maxicoursSettings.Categories[_testsCategoryKey]);
+            Debug.Assert(result.IsNotNull());
+
+            return result;
+        }
     }
 }

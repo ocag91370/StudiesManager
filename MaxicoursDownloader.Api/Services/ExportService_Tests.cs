@@ -94,5 +94,24 @@ namespace MaxicoursDownloader.Api.Services
                 throw ex;
             }
         }
+
+        public ExportResultModel ExportTests(string levelTag, int subjectId, List<ItemKeyModel> itemKeyList)
+        {
+            try
+            {
+                var resultList = new List<ExportResultModel>();
+                itemKeyList.ForEach((itemKey) =>
+                {
+                    var item = _maxicoursService.GetTest(levelTag, subjectId, itemKey);
+                    resultList.Add(ExportTest(item));
+                });
+
+                return new ExportResultModel(resultList);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
     }
 }

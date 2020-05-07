@@ -67,6 +67,10 @@ namespace MaxicoursDownloader.Api.Contracts
 
         List<ItemModel> GetTests(string levelTag, int subjectId);
 
+        TestModel GetTest(string levelTag, int subjectId, ItemKeyModel itemKey);
+
+        List<ItemModel> GetTests(SummarySubjectModel summarySubject);
+
         #endregion
 
         #region Video lessons

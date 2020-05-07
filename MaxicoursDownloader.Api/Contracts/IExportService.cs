@@ -40,6 +40,8 @@ namespace MaxicoursDownloader.Api.Interfaces
 
         ExportResultModel ExportTests(string levelTag);
 
+        ExportResultModel ExportTests(string levelTag, int subjectId, List<ItemKeyModel> itemKeyList);
+
         #endregion
 
         #region Video lessons
