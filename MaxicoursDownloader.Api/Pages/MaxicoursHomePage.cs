@@ -9,9 +9,7 @@ namespace MaxicoursDownloader.Api.Pages
 {
     public class MaxicoursHomePage : BasePage
     {
-        private IWebElement ContainerElement => Driver.FindElement(By.ClassName("choix-des-classes"));
-
-        private IEnumerable<IWebElement> SchoolLevelListElements => ContainerElement.FindElements(By.XPath("//li/a"));
+        private IEnumerable<IWebElement> SchoolLevelListElements => Driver.FindElements(By.XPath("//*[@class='choix-des-classes']//li/a"));
 
         public MaxicoursHomePage(MaxicoursSettingsModel settings, IWebDriver driver, string url) : base(settings, driver, url)
         {

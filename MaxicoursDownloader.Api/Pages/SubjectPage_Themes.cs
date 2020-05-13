@@ -12,7 +12,7 @@ namespace MaxicoursDownloader.Api.Pages
     {
         private IWebElement ThemesContainerElement => ContainerElement.FindElement(By.XPath("//*[@class = 'lsi-cartouche-milieu']"));
 
-        private IEnumerable<IWebElement> ThemeElementList => ThemesContainerElement.FindElements(By.TagName("a"));
+        private IEnumerable<IWebElement> ThemeElementList => ThemesContainerElement.FindElements(By.XPath("//*[@class = 'td-label']//*[@class = 'item-url']"));
         private IWebElement ThemeElement(int themeId) => ThemesContainerElement.FindElement(By.XPath($"//a[contains(@href, '/{themeId}')]"));
 
         public List<ThemeEntity> GetAllThemes()
