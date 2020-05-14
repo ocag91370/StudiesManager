@@ -14,18 +14,12 @@ namespace MaxicoursDownloader.Api.Pages
     {
         private readonly SchoolLevelEntity _schoolLevelEntity;
 
-        private IWebElement ContainerElement => Driver.FindElement(By.ClassName("mes-matieres"));
-
-        private IWebElement TitleElement => ContainerElement.FindElement(By.ClassName("lsi-txt"));
-
-        private IEnumerable<IWebElement> SubjectElementList => ContainerElement.FindElements(By.XPath("//*[@class='td-label']/a"));
+        private IEnumerable<IWebElement> SubjectElementList => Driver.FindElements(By.XPath("//*[@class = 'mes-matieres']//a[*[@class='matiere-label']]"));
 
         public SchoolLevelPage(MaxicoursSettingsModel settings, IWebDriver driver, SchoolLevelEntity schoolLevelEntity) : base(settings, driver, schoolLevelEntity.Url)
         {
             _schoolLevelEntity = schoolLevelEntity;
         }
-
-        public string Title => TitleElement.Text;
 
         public List<SummarySubjectEntity> GetAllSummarySubjects()
         {
