@@ -8,7 +8,7 @@ namespace MaxicoursDownloader.Api.Pages
 {
     public partial class SubjectPage : BasePage
     {
-        private IWebElement CategoriesContainerElement => ContainerElement.FindElement(By.XPath("//*[@class = 'lsi-crn-container']//*[@class = 'onglets']"));
+        private IWebElement CategoriesContainerElement => ContainerElement.FindElement(By.XPath("//*[@class = 'onglets-panes']"));
 
         private IEnumerable<IWebElement> CategoryElementList => CategoriesContainerElement.FindElements(By.TagName("a"));
 

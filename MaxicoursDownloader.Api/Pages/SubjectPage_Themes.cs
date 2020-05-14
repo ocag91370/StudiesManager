@@ -10,10 +10,9 @@ namespace MaxicoursDownloader.Api.Pages
 {
     public partial class SubjectPage : BasePage
     {
-        private IWebElement ThemesContainerElement => ContainerElement.FindElement(By.XPath("//*[@class = 'lsi-cartouche-milieu']"));
+        private IEnumerable<IWebElement> ThemeElementList => ContainerElement.FindElements(By.XPath("//*[contains(@class, '_2020-cartouche-matiere')]//*[@class = 'item-url']"));
 
-        private IEnumerable<IWebElement> ThemeElementList => ThemesContainerElement.FindElements(By.XPath("//*[@class = 'td-label']//*[@class = 'item-url']"));
-        private IWebElement ThemeElement(int themeId) => ThemesContainerElement.FindElement(By.XPath($"//a[contains(@href, '/{themeId}')]"));
+        private IWebElement ThemeElement(int themeId) => ContainerElement.FindElement(By.XPath($"//*[contains(@class, '_2020-cartouche-matiere')]/a[contains(@href, '/{themeId}')]"));
 
         public List<ThemeEntity> GetAllThemes()
         {

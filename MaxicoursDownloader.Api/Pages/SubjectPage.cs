@@ -14,7 +14,7 @@ namespace MaxicoursDownloader.Api.Pages
     {
         private readonly SummarySubjectEntity _summarySubject;
 
-        private IWebElement ContainerElement => Driver.FindElement(By.XPath("//*[@class = 'lsi-arbo']"));
+        private IWebElement ContainerElement => Driver.FindElement(By.XPath("//*[@class = '_2020-lsi-arbo']"));
 
         public SubjectPage(MaxicoursSettingsModel settings, IWebDriver driver, SummarySubjectEntity summarySubject) : base(settings, driver, summarySubject.Url)
         {
