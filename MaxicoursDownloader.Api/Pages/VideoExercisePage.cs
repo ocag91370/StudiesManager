@@ -5,6 +5,7 @@ using MaxicoursDownloader.Models;
 using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -40,13 +41,16 @@ namespace MaxicoursDownloader.Api.Pages
             var solution = GetHtmlPage(subject + GetSeparator("Solution") + SolutionElement.GetOuterHtml());
 
             VideoSolutionButtonElement.Click();
-            var videoUrl = string.Empty;
-            do
+
+            var videoElement = Driver.FindElement(By.XPath("//*[@class = 'mxc-jp-jplayer']//video[@src]"), 1, 5);
+            var videoUrl = videoElement.GetAttribute("src");
+            Debug.Assert(!string.IsNullOrWhiteSpace(videoUrl));
+
+            if (videoUrl.Contains("423453"))
             {
-                var videoSolutionElement = Driver.FindElement(By.XPath("//*[@class = 'mxc-jp-jplayer']//video[@src]"), 1, 5);
-                videoUrl = videoSolutionElement?.GetAttribute("src") ?? string.Empty;
+                videoElement = Driver.FindElement(By.XPath("//*[@class = 'mxc-jp-jplayer']//video[@src and (contains(@src, '423453') = false)]"), 1, 10);
+                videoUrl = videoElement.GetAttribute("src");
             }
-            while (videoUrl.Contains("423453-high.mp4"));
 
             return new VideoExerciseEntity
             {
