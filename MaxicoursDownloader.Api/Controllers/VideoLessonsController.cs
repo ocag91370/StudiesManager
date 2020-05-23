@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using MaxicoursDownloader.Api.Contracts;
-using StudiesManager.Common;
+using StudiesManager.Common.Extensions;
 using MaxicoursDownloader.Api.Models.Result;
 using Microsoft.AspNetCore.Mvc;
 using System;

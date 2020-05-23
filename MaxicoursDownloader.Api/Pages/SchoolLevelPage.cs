@@ -1,7 +1,6 @@
 ﻿using MaxicoursDownloader.Api.Entities;
-using MaxicoursDownloader.Api.Extensions;
+using StudiesManager.Common.Extensions;
 using MaxicoursDownloader.Models;
-using Microsoft.Extensions.Options;
 using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;

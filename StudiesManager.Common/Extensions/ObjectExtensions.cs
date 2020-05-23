@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace StudiesManager.Common
+namespace StudiesManager.Common.Extensions
 {
     public static class ObjectExtensions
     {

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace StudiesManager.Common
+namespace StudiesManager.Common.Extensions
 {
     public static class StringExtensions
     {

@@ -1,5 +1,5 @@
 ﻿using MaxicoursDownloader.Api.Entities;
-using MaxicoursDownloader.Api.Extensions;
+using StudiesManager.Common.Extensions;
 using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;

@@ -1,6 +1,5 @@
-﻿using AutoMapper;
-using MaxicoursDownloader.Api.Contracts;
-using StudiesManager.Common;
+﻿using MaxicoursDownloader.Api.Contracts;
+using StudiesManager.Common.Extensions;
 using MaxicoursDownloader.Api.Models;
 using System.Collections.Generic;
 using System.Diagnostics;

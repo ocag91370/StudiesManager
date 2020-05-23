@@ -1,6 +1,6 @@
 ﻿using MaxicoursDownloader.Api.Contracts;
 using MaxicoursDownloader.Api.Entities;
-using StudiesManager.Common;
+using StudiesManager.Common.Extensions;
 using MaxicoursDownloader.Api.Models;
 using System.Collections.Generic;
 using System.Diagnostics;
