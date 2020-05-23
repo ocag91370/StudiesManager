@@ -1,13 +1,11 @@
 ﻿using MaxicoursDownloader.Api.Entities;
-using MaxicoursDownloader.Api.Extensions;
-using MaxicoursDownloader.Api.Models;
+using StudiesManager.Services.Extensions;
 using MaxicoursDownloader.Models;
 using OpenQA.Selenium;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MaxicoursDownloader.Api.Pages
 {

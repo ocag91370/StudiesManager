@@ -1,7 +1,6 @@
 ﻿using MaxicoursDownloader.Api.Contracts;
-using MaxicoursDownloader.Api.Extensions;
+using StudiesManager.Common;
 using MaxicoursDownloader.Api.Models;
-using MaxicoursDownloader.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;

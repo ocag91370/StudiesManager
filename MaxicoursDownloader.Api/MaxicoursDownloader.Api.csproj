@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\StudiesManager.Common\StudiesManager.Common.csproj" />
     <ProjectReference Include="..\StudiesManager.Services\StudiesManager.Services.csproj" />
   </ItemGroup>
 
