@@ -28,9 +28,11 @@ namespace StudiesManager.Services
                 //    return new RemoteWebDriver(new Uri("http://mac-ip-address:the-opened-port"), DesiredCapabilities.Safari());
                 case WebBrowserType.Chrome:
                 default:
-                    var chromeOption = new ChromeOptions();
-                    chromeOption.AddArguments("--disable-extensions");
-                    return new ChromeDriver(chromeOption);
+                    var chromeOptions = new ChromeOptions();
+                    chromeOptions.AddArguments("--disable-extensions");
+                    chromeOptions.AddUserProfilePreference("download.default_directory", @"C:\Perso\Export");
+                    chromeOptions.PageLoadStrategy = PageLoadStrategy.Normal;
+                    return new ChromeDriver(chromeOptions);
             }
         }
     }

@@ -5,7 +5,14 @@ using System.Threading.Tasks;
 
 namespace EcoleDirecteDownloader.Api.Contracts
 {
-    public interface IEcoleDirecteService
+    public interface IEcoleDirecteService : IDisposable
     {
+        bool Home();
+
+        bool HomeworkBook();
+
+        string GetWorkToDo(DateTime date);
+
+        string GetSessionsContent(DateTime date);
     }
 }

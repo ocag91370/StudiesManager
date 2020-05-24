@@ -1,4 +1,4 @@
-﻿using EcoleDirecteDownloader.Models;
+﻿using EcoleDirecteDownloader.Api.Models;
 using OpenQA.Selenium;
 using System;
 using System.Linq;
@@ -10,7 +10,7 @@ namespace EcoleDirecteDownloader.Api.Pages
     {
         public string Url { get; set; }
 
-        private readonly EcoleDirecteSettingsModel _ecoleDirecteSettings;
+        protected readonly EcoleDirecteSettingsModel _ecoleDirecteSettings;
 
         public IWebDriver Driver { get; set; }
 
@@ -24,6 +24,15 @@ namespace EcoleDirecteDownloader.Api.Pages
         public BasePage(EcoleDirecteSettingsModel ecoleDirecteSettings, IWebDriver driver, string url)
         {
             _ecoleDirecteSettings = ecoleDirecteSettings;
+            Driver = driver;
+            Url = url;
+
+            GoTo();
+        }
+
+        public BasePage(IWebDriver driver, string url)
+        {
+            _ecoleDirecteSettings = null;
             Driver = driver;
             Url = url;
 

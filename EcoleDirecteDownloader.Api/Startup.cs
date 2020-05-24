@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using EcoleDirecteDownloader.Api.Contracts;
 using EcoleDirecteDownloader.Api.Services;
-using EcoleDirecteDownloader.Models;
+using EcoleDirecteDownloader.Api.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
