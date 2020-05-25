@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace EcoleDirecteDownloader.Api.Pages
 {
-    public partial class LoginPage : BasePage
+    public partial class LoginPom : BasePom
     {
-        public HomePage Connect()
+        public HomePom Connect()
         {
             try
             {
@@ -18,7 +18,7 @@ namespace EcoleDirecteDownloader.Api.Pages
 
                 ConnectElement().Click();
 
-                return new HomePage(Driver);
+                return new HomePom(Driver);
             }
             catch (Exception)
             {
@@ -27,7 +27,7 @@ namespace EcoleDirecteDownloader.Api.Pages
         }
     }
  
-    public partial class LoginPage
+    public partial class LoginPom
     {
         private IWebElement UserNameElement() => Driver.FindElement(By.Id("username"));
 
@@ -35,7 +35,7 @@ namespace EcoleDirecteDownloader.Api.Pages
 
         private IWebElement ConnectElement() => Driver.FindElement(By.Id("connexion"));
 
-        public LoginPage(EcoleDirecteSettingsModel settings, IWebDriver driver, string url) : base(settings, driver, url)
+        public LoginPom(EcoleDirecteSettingsModel settings, IWebDriver driver, string url) : base(settings, driver, url)
         {
         }
     }

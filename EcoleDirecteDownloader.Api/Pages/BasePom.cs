@@ -6,7 +6,7 @@ using System.Web;
 
 namespace EcoleDirecteDownloader.Api.Pages
 {
-    public class BasePage
+    public class BasePom
     {
         public string Url { get; set; }
 
@@ -14,14 +14,14 @@ namespace EcoleDirecteDownloader.Api.Pages
 
         public IWebDriver Driver { get; set; }
 
-        public BasePage(IWebDriver driver)
+        public BasePom(IWebDriver driver)
         {
             Driver = driver;
             Url = string.Empty;
             _ecoleDirecteSettings = null;
         }
 
-        public BasePage(EcoleDirecteSettingsModel ecoleDirecteSettings, IWebDriver driver, string url)
+        public BasePom(EcoleDirecteSettingsModel ecoleDirecteSettings, IWebDriver driver, string url)
         {
             _ecoleDirecteSettings = ecoleDirecteSettings;
             Driver = driver;
@@ -30,7 +30,7 @@ namespace EcoleDirecteDownloader.Api.Pages
             GoTo();
         }
 
-        public BasePage(IWebDriver driver, string url)
+        public BasePom(IWebDriver driver, string url)
         {
             _ecoleDirecteSettings = null;
             Driver = driver;

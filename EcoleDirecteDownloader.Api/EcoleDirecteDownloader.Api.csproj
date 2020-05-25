@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="Ical.Net" Version="4.1.11" />
     <PackageReference Include="PDF.Core" Version="2020.0.0" />
     <PackageReference Include="Protractor" Version="0.13.0" />
     <PackageReference Include="Selenium.Chrome.WebDriver" Version="81.0.0" />

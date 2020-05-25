@@ -7,19 +7,19 @@ using System.Threading.Tasks;
 
 namespace EcoleDirecteDownloader.Api.Pages
 {
-    public partial class NavigationBar : BasePage
+    public partial class NavigationBarPom : BasePom
     {
-        public HomeworkBookPage GoToHomeworkBook()
+        public HomeworkBookPom GoToHomeworkBook()
         {
             GetHomeworkBookElement().Click();
 
-            return new HomeworkBookPage(Driver);
+            return new HomeworkBookPom(Driver);
         }
     }
 
-    public partial class NavigationBar : BasePage
+    public partial class NavigationBarPom
     {
-        public NavigationBar(IWebDriver driver) : base(driver)
+        public NavigationBarPom(IWebDriver driver) : base(driver)
         {
         }
 

@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace EcoleDirecteDownloader.Api.Pages
 {
-    public partial class HomePage : BasePage
+    public partial class HomePom : BasePom
     {
-        public NavigationBar GetNavigationBar() => new NavigationBar(Driver);
+        public NavigationBarPom GetNavigationBar() => new NavigationBarPom(Driver);
     }
 
-    public partial class HomePage : BasePage
+    public partial class HomePom
     {
-        public HomePage(IWebDriver driver) : base(driver)
+        public HomePom(IWebDriver driver) : base(driver)
         {
         }
     }

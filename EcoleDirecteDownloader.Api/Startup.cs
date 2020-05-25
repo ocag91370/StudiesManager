@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using StudiesManager.Services.Models;
 
 namespace EcoleDirecteDownloader.Api
 {
@@ -38,6 +39,7 @@ namespace EcoleDirecteDownloader.Api
 
             // Add our Config object so it can be injected
             services.Configure<EcoleDirecteSettingsModel>(Configuration.GetSection("EcoleDirecteSettings"));
+            services.Configure<WebDriverSettingsModel>(Configuration.GetSection("WebDriverSettings"));
 
             // *If* you need access to generic IConfiguration this is **required**
             services.AddSingleton<IConfiguration>(Configuration);

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using OpenQA.Selenium;
 using StudiesManager.Common.Extensions;
 using StudiesManager.Services;
+using StudiesManager.Services.Models;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -17,17 +18,19 @@ namespace EcoleDirecteDownloader.Api.Services
     public class EcoleDirecteService : IEcoleDirecteService
     {
         private readonly EcoleDirecteSettingsModel _ecoleDirecteSettings;
+        private readonly WebDriverSettingsModel _webDriverSettings;
 
         private readonly IMapper _mapper;
 
         public IWebDriver Driver { get; private set; }
 
-        public EcoleDirecteService(IOptions<EcoleDirecteSettingsModel> configuration, IMapper mapper)
+        public EcoleDirecteService(IOptions<EcoleDirecteSettingsModel> configuration, IOptions<WebDriverSettingsModel> webDriverSettings, IMapper mapper)
         {
             _ecoleDirecteSettings = configuration.Value;
+            _webDriverSettings = webDriverSettings.Value;
             _mapper = mapper;
 
-            Driver = WebDriverFactory.CreateWebDriver(WebBrowserType.Chrome);
+            Driver = WebDriverFactory.CreateWebDriver(WebBrowserType.Chrome, _webDriverSettings);
         }
 
         public bool Home()
@@ -51,53 +54,58 @@ namespace EcoleDirecteDownloader.Api.Services
 
         public string GetWorkToDo(DateTime date)
         {
-            return GoToHomeworkBookPage(date)?.GetWorkToDo();
+            return GoToHomeworkBookPage(date)?.GetWorkToDo(_webDriverSettings);
         }
 
         public string GetSessionsContent(DateTime date)
         {
-            return GoToHomeworkBookPage(date)?.GetSessionsContent();
+            return GoToHomeworkBookPage(date)?.GetSessionsContent(_webDriverSettings);
         }
 
-        private LoginPage GetLoginPage()
+        public void SendMail()
         {
-            var loginPage = new LoginPage(_ecoleDirecteSettings, Driver, _ecoleDirecteSettings.StartUrl);
+            GoToHomeworkBookPage()?.SendMail();
+        }
+
+        private LoginPom GetLoginPage()
+        {
+            var loginPage = new LoginPom(_ecoleDirecteSettings, Driver, _ecoleDirecteSettings.StartUrl);
             Debug.Assert(loginPage.IsNotNull());
 
             return loginPage;
         }
 
-        private NavigationBar Connect()
+        private NavigationBarPom Connect()
         {
             var loginPage = GetLoginPage();
 
             loginPage.Connect();
 
-            var menuPage = new NavigationBar(Driver);
+            var menuPage = new NavigationBarPom(Driver);
             Debug.Assert(menuPage.IsNotNull());
 
             return menuPage;
         }
 
-        private HomeworkBookPage GoToHomeworkBookPage()
+        private HomeworkBookPom GoToHomeworkBookPage()
         {
             var menuPage = Connect();
 
             menuPage.GoToHomeworkBook();
 
-            var homeworkBookPage = new HomeworkBookPage(Driver);
+            var homeworkBookPage = new HomeworkBookPom(Driver);
             Debug.Assert(homeworkBookPage.IsNotNull());
 
             return homeworkBookPage;
         }
 
-        private HomeworkBookPage GoToHomeworkBookPage(DateTime date)
+        private HomeworkBookPom GoToHomeworkBookPage(DateTime date)
         {
             var menuPage = Connect();
 
             menuPage.GoToHomeworkBook();
 
-            var homeworkBookPage = new HomeworkBookPage(Driver);
+            var homeworkBookPage = new HomeworkBookPom(Driver);
             Debug.Assert(homeworkBookPage.IsNotNull());
 
             homeworkBookPage.GoToDate(date);

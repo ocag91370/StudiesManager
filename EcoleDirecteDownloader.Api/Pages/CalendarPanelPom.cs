@@ -7,7 +7,7 @@ using System.Globalization;
 
 namespace EcoleDirecteDownloader.Api.Pages
 {
-    public partial class CalendarPanel : BasePage
+    public partial class CalendarPanelPom : BasePom
     {
         public void GoToDate(DateTime date)
         {
@@ -32,7 +32,7 @@ namespace EcoleDirecteDownloader.Api.Pages
         }
     }
 
-    public partial class CalendarPanel : BasePage
+    public partial class CalendarPanelPom
     {
         private readonly CultureInfo _ci = new CultureInfo("fr-FR");
 
@@ -52,7 +52,7 @@ namespace EcoleDirecteDownloader.Api.Pages
 
         private IWebElement GetNextMonthElement() => GetMonthHeader().FindElement(By.XPath("//*[contains(@class, 'picker-navigate-right-arrow')]"));
 
-        public CalendarPanel(IWebDriver driver) : base(driver)
+        public CalendarPanelPom(IWebDriver driver) : base(driver)
         {
         }
     }

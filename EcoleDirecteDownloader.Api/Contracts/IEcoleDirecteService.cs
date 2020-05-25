@@ -14,5 +14,7 @@ namespace EcoleDirecteDownloader.Api.Contracts
         string GetWorkToDo(DateTime date);
 
         string GetSessionsContent(DateTime date);
+
+        void SendMail();
     }
 }
