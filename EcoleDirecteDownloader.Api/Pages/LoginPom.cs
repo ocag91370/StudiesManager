@@ -29,14 +29,14 @@ namespace EcoleDirecteDownloader.Api.Pages
  
     public partial class LoginPom
     {
+        public LoginPom(EcoleDirecteSettingsModel settings, IWebDriver driver, string url) : base(settings, driver, url)
+        {
+        }
+
         private IWebElement UserNameElement() => Driver.FindElement(By.Id("username"));
 
         private IWebElement PasswordElement() => Driver.FindElement(By.Id("password"));
 
         private IWebElement ConnectElement() => Driver.FindElement(By.Id("connexion"));
-
-        public LoginPom(EcoleDirecteSettingsModel settings, IWebDriver driver, string url) : base(settings, driver, url)
-        {
-        }
     }
 }

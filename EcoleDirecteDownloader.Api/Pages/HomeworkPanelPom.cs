@@ -21,28 +21,35 @@ namespace EcoleDirecteDownloader.Api.Pages
 
         public string GetWorkToDo(WebDriverSettingsModel webDriverSettings)
         {
-            GetWorkToDoElement().Click();
+            var body = GetWorkToDoPanel().GetWork("Travail à faire").Html;
+            ExtractContent(body, webDriverSettings);
 
-            ExtractFiles(webDriverSettings);
-            ExtractContent(webDriverSettings);
+            return body;
+            //GetWorkToDoElement().Click();
 
-            return GetDataElement().Text;
+            //ExtractFiles(webDriverSettings);
+            //ExtractContent(webDriverSettings);
+
+            //return GetDataElement().Text;
         }
 
         public string GetSessionsContent(WebDriverSettingsModel webDriverSettings)
         {
-            GetSessionsContentElement().Click();
+            var body = GetWorkSessionPanel().GetWork("Contenus de séances").Html;
+            ExtractContent(body, webDriverSettings);
 
-            ExtractFiles(webDriverSettings);
-            var content = ExtractContent(webDriverSettings);
+            return body;
+            //GetSessionsContentElement().Click();
 
-            return GetDataElement().Text;
+            //ExtractFiles(webDriverSettings);
+            //var content = ExtractContent(webDriverSettings);
+
+            //return GetDataElement().Text;
         }
 
-        public string ExtractContent(WebDriverSettingsModel webDriverSettings)
+        public string ExtractContent(string body, WebDriverSettingsModel webDriverSettings)
         {
             string head = string.Join("", Driver.FindElements(By.XPath("//*[@rel='stylesheet']")).AsEnumerable().Select(o => o.GetOuterHtml()));
-            string body = GetDataElement().GetOuterHtml();
             var html = @$"<html><head>{head}</head><body>{body}</body></html>";
 
             var filename = Path.Combine(webDriverSettings.DownloadDefaultDirectory, "test.pdf");
@@ -91,46 +98,46 @@ namespace EcoleDirecteDownloader.Api.Pages
         public void SendMail()
         {
             var mail = new MailMessage("olive91370@gmail.com", "ocagliuli@hotmail.com");
-/*
-            var str = new StringBuilder();
-            str.AppendLine("BEGIN:VCALENDAR");
-            str.AppendLine("PRODID:-//Schedule a Meeting");
-            str.AppendLine("VERSION:2.0");
-            str.AppendLine("METHOD:REQUEST");
-            str.AppendLine("BEGIN:VEVENT");
-            str.AppendLine(string.Format("DTSTART:{0:yyyyMMddTHHmmssZ}", DateTime.Now.AddMinutes(+330)));
-            str.AppendLine(string.Format("DTSTAMP:{0:yyyyMMddTHHmmssZ}", DateTime.UtcNow));
-            str.AppendLine(string.Format("DTEND:{0:yyyyMMddTHHmmssZ}", DateTime.Now.AddMinutes(+660)));
-            str.AppendLine("LOCATION: " + "abcd");
-            str.AppendLine(string.Format("UID:{0}", Guid.NewGuid()));
-            str.AppendLine(string.Format("DESCRIPTION:{0}", msg.Body));
-            str.AppendLine(string.Format("X-ALT-DESC;FMTTYPE=text/html:{0}", msg.Body));
-            str.AppendLine(string.Format("SUMMARY:{0}", msg.Subject));
-            str.AppendLine(string.Format("ORGANIZER:MAILTO:{0}", msg.From.Address));
+            /*
+                        var str = new StringBuilder();
+                        str.AppendLine("BEGIN:VCALENDAR");
+                        str.AppendLine("PRODID:-//Schedule a Meeting");
+                        str.AppendLine("VERSION:2.0");
+                        str.AppendLine("METHOD:REQUEST");
+                        str.AppendLine("BEGIN:VEVENT");
+                        str.AppendLine(string.Format("DTSTART:{0:yyyyMMddTHHmmssZ}", DateTime.Now.AddMinutes(+330)));
+                        str.AppendLine(string.Format("DTSTAMP:{0:yyyyMMddTHHmmssZ}", DateTime.UtcNow));
+                        str.AppendLine(string.Format("DTEND:{0:yyyyMMddTHHmmssZ}", DateTime.Now.AddMinutes(+660)));
+                        str.AppendLine("LOCATION: " + "abcd");
+                        str.AppendLine(string.Format("UID:{0}", Guid.NewGuid()));
+                        str.AppendLine(string.Format("DESCRIPTION:{0}", msg.Body));
+                        str.AppendLine(string.Format("X-ALT-DESC;FMTTYPE=text/html:{0}", msg.Body));
+                        str.AppendLine(string.Format("SUMMARY:{0}", msg.Subject));
+                        str.AppendLine(string.Format("ORGANIZER:MAILTO:{0}", msg.From.Address));
 
-            str.AppendLine(string.Format("ATTENDEE;CN=\"{0}\";RSVP=TRUE:mailto:{1}", msg.To[0].DisplayName, msg.To[0].Address));
+                        str.AppendLine(string.Format("ATTENDEE;CN=\"{0}\";RSVP=TRUE:mailto:{1}", msg.To[0].DisplayName, msg.To[0].Address));
 
-            str.AppendLine("BEGIN:VALARM");
-            str.AppendLine("TRIGGER:-PT15M");
-            str.AppendLine("ACTION:DISPLAY");
-            str.AppendLine("DESCRIPTION:Reminder");
-            str.AppendLine("END:VALARM");
-            str.AppendLine("END:VEVENT");
-            str.AppendLine("END:VCALENDAR");
+                        str.AppendLine("BEGIN:VALARM");
+                        str.AppendLine("TRIGGER:-PT15M");
+                        str.AppendLine("ACTION:DISPLAY");
+                        str.AppendLine("DESCRIPTION:Reminder");
+                        str.AppendLine("END:VALARM");
+                        str.AppendLine("END:VEVENT");
+                        str.AppendLine("END:VCALENDAR");
 
-            var byteArray = Encoding.ASCII.GetBytes(str.ToString());
-            var stream = new MemoryStream(byteArray);
+                        var byteArray = Encoding.ASCII.GetBytes(str.ToString());
+                        var stream = new MemoryStream(byteArray);
 
-            var attach = new Attachment(stream, "test.ics");
+                        var attach = new Attachment(stream, "test.ics");
 
-            mail.Attachments.Add(attach);
+                        mail.Attachments.Add(attach);
 
-            var contype = new ContentType("text/calendar");
-            contype.Parameters.Add("method", "REQUEST");
-            //  contype.Parameters.Add("name", "Meeting.ics");
-            var avCal = AlternateView.CreateAlternateViewFromString(str.ToString(), contype);
-            mail.AlternateViews.Add(avCal);
-*/
+                        var contype = new ContentType("text/calendar");
+                        contype.Parameters.Add("method", "REQUEST");
+                        //  contype.Parameters.Add("name", "Meeting.ics");
+                        var avCal = AlternateView.CreateAlternateViewFromString(str.ToString(), contype);
+                        mail.AlternateViews.Add(avCal);
+            */
             //Now sending a mail with attachment ICS file.                     
             mail.Subject = "Test Mail";
             mail.Body = "This is for testing SMTP mail from GMAIL";
@@ -149,20 +156,36 @@ namespace EcoleDirecteDownloader.Api.Pages
     {
         private readonly CultureInfo _ci = new CultureInfo("fr-FR");
 
+        public HomeworkPanelPom(IWebDriver driver) : base(driver)
+        {
+        }
+
         private IWebElement GetCurrentElement() => Driver.FindElement(By.Id("tab-devoirs-jour"), 1, 5);
 
         private IWebElement GetWorkToDoElement() => GetCurrentElement().FindElement(By.XPath("//*[contains(@ng-click, 'afaire')]"));
 
-        private IWebElement GetSessionsContentElement() => GetCurrentElement().FindElement(By.XPath("//*[contains(@ng-click, 'crseance')]"));
+        private IWebElement GetWorkSessionElement() => GetCurrentElement().FindElement(By.XPath("//*[contains(@ng-click, 'crseance')]"));
+
+        //private IWebElement GetSessionsContentElement() => GetCurrentElement().FindElement(By.XPath("//*[contains(@ng-click, 'crseance')]"));
 
         private IWebElement GetDataElement() => Driver.FindElement(By.XPath($"//*[(@class = 'encartJour') and (@id != '')]"), 1, 5);
 
         private List<IWebElement> GetFileElements() => GetDataElement().FindElements(By.XPath($"//a[@file-type = 'FICHIER_CDT']")).ToList();
 
-        private List<IWebElement> GetSubjectElements() => GetDataElement().FindElements(By.XPath($"//*[@class = '//*[@class = 'ed-card width-epingle']")).ToList();
+        private List<IWebElement> GetSubjectElements() => GetDataElement().FindElements(By.XPath($"//*[@class = 'ed-card width-epingle']")).ToList();
 
-        public HomeworkPanelPom(IWebDriver driver) : base(driver)
+        private WorkPanelPom GetWorkToDoPanel()
         {
+            GetWorkToDoElement().Click();
+
+            return new WorkPanelPom(Driver, GetDataElement());
+        }
+
+        private WorkPanelPom GetWorkSessionPanel()
+        {
+            GetWorkSessionElement().Click();
+
+            return new WorkPanelPom(Driver, GetDataElement());
         }
     }
 }

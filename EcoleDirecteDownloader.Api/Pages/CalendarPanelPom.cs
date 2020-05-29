@@ -36,6 +36,10 @@ namespace EcoleDirecteDownloader.Api.Pages
     {
         private readonly CultureInfo _ci = new CultureInfo("fr-FR");
 
+        public CalendarPanelPom(IWebDriver driver) : base(driver)
+        {
+        }
+
         private IWebElement GetCalendarElement() => Driver.FindElement(By.Id("cdtnavigation-calendar"), 1, 5);
 
         private IWebElement GetMonthHeader() => GetCalendarElement().FindElement(By.XPath("//*[@class = 'picker-top-row']"));
@@ -51,9 +55,5 @@ namespace EcoleDirecteDownloader.Api.Pages
         private IWebElement GetPreviousMonthElement() => GetMonthHeader().FindElement(By.XPath("//*[contains(@class, 'picker-navigate-left-arrow')]"));
 
         private IWebElement GetNextMonthElement() => GetMonthHeader().FindElement(By.XPath("//*[contains(@class, 'picker-navigate-right-arrow')]"));
-
-        public CalendarPanelPom(IWebDriver driver) : base(driver)
-        {
-        }
     }
 }

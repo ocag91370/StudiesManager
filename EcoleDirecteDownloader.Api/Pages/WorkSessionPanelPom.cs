@@ -10,10 +10,11 @@ using EcoleDirecteDownloader.Api.Entities;
 
 namespace EcoleDirecteDownloader.Api.Pages
 {
-    public partial class WorkPanelPom : BasePom
+    public partial class WorkSessionPanelPom : BasePom
     {
-        public WorkEntity GetWork(string title)
+        public WorkEntity GetWork()
         {
+            var title = "Contenus de séances";
             var subjects = GetSubjectPanels().Select(o => o.GetSubject()).ToList();
             var html = $"<h3>{title}</h3>{string.Join("", subjects.Select(o => o.Html))}";
 
@@ -26,11 +27,11 @@ namespace EcoleDirecteDownloader.Api.Pages
         }
     }
 
-    public partial class WorkPanelPom
+    public partial class WorkSessionPanelPom
     {
         public IWebElement ContainerElement { get; set; }
 
-        public WorkPanelPom(IWebDriver driver, IWebElement containerElement) : base(driver)
+        public WorkSessionPanelPom(IWebDriver driver, IWebElement containerElement) : base(driver)
         {
             ContainerElement = containerElement;
         }

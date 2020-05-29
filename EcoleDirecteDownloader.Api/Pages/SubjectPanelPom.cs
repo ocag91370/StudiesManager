@@ -1,6 +1,8 @@
 ﻿using EcoleDirecteDownloader.Api.Entities;
 using OpenQA.Selenium;
 using StudiesManager.Services.Extensions;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace EcoleDirecteDownloader.Api.Pages
 {
@@ -8,9 +10,11 @@ namespace EcoleDirecteDownloader.Api.Pages
     {
         public SubjectEntity GetSubject ()
         {
-            var title = GetTitleElement().Text;
-            var content = GetContentElement().Text;
-            var html = ContainerElement.GetOuterHtml();
+            var sectionElements = GetSectionElements();
+
+            var title = sectionElements[0].Text;
+            var content = sectionElements[1].Text;
+            var html = sectionElements[2].GetOuterHtml();
 
             return new SubjectEntity {
                 Title = title,
@@ -24,15 +28,11 @@ namespace EcoleDirecteDownloader.Api.Pages
     {
         public IWebElement ContainerElement { get; set; }
 
-        private IWebElement GetTitleElement() => ContainerElement.FindElement(By.XPath($"//*[contains(@class, 'panel-heading-devoir')]"));
-
-        private IWebElement GetContentElement() => ContainerElement.FindElement(By.XPath($"//*[@class = 'row']"));
-
-        private IWebElement GetFooterElement() => ContainerElement.FindElement(By.XPath($"//*[@class = 'footer']"));
-
         public SubjectPanelPom(IWebDriver driver, IWebElement containerElement) : base(driver)
         {
             ContainerElement = containerElement;
         }
+
+        private List<IWebElement> GetSectionElements() => ContainerElement.FindElements(By.XPath("div")).ToList();
     }
 }
