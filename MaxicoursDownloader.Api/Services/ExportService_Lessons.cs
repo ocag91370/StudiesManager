@@ -39,6 +39,33 @@ namespace MaxicoursDownloader.Api.Services
             {
                 var nbFiles = SaveAsPdf(lesson);
 
+                var item = lesson.Item;
+                var index = item.Index.ToString().PadLeft(3, '0');
+                var filename = Path.Combine(_maxicoursSettings.ExportPath, $"{item.SummarySubject.SchoolLevel.Tag} - {item.SummarySubject.Tag} - {item.Category.Tag} - {index} - {item?.Theme?.Tag ?? item.SummarySubject.Tag} - {item.Id} - {item.Tag}");
+
+                if (lesson.HasSwfs())
+                {
+                    lesson.SwfUrls.ForEach(url =>
+                    {
+                        var name = url.Split("/").Last();
+                        var uri = new Uri(url);
+                        using (WebClient client = new WebClient())
+                        {
+                            client.DownloadFile(uri, $"{filename} - {name}");
+                        }
+                    });
+                }
+
+                if (lesson.HasMindMap())
+                {
+                    var name = lesson.MindMapUrl.Split("/").Last();
+                    var uri = new Uri(lesson.MindMapUrl);
+                    using (WebClient client = new WebClient())
+                    {
+                        client.DownloadFile(uri, $"{filename} - {name}");
+                    }
+                }
+
                 return new ExportResultModel(1, 0, nbFiles);
             }
             catch (Exception ex)
@@ -147,11 +174,15 @@ namespace MaxicoursDownloader.Api.Services
         {
             try
             {
+                string categoryId = _maxicoursSettings.Categories[_lessonsCategoryKey];
+                var itemList = _maxicoursService.GetItemsOfCategory(levelTag, subjectId, categoryId);
+
                 var resultList = new List<ExportResultModel>();
                 itemKeyList.ForEach((itemKey) =>
                 {
-                    var item = _maxicoursService.GetLesson(levelTag, subjectId, itemKey);
-                    resultList.Add(ExportLesson(item));
+                    var item = itemList.FirstOrDefault(o => o.Id == itemKey.Id && o.Index == itemKey.Index);
+                    var lesson = _maxicoursService.GetLesson(item);
+                    resultList.Add(ExportLesson(lesson));
                 });
 
                 return new ExportResultModel(resultList);

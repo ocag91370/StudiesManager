@@ -21,6 +21,8 @@ namespace MaxicoursDownloader.Api.Models
 
         public string Url { get; set; }
 
+        public bool HasSwf { get; set; }
+
         public int Index { get; set; }
     }
 }

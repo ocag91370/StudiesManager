@@ -28,6 +28,7 @@ namespace MaxicoursDownloader.Api.Services
             SetHeader(lesson.Item, renderer);
             SetFooter(lesson.Item, renderer);
 
+            //var pdf = renderer.RenderHtmlAsPdf(lesson.HtmlLesson);
             var pdf = renderer.RenderUrlAsPdf(lesson.PrintUrl);
 
             pdf.SaveAs(filename);
@@ -99,7 +100,7 @@ namespace MaxicoursDownloader.Api.Services
             @this.PrintOptions.Title = string.Empty;
             @this.PrintOptions.EnableJavaScript = true;
             @this.PrintOptions.RenderDelay = 50;
-            @this.PrintOptions.CssMediaType = PdfPrintOptions.PdfCssMediaType.Print;
+            @this.PrintOptions.CssMediaType = PdfPrintOptions.PdfCssMediaType.Screen;
             @this.PrintOptions.DPI = 300;
             @this.PrintOptions.FitToPaperWidth = true;
             @this.PrintOptions.JpegQuality = 80;

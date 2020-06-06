@@ -66,7 +66,7 @@ namespace MaxicoursDownloader.Api.Services
 
         private LessonPage GetLessonPage(ItemEntity item)
         {
-            var lessonPage = new LessonPage(Driver, item);
+            var lessonPage = new LessonPage(_maxicoursSettings, Driver, item);
             Debug.Assert(lessonPage.IsNotNull());
 
             return lessonPage;

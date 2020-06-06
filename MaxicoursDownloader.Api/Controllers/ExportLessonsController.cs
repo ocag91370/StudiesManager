@@ -2,6 +2,7 @@
 using MaxicoursDownloader.Api.Extensions;
 using MaxicoursDownloader.Api.Interfaces;
 using MaxicoursDownloader.Api.Models;
+using MaxicoursDownloader.Api.Models.Result;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -130,6 +131,38 @@ namespace MaxicoursDownloader.Api.Controllers
                 {
                     Items = $"{exportResult.NbItems} item(s) identified.",
                     Files = $"{exportResult.NbFiles} file(s) successfully exported."
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("schoollevels/{levelTag}/lessons/export")]
+        public IActionResult ExportLessons(string levelTag, [FromBody]SchoolLevelKeyModel schoolLevelModel)
+        {
+            try
+            {
+                var exportResultList = new List<ExportResultModel>();
+                schoolLevelModel.Subjects.ForEach(subject =>
+                {
+                    exportResultList.Add(_exportService.ExportLessons(levelTag, subject.Id, subject.Items));
+                });
+
+                var nbItems = exportResultList.Sum(o => o.NbItems);
+                var nbFiles = exportResultList.Sum(o => o.NbFiles);
+
+                if (nbFiles <= 0)
+                    return NotFound();
+
+                var result = new
+                {
+                    Items = $"{nbItems} item(s) identified.",
+                    Files = $"{nbFiles} file(s) successfully exported."
                 };
 
                 return Ok(result);

@@ -12,14 +12,12 @@ namespace MaxicoursDownloader.Api.Pages
 {
     public partial class SubjectPage : BasePage
     {
-        private IWebElement ItemsContainerElement => ContainerElement.FindElement(By.XPath("//*[@class = 'lsi-crn-container']//*[@class = 'panes']"));
-
         public List<ItemEntity> GetAllItems()
         {
             var categoryList = GetAllCategories();
             var themeList = GetAllThemes();
 
-            var elementList = ContainerElement.FindElements(By.XPath($"//*[contains(@class,'  overable')]//*[@class = 'label']/a"));
+            var elementList = ContainerElement.FindElements(By.XPath($"//*[contains(@class,'  overable')]"));
 
             var result = elementList.Select((element, index) => GetItem(categoryList, themeList, element, index)).ToList();
 
@@ -31,7 +29,7 @@ namespace MaxicoursDownloader.Api.Pages
             var categoryList = GetAllCategories();
             var themeList = GetAllThemes();
 
-            var elementList = ContainerElement.FindElements(By.XPath($"//*[@class = '{categoryId}  overable']//*[@class = 'label']/a"));
+            var elementList = ContainerElement.FindElements(By.XPath($"//*[@class = '{categoryId}  overable']"));
 
             var result = elementList.Select((element, index) => GetItem(categoryList, themeList, element, index)).ToList();
 
@@ -54,10 +52,16 @@ namespace MaxicoursDownloader.Api.Pages
 
         private ItemEntity GetItem(List<CategoryEntity> categoryList, List<ThemeEntity> themeList, IWebElement element, int index)
         {
-            var url = element.GetAttribute("href");
+            var item = element?.FindElement(By.ClassName("label"))?.FindElement(By.TagName("a"));
+            if (item.IsNull())
+                return null;
+
+            var hasSwf = element.FindElements(By.ClassName("contribution-swf")).Any();
+
+            var url = item.GetAttribute("href");
             var reference = FromUrl(url);
 
-            var name = element.GetAttribute("title");
+            var name = item.GetAttribute("title");
 
             var category = GetCategory(categoryList, reference);
             var theme = GetTheme(themeList, reference);
@@ -71,6 +75,7 @@ namespace MaxicoursDownloader.Api.Pages
                 Tag = name.CleanName(),
                 Name = name,
                 Url = url,
+                HasSwf = hasSwf,
                 Index = index + 1
             };
 

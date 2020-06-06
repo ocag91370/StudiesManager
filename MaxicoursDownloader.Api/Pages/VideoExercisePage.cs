@@ -20,7 +20,7 @@ namespace MaxicoursDownloader.Api.Pages
 
         private IWebElement TitleElement => ContainerElement.FindElement(By.Id("titre"));
 
-        private IWebElement TextSolutionButtonElement => ContainerElement.FindElement(By.Id("voir-solution"));
+        //private IWebElement TextSolutionButtonElement => ContainerElement.FindElement(By.Id("voir-solution"));
 
         private IWebElement VideoSolutionButtonElement => ContainerElement.FindElement(By.Id("voir-video"));
 

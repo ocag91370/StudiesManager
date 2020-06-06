@@ -13,12 +13,10 @@ namespace MaxicoursDownloader.Api.Controllers
     [Route("maxicours")]
     public class MaxicoursController : ControllerBase
     {
-        //private readonly ILogger<MaxicoursController> _logger;
         private readonly IMaxicoursService _maxicoursService;
 
-        public MaxicoursController(IMaxicoursService maxicoursService/*, ILogger<MaxicoursController> logger*/)
+        public MaxicoursController(IMaxicoursService maxicoursService)
         {
-            //_logger = logger;
             _maxicoursService = maxicoursService;
         }
 
@@ -106,7 +104,7 @@ namespace MaxicoursDownloader.Api.Controllers
                         Items = new
                         {
                             Count = subject.Items.Count(),
-                            Data = subject.Items.Select(o => new { o.Id, o.Tag, o.Name, o.Url, o.Index })
+                            Data = subject.Items.Select(o => new { o.Id, o.Tag, o.Name, o.Url, o.HasSwf, o.Index })
                         }
                     }
                 };
@@ -204,7 +202,7 @@ namespace MaxicoursDownloader.Api.Controllers
                     {
                         SubjectName = subjectName,
                         NbItems = subjectItemList.Count(),
-                        Items = subjectItemList.Select(o => new { o.Id, o.Tag, o.Name, o.Url, o.Index }),
+                        Items = subjectItemList.Select(o => new { o.Id, o.Tag, o.Name, o.Url, o.HasSwf, o.Index }),
                         Categories = subjectItemList.GroupBy(
                             o => o.Category.Name,
                             o => o,
@@ -263,43 +261,7 @@ namespace MaxicoursDownloader.Api.Controllers
                     Items = new
                     {
                         Count = itemList.Count(),
-                        Data = itemList.Select(o => new { o.Id, o.Tag, o.Name, o.Url, o.Index })
-                    }
-                };
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
-            }
-        }
-/*
-        [HttpGet]
-        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/lessons")]
-        public IActionResult GetLessons(string levelTag, int subjectId)
-        {
-            try
-            {
-                var itemList = _maxicoursService.GetLessons(levelTag, subjectId);
-
-                if (!itemList.Any())
-                    return NotFound();
-
-                var firstItem = itemList?.FirstOrDefault();
-                if (firstItem.IsNull())
-                    return NotFound();
-
-                var result = new
-                {
-                    firstItem.SummarySubject.SchoolLevel,
-                    firstItem.SummarySubject,
-                    firstItem.Theme,
-                    firstItem.Category,
-                    Lesson = new
-                    {
-                        Count = itemList.Count(),
-                        Data = itemList.Select(o => new { o.Id, o.Tag, o.Name, o.Url, o.Index })
+                        Data = itemList.Select(o => new { o.Id, o.Tag, o.Name, o.Url, o.HasSwf, o.Index })
                     }
                 };
 
@@ -311,34 +273,6 @@ namespace MaxicoursDownloader.Api.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/lessons/{lessonId:int}")]
-        public IActionResult GetLesson(string levelTag, int subjectId, int lessonId)
-        {
-            try
-            {
-                var item = _maxicoursService.GetLessons(levelTag, subjectId).FirstOrDefault(o => o.Id == lessonId);
-
-                if (item.IsNull())
-                    return NotFound();
-
-                var result = new
-                {
-                    item.SummarySubject.SchoolLevel,
-                    item.SummarySubject,
-                    item.Theme,
-                    item.Category,
-                    Lesson = new { item.Id, item.Tag, item.Name, item.Url, item.Index }
-                };
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
-            }
-        }
-*/
         [HttpGet]
         [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/summarysheets")]
         public IActionResult GetSummarySheets(string levelTag, int subjectId)
@@ -363,7 +297,7 @@ namespace MaxicoursDownloader.Api.Controllers
                     SummarySheets = new
                     {
                         Count = itemList.Count(),
-                        Data = itemList.Select(o => new { o.Id, o.Tag, o.Name, o.Url, o.Index })
+                        Data = itemList.Select(o => new { o.Id, o.Tag, o.Name, o.Url, o.HasSwf, o.Index })
                     }
                 };
 
@@ -399,7 +333,7 @@ namespace MaxicoursDownloader.Api.Controllers
                     Tests = new
                     {
                         Count = itemList.Count(),
-                        Data = itemList.Select(o => new { o.Id, o.Tag, o.Name, o.Url, o.Index })
+                        Data = itemList.Select(o => new { o.Id, o.Tag, o.Name, o.Url, o.HasSwf, o.Index })
                     }
                 };
 
@@ -410,75 +344,7 @@ namespace MaxicoursDownloader.Api.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
-/*
-        [HttpGet]
-        [Route("schoollevels/{levelTag}/videolessons")]
-        public IActionResult GetVideoLessons(string levelTag)
-        {
-            try
-            {
-                var summarySubjectList = _maxicoursService.GetSummarySubjects(levelTag);
 
-                if (!summarySubjectList.Any())
-                    return NotFound();
-
-                var itemList = summarySubjectList.SelectMany(summarySubject => _maxicoursService.GetVideoLessons(levelTag, summarySubject.Id)).ToList();
-
-                if (!itemList.Any())
-                    return NotFound();
-
-                var schoolLevel = summarySubjectList.First().SchoolLevel;
-                var result = new
-                {
-                    SchoolLevel = schoolLevel,
-                    Count = itemList.Count(),
-                    VideoLessons = itemList.Select(o => new { o.Id, o.Tag, o.Name, o.Url, o.Index })
-                };
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
-            }
-        }
-
-        [HttpGet]
-        [Route("schoollevels/{levelTag}/subjects/{subjectId:int}/videolessons")]
-        public IActionResult GetVideoLessons(string levelTag, int subjectId)
-        {
-            try
-            {
-                var itemList = _maxicoursService.GetVideoLessons(levelTag, subjectId);
-
-                if (!itemList.Any())
-                    return NotFound();
-
-                var firstItem = itemList?.FirstOrDefault();
-                if (firstItem.IsNull())
-                    return NotFound();
-
-                var result = new
-                {
-                    firstItem.SummarySubject.SchoolLevel,
-                    firstItem.SummarySubject,
-                    firstItem.Theme,
-                    firstItem.Category,
-                    VideoLessons = new
-                    {
-                        Count = itemList.Count(),
-                        Data = itemList.Select(o => new { o.Id, o.Tag, o.Name, o.Url, o.Index })
-                    }
-                };
-
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
-            }
-        }
-*/
         [HttpGet]
         [Route("schoollevels/{levelTag}/videoexercises")]
         public IActionResult GetVideoExercises(string levelTag)
@@ -500,7 +366,7 @@ namespace MaxicoursDownloader.Api.Controllers
                 {
                     SchoolLevel = schoolLevel,
                     Count = itemList.Count(),
-                    VideoExercises = itemList.Select(o => new { o.Id, o.Tag, o.Name, o.Url, o.Index })
+                    VideoExercises = itemList.Select(o => new { o.Id, o.Tag, o.Name, o.Url, o.HasSwf, o.Index })
                 };
 
                 return Ok(result);
@@ -535,7 +401,7 @@ namespace MaxicoursDownloader.Api.Controllers
                     VideoExercises = new
                     {
                         Count = itemList.Count(),
-                        Data = itemList.Select(o => new { o.Id, o.Tag, o.Name, o.Url, o.Index })
+                        Data = itemList.Select(o => new { o.Id, o.Tag, o.Name, o.Url, o.HasSwf, o.Index })
                     }
                 };
 
