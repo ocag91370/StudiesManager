@@ -2,6 +2,7 @@
 using MaxicoursDownloader.Api.Models;
 using MaxicoursDownloader.Models;
 using OpenQA.Selenium;
+using StudiesManager.Common.Extensions;
 using StudiesManager.Services.Extensions;
 using System;
 using System.Collections.Generic;
@@ -14,7 +15,7 @@ namespace MaxicoursDownloader.Api.Pages
     {
         private readonly ItemEntity _item;
 
-        private IWebElement PrintElement => Driver.FindElement(By.XPath("//a[*[@class = 'picto-imprimer']]"));
+        private IWebElement PrintElement => Driver.FindElements(By.XPath("//a[*[@class = 'picto-imprimer']]")).FirstOrDefault();
 
         private List<IWebElement> SwfElementList => Driver.FindElements(By.XPath("//embed")).ToList();
 
@@ -62,7 +63,10 @@ namespace MaxicoursDownloader.Api.Pages
 
         public string GetHtmlLesson()
         {
-            var TitleElement = Driver.FindElement(By.Id("titre"));
+            var TitleElement = Driver.FindElements(By.Id("titre")).FirstOrDefault();
+            if (TitleElement.IsNull())
+                return string.Empty;
+
             var title = $"<div style='display: block; margin-bottom: 30px; font-family: rawline, arial, sans-serif; font-size: 32px; font-weight: bold; letter-spacing: 0.02em; line-height: 36px; color: #712958; text-align: left;'><span>{TitleElement.Text}</span></div>";
 
             if (Driver is IJavaScriptExecutor js)

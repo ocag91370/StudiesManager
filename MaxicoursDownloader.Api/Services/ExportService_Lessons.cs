@@ -70,7 +70,7 @@ namespace MaxicoursDownloader.Api.Services
             }
             catch (Exception ex)
             {
-                throw ex;
+                return new ExportResultModel(0, 0, 0);
             }
         }
 
