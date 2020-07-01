@@ -31,6 +31,7 @@ namespace StudiesManager.Services
                 default:
                     var chromeOptions = new ChromeOptions();
                     chromeOptions.AddArguments("--disable-extensions");
+                    chromeOptions.AddArguments("start-maximized");
                     chromeOptions.AddUserProfilePreference("download.default_directory", @"C:\Perso\Export");
                     chromeOptions.PageLoadStrategy = PageLoadStrategy.Normal;
                     return new ChromeDriver(chromeOptions);

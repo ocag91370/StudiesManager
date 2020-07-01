@@ -14,7 +14,8 @@ namespace EcoleDirecteDownloader.Api.Pages
 
             var title = sectionElements[0].Text;
             var content = sectionElements[1].Text;
-            var html = sectionElements[2].GetOuterHtml();
+            //var html = sectionElements[2].GetOuterHtml();
+            var html = ContainerElement.GetOuterHtml();
 
             return new SubjectEntity {
                 Title = title,

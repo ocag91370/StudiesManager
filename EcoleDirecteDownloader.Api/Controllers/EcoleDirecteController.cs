@@ -1,4 +1,5 @@
-﻿using EcoleDirecteDownloader.Api.Contracts;
+﻿using EcoleDirecteController.Api.Models;
+using EcoleDirecteDownloader.Api.Contracts;
 using Ical.Net;
 using Ical.Net.CalendarComponents;
 using Ical.Net.DataTypes;
@@ -65,7 +66,46 @@ namespace EcoleDirecteController.Api.Controllers
         }
 
         [HttpGet]
-        [Route("homeworkbook/worktodo/{date}")]
+        [Route("homework/{date}")]
+        public IActionResult GetHomework(DateTime date)
+        {
+            try
+            {
+                _ecoleDirecteService.GetWorkToDo(date);
+                _ecoleDirecteService.GetSessionsContent(date);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("homework/fromdate/{fromDate}/todate/{toDate}")]
+        public IActionResult GetHomeworkPeriod(DateTime fromDate, DateTime toDate)
+        {
+            _ecoleDirecteService.GoToHomeworkBookPage();
+
+            var date = fromDate;
+            do
+            {
+                try
+                {
+                    _ecoleDirecteService.GetHomework(date);
+                    date = date.AddDays(1);
+                }
+                catch (Exception ex)
+                {
+                }
+            } while (date <= toDate);
+
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("homework/worktodo/{date}")]
         public IActionResult GetWorkToDo(DateTime date)
         {
             try
@@ -84,7 +124,7 @@ namespace EcoleDirecteController.Api.Controllers
         }
 
         [HttpGet]
-        [Route("homeworkbook/sessionscontent/{date}")]
+        [Route("homework/sessionscontent/{date}")]
         public IActionResult GetSessionsContent(DateTime date)
         {
             try
@@ -103,7 +143,7 @@ namespace EcoleDirecteController.Api.Controllers
         }
 
         [HttpGet]
-        [Route("homeworkbook/sendmail")]
+        [Route("homework/sendmail")]
         public IActionResult SendMail()
         {
             try
@@ -130,36 +170,36 @@ namespace EcoleDirecteController.Api.Controllers
                     outputFile.Write(serializedCalendar);
                 }
 
-/*
-                var fromAddress = new MailAddress("olive91370@gmail.com", "From Name");
-                var toAddress = new MailAddress("ocagliuli@hotmail.com", "To Name");
-                const string fromPassword = "ocag_2312";
-                const string subject = "Subject";
-                const string body = "Body";
+                /*
+                                var fromAddress = new MailAddress("olive91370@gmail.com", "From Name");
+                                var toAddress = new MailAddress("ocagliuli@hotmail.com", "To Name");
+                                const string fromPassword = "ocag_2312";
+                                const string subject = "Subject";
+                                const string body = "Body";
 
-                var smtp = new SmtpClient
-                {
-                    Host = "smtp.gmail.com",
-                    Port = 587,
-                    EnableSsl = true,
-                    DeliveryMethod = SmtpDeliveryMethod.Network,
-                    UseDefaultCredentials = false,
-                    Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
-                };
-                using (var message = new MailMessage(fromAddress, toAddress)
-                {
-                    Subject = subject,
-                    Body = body
-                })
-                {
-                    var ct = new ContentType("text/calendar");
-                    ct.Parameters.Add("method", "REQUEST");
-                    var avCal = AlternateView.CreateAlternateViewFromString(serializer.SerializeToString(calendar), ct);
-                    message.AlternateViews.Add(avCal);
+                                var smtp = new SmtpClient
+                                {
+                                    Host = "smtp.gmail.com",
+                                    Port = 587,
+                                    EnableSsl = true,
+                                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                                    UseDefaultCredentials = false,
+                                    Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
+                                };
+                                using (var message = new MailMessage(fromAddress, toAddress)
+                                {
+                                    Subject = subject,
+                                    Body = body
+                                })
+                                {
+                                    var ct = new ContentType("text/calendar");
+                                    ct.Parameters.Add("method", "REQUEST");
+                                    var avCal = AlternateView.CreateAlternateViewFromString(serializer.SerializeToString(calendar), ct);
+                                    message.AlternateViews.Add(avCal);
 
-                    smtp.Send(message);
-                }
-*/
+                                    smtp.Send(message);
+                                }
+                */
                 //_ecoleDirecteService.SendMail();
 
                 //var mail = new MailMessage("olive91370@gmail.com", "ocagliuli@hotmail.com");
@@ -238,6 +278,42 @@ namespace EcoleDirecteController.Api.Controllers
                     smtp.Send(message);
                 }
                     */
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpPost]
+        [Route("homeworkbook/mail/reminder")]
+        public IActionResult CreateMailReminder([FromBody]MailReminderModel model)
+        {
+            try
+            {
+                var buffer = System.IO.File.ReadAllBytes(@"c:\perso\export\test.pdf");
+
+                var attachment = new Ical.Net.DataTypes.Attachment(buffer);
+                attachment.Parameters.Add("X-FILENAME", "test.pdf");
+                var calendar = new Calendar();
+                var vEvent = new CalendarEvent
+                {
+                    Start = new CalDateTime(DateTime.Parse("2020-05-24T07:00:00")),
+                    End = new CalDateTime(DateTime.Parse("2020-05-24T08:00:00")),
+                    Attachments = new List<Ical.Net.DataTypes.Attachment> { attachment }
+                };
+
+                calendar.Events.Add(vEvent);
+
+                var serializer = new CalendarSerializer(new SerializationContext());
+                string serializedCalendar = serializer.SerializeToString(calendar);
+
+                using (StreamWriter outputFile = new StreamWriter(@"c:\perso\ocag.ics"))
+                {
+                    outputFile.Write(serializedCalendar);
+                }
+
                 return Ok();
             }
             catch (Exception ex)

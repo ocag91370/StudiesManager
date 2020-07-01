@@ -52,6 +52,17 @@ namespace EcoleDirecteDownloader.Api.Services
             return true;
         }
 
+        public void GetHomework(DateTime date)
+        {
+            var homeworkBookPage = new HomeworkBookPom(Driver);
+            Debug.Assert(homeworkBookPage.IsNotNull());
+
+            homeworkBookPage.GoToDate(date);
+
+            homeworkBookPage?.GetWorkToDo(_webDriverSettings);
+            homeworkBookPage?.GetSessionsContent(_webDriverSettings);
+        }
+
         public string GetWorkToDo(DateTime date)
         {
             return GoToHomeworkBookPage(date)?.GetWorkToDo(_webDriverSettings);
@@ -87,7 +98,7 @@ namespace EcoleDirecteDownloader.Api.Services
             return menuPage;
         }
 
-        private HomeworkBookPom GoToHomeworkBookPage()
+        public HomeworkBookPom GoToHomeworkBookPage()
         {
             var menuPage = Connect();
 

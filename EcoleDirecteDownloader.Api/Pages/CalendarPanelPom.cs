@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using System.Globalization;
+using System.Threading;
 
 namespace EcoleDirecteDownloader.Api.Pages
 {
@@ -23,7 +24,24 @@ namespace EcoleDirecteDownloader.Api.Pages
                 GetPreviousMonthElement().Click();
             }
 
-            GetDayElement(date.Day).Click();
+            var dayElement = GetDayElement(date.Day);
+            dayElement.Click();
+
+            //var nbRepeat = 3;
+            //var end = false;
+            //do
+            //{
+            //    try
+            //    {
+            //        dayElement.Click();
+            //        end = true;
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        Thread.Sleep(1000);
+            //        end = (--nbRepeat > 0);
+            //    }
+            //} while (!end);
         }
 
         public DateTime GetCurrentMonth()
@@ -45,6 +63,7 @@ namespace EcoleDirecteDownloader.Api.Pages
         private IWebElement GetMonthHeader() => GetCalendarElement().FindElement(By.XPath("//*[@class = 'picker-top-row']"));
 
         private IWebElement GetDayElement(int day) => GetCalendarElement().FindElement(By.XPath($"//*[contains(@class, ' picker-day')][text() = {day}]"));
+        //private IWebElement GetDayElement(int day) => Driver.FindElement(By.XPath($"//*[contains(@class, ' picker-day')][text() = {day}]"), 1, 5);
 
         private List<IWebElement> GetDayElements() => GetCalendarElement().FindElements(By.XPath("//*[contains(@class, ' picker-day') and not(contains(@class, 'picker-empty'))]")).ToList();
 

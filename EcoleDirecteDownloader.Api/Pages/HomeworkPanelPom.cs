@@ -17,42 +17,38 @@ namespace EcoleDirecteDownloader.Api.Pages
 {
     public partial class HomeworkPanelPom : BasePom
     {
+        public DateTime CurrentDate { get; set; }
+
         private List<SubjectPanelPom> GetSubjects() => GetSubjectElements().Select(o => new SubjectPanelPom(Driver, o)).ToList();
 
         public string GetWorkToDo(WebDriverSettingsModel webDriverSettings)
         {
             var body = GetWorkToDoPanel().GetWork("Travail à faire").Html;
+
             ExtractContent(body, webDriverSettings);
+            ExtractFiles(webDriverSettings);
+            MoveFilesToDirectory(webDriverSettings, "TravailaFaire");
 
             return body;
-            //GetWorkToDoElement().Click();
-
-            //ExtractFiles(webDriverSettings);
-            //ExtractContent(webDriverSettings);
-
-            //return GetDataElement().Text;
         }
 
         public string GetSessionsContent(WebDriverSettingsModel webDriverSettings)
         {
             var body = GetWorkSessionPanel().GetWork("Contenus de séances").Html;
+
             ExtractContent(body, webDriverSettings);
+            ExtractFiles(webDriverSettings);
+            MoveFilesToDirectory(webDriverSettings, "ContenusDeSeances");
 
             return body;
-            //GetSessionsContentElement().Click();
-
-            //ExtractFiles(webDriverSettings);
-            //var content = ExtractContent(webDriverSettings);
-
-            //return GetDataElement().Text;
         }
 
-        public string ExtractContent(string body, WebDriverSettingsModel webDriverSettings)
+        private string ExtractContent(string body, WebDriverSettingsModel webDriverSettings)
         {
             string head = string.Join("", Driver.FindElements(By.XPath("//*[@rel='stylesheet']")).AsEnumerable().Select(o => o.GetOuterHtml()));
             var html = @$"<html><head>{head}</head><body>{body}</body></html>";
 
-            var filename = Path.Combine(webDriverSettings.DownloadDefaultDirectory, "test.pdf");
+            var filename = Path.Combine(webDriverSettings.DownloadDefaultDirectory, "Synthese.pdf");
             var renderer = new HtmlToPdf();
             var pdf = renderer.RenderHtmlAsPdf(html);
             pdf.SaveAs(filename);
@@ -60,7 +56,7 @@ namespace EcoleDirecteDownloader.Api.Pages
             return html;
         }
 
-        public void ExtractFiles(WebDriverSettingsModel webDriverSettings)
+        private void ExtractFiles(WebDriverSettingsModel webDriverSettings)
         {
             DownloadFiles();
             CheckThatFilesAreDownloaded(webDriverSettings.DownloadDefaultDirectory);
@@ -87,57 +83,17 @@ namespace EcoleDirecteDownloader.Api.Pages
 
             var filenames = fileElements.Select(o => o.Text);
 
-            var nbRetry = 5;
+            var nbRetry = 100;
             while ((nbRetry > 0) && Directory.EnumerateFiles(path, "*.crdownload").Any())
             {
                 nbRetry--;
-                Thread.Sleep(2000);
+                Thread.Sleep(5000);
             }
         }
 
         public void SendMail()
         {
             var mail = new MailMessage("olive91370@gmail.com", "ocagliuli@hotmail.com");
-            /*
-                        var str = new StringBuilder();
-                        str.AppendLine("BEGIN:VCALENDAR");
-                        str.AppendLine("PRODID:-//Schedule a Meeting");
-                        str.AppendLine("VERSION:2.0");
-                        str.AppendLine("METHOD:REQUEST");
-                        str.AppendLine("BEGIN:VEVENT");
-                        str.AppendLine(string.Format("DTSTART:{0:yyyyMMddTHHmmssZ}", DateTime.Now.AddMinutes(+330)));
-                        str.AppendLine(string.Format("DTSTAMP:{0:yyyyMMddTHHmmssZ}", DateTime.UtcNow));
-                        str.AppendLine(string.Format("DTEND:{0:yyyyMMddTHHmmssZ}", DateTime.Now.AddMinutes(+660)));
-                        str.AppendLine("LOCATION: " + "abcd");
-                        str.AppendLine(string.Format("UID:{0}", Guid.NewGuid()));
-                        str.AppendLine(string.Format("DESCRIPTION:{0}", msg.Body));
-                        str.AppendLine(string.Format("X-ALT-DESC;FMTTYPE=text/html:{0}", msg.Body));
-                        str.AppendLine(string.Format("SUMMARY:{0}", msg.Subject));
-                        str.AppendLine(string.Format("ORGANIZER:MAILTO:{0}", msg.From.Address));
-
-                        str.AppendLine(string.Format("ATTENDEE;CN=\"{0}\";RSVP=TRUE:mailto:{1}", msg.To[0].DisplayName, msg.To[0].Address));
-
-                        str.AppendLine("BEGIN:VALARM");
-                        str.AppendLine("TRIGGER:-PT15M");
-                        str.AppendLine("ACTION:DISPLAY");
-                        str.AppendLine("DESCRIPTION:Reminder");
-                        str.AppendLine("END:VALARM");
-                        str.AppendLine("END:VEVENT");
-                        str.AppendLine("END:VCALENDAR");
-
-                        var byteArray = Encoding.ASCII.GetBytes(str.ToString());
-                        var stream = new MemoryStream(byteArray);
-
-                        var attach = new Attachment(stream, "test.ics");
-
-                        mail.Attachments.Add(attach);
-
-                        var contype = new ContentType("text/calendar");
-                        contype.Parameters.Add("method", "REQUEST");
-                        //  contype.Parameters.Add("name", "Meeting.ics");
-                        var avCal = AlternateView.CreateAlternateViewFromString(str.ToString(), contype);
-                        mail.AlternateViews.Add(avCal);
-            */
             //Now sending a mail with attachment ICS file.                     
             mail.Subject = "Test Mail";
             mail.Body = "This is for testing SMTP mail from GMAIL";
@@ -150,14 +106,35 @@ namespace EcoleDirecteDownloader.Api.Pages
             smtpclient.EnableSsl = true;
             smtpclient.Send(mail);
         }
+
+        private void MoveFilesToDirectory(WebDriverSettingsModel webDriverSettings, string tag)
+        {
+            var prefix = CurrentDate.ToLocalTime().ToString("yyyy-MM-dd");
+
+            var newPath = Path.Combine(webDriverSettings.DownloadDefaultDirectory, prefix);
+            if (!Directory.Exists(newPath))
+                Directory.CreateDirectory(newPath);
+
+            var files = Directory.GetFiles(webDriverSettings.DownloadDefaultDirectory);
+            foreach (var file in files)
+            {
+                if (!File.Exists(file))
+                    continue;
+
+                var newFilename = Path.Combine(newPath, $"{prefix}_{tag}_{Path.GetFileName(file)}");
+
+                File.Move(file, newFilename, true);
+            }
+        }
     }
 
     public partial class HomeworkPanelPom
     {
         private readonly CultureInfo _ci = new CultureInfo("fr-FR");
 
-        public HomeworkPanelPom(IWebDriver driver) : base(driver)
+        public HomeworkPanelPom(IWebDriver driver, DateTime date) : base(driver)
         {
+            CurrentDate = date;
         }
 
         private IWebElement GetCurrentElement() => Driver.FindElement(By.Id("tab-devoirs-jour"), 1, 5);
