@@ -14,6 +14,8 @@ namespace StudiesManager.Services
         /// <returns></returns>
         public static IWebDriver CreateWebDriver(WebBrowserType name)
         {
+            IWebDriver driver = null;
+
             switch (name)
             {
                 //case WebBrowserType.Firefox:
@@ -34,8 +36,13 @@ namespace StudiesManager.Services
                     chromeOptions.AddArguments("start-maximized");
                     chromeOptions.AddUserProfilePreference("download.default_directory", @"C:\Perso\Export");
                     chromeOptions.PageLoadStrategy = PageLoadStrategy.Normal;
-                    return new ChromeDriver(chromeOptions);
+                    driver = new ChromeDriver(ChromeDriverService.CreateDefaultService(), chromeOptions, TimeSpan.FromMinutes(3));
+                    break;
             }
+
+            driver.Manage().Timeouts().PageLoad = TimeSpan.FromMinutes(3);
+
+            return driver;
         }
 
         /// <summary>
